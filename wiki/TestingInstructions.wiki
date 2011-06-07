@@ -2,11 +2,16 @@
 #labels Phase-Implementation
 
 = Locally testing a JebGL build =
+== Get necessary files ==
+Because of the way JNLP works you need to get a bunch of files and some modified jnlp files to run JebGL locally. Download them [http://maq.dk/jebgl/webstart-files.tar.gz here] and put them in your `webstart` directory under your JebGL build.
 
+Also download [http://maq.dk/jebgl/test.html test.html] and put it in your JebGL build directory.
 
-= Details =
+== Run a test server ==
+JNLP needs absolute URIs and does not support port numbers, so you have to run your test server on port 80. This means you need root permissions. If you have privileges to do so run
+{{{
+sudo python -m SimpleHTTPServer 80
+}}}
+in your JebGL build directory, and you should be good to go by pointing your browser to http://localhost/test.html
 
-Add your content here.  Format your content with:
-  * Text in *bold* or _italic_
-  * Headings, paragraphs, and lists
-  * Automatic links to other wiki pages
+If you don't have root privileges you need to put all aforementioned files on a webserver already running.

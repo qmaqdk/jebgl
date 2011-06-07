@@ -1,0 +1,33 @@
+#summary Instructions on how to use JebGL on your page.
+
+===Usage===
+Include `jebgl.js`
+{{{
+<script type="text/javascript" src="http://maq.dk/jebgl/jebgl.js"></script>
+}}}
+and instead of a canvas element you use
+{{{
+<applet code="org.jdesktop.applet.util.JNLPAppletLauncher"
+          width=300 height=300 id="canvas">
+  <param name="archive" value="http://maq.dk/jebgl/webstart/applet-launcher.jar,
+                               http://maq.dk/jebgl/webstart/jogl.all.jar,
+                               http://maq.dk/jebgl/webstart/nativewindow.all.jar,
+                               http://maq.dk/jebgl/webstart/gluegen-rt.jar,
+                               http://maq.dk/jebgl/jebgl.jar">
+  <param name="codebase_lookup" value="false">
+  <param name="subapplet.classname" value="com.iola.JebGL">
+  <param name="subapplet.displayname" value="JebGL Applet">
+  <param name="noddraw.check" value="true">
+  <param name="progressbar" value="true">
+  <param name="jnlpNumExtensions" value="1">
+  <param name="jnlpExtension1"
+         value="http://maq.dk/jebgl/webstart/jogl-core.jnlp">
+</applet>
+}}}
+You can of course host the js, jar, and jnlp files on your own site, but remember to change all relevent URIs in the JNLP-files (including all the dependent JNLP-files in jogl-core.jnlp).
+
+The last thing you need to do is wait for the applet being ready (it can still be loading when onload fires). To do so use
+{{{
+JebGL.prototype.waitForApplet(document.getElementById('canvas'),fun);
+}}}
+where `fun` is the callback function to call when the applet is ready for drawing.

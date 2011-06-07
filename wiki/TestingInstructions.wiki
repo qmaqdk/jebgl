@@ -3,7 +3,7 @@
 
 = Locally testing a JebGL build =
 == Get necessary files ==
-Because of the way JNLP works you need to get a bunch of files and some modified jnlp files to run JebGL locally. Download them [http://maq.dk/jebgl/webstart-files.tar.gz here] and put them in your `webstart` directory under your JebGL build.
+Because of the way JNLP works you need to get a bunch of jars and some modified jnlp files to run JebGL locally. Download them [http://maq.dk/jebgl/webstart-files.tar.gz here] and put them in your `webstart` directory under your JebGL build.
 
 Also download [http://maq.dk/jebgl/test.html test.html] and put it in your JebGL build directory.
 

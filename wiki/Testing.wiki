@@ -1,4 +1,5 @@
 #summary Instructions for locally testing your JebGL build
+#labels Featured
 
 = Locally testing a JebGL build =
 == Get necessary files ==

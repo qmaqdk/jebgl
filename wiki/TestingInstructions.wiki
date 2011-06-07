@@ -3,9 +3,9 @@
 
 = Locally testing a JebGL build =
 == Get necessary files ==
-Because of the way JNLP works you need to get a bunch of jars and some modified jnlp files to run JebGL locally. Download them [http://maq.dk/jebgl/webstart-files.tar.gz here] and put them in your `webstart` directory under your JebGL build.
+Because of the way JNLP works you need to get a bunch of jars and some modified jnlp files to run JebGL locally. Download them [http://jebgl.com/webstart-files.tar.gz here] and put them in your `webstart` directory under your JebGL build.
 
-Also download [http://maq.dk/jebgl/test.html test.html] and put it in your JebGL build directory.
+Also download [http://jebgl.com/test.html test.html] and put it in your JebGL build directory.
 
 == Run a test server ==
 JNLP needs absolute URIs and does not support port numbers, so you have to run your test server on port 80. This means you need root permissions. If you have privileges to do so run

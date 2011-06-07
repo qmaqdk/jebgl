@@ -1,4 +1,5 @@
 #summary Instructions for building JebGL from the source code.
+#labels Featured
 
 = Building JebGL =
 == Get the source ==

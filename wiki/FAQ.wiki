@@ -1,0 +1,17 @@
+#summary Frequently asked questions
+#labels Featured
+
+= General =
+=== Some of the texture images don't load ===
+The texture images are actually loaded by the applet. It grabs the URL from the DOM element, and then loads it separately. There is still some development needed for retries, etc.
+
+=== There's a gray box where the applet should be in Chrome ===
+There's an issue with setting applet permissions in Chrome. If you set _always allow_ the applet wont subsequently load. Until this is fixed you can use _run once_.
+
+= Linux =
+=== class not found com.iola.JebGL ===
+This error occurs when using the icedtea-plugin Java plugin. You need to switch to Suns Java plugin instead.
+
+= Windows =
+=== LessonXX doesn't work in IE6 ===
+Some of the lessons still need to be ported to IE6. The errors are with the js, not JebGL.

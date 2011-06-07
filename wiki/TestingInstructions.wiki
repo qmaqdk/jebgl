@@ -15,3 +15,5 @@ sudo python -m SimpleHTTPServer 80
 in your JebGL build directory, and you should be good to go by pointing your browser to http://localhost/test.html
 
 If you don't have root privileges you need to put all aforementioned files on a webserver already running.
+
+If everything works you should see a blue and red pattern oscillating.

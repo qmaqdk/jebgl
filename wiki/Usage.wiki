@@ -4,17 +4,17 @@
 =Using JebGL=
 Include `jebgl.js`
 {{{
-<script type="text/javascript" src="http://maq.dk/jebgl/jebgl.js"></script>
+<script type="text/javascript" src="http://jebgl.com/jebgl.js"></script>
 }}}
 and instead of a canvas element you use
 {{{
 <applet code="org.jdesktop.applet.util.JNLPAppletLauncher"
           width=300 height=300 id="canvas">
-  <param name="archive" value="http://maq.dk/jebgl/webstart/applet-launcher.jar,
-                               http://maq.dk/jebgl/webstart/jogl.all.jar,
-                               http://maq.dk/jebgl/webstart/nativewindow.all.jar,
-                               http://maq.dk/jebgl/webstart/gluegen-rt.jar,
-                               http://maq.dk/jebgl/jebgl.jar">
+  <param name="archive" value="http://jebgl.com/webstart/applet-launcher.jar,
+                               http://jebgl.com/webstart/jogl.all.jar,
+                               http://jebgl.com/webstart/nativewindow.all.jar,
+                               http://jebgl.com/webstart/gluegen-rt.jar,
+                               http://jebgl.com/jebgl.jar">
   <param name="codebase_lookup" value="false">
   <param name="subapplet.classname" value="com.iola.JebGL">
   <param name="subapplet.displayname" value="JebGL Applet">
@@ -22,7 +22,7 @@ and instead of a canvas element you use
   <param name="progressbar" value="true">
   <param name="jnlpNumExtensions" value="1">
   <param name="jnlpExtension1"
-         value="http://maq.dk/jebgl/webstart/jogl-core.jnlp">
+         value="http://jebgl.com/webstart/jogl-core.jnlp">
 </applet>
 }}}
 You can of course host the js, jar, and jnlp files on your own site, but remember to change all relevent URIs in the JNLP-files (including all the dependent JNLP-files in jogl-core.jnlp).

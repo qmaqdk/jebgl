@@ -14,9 +14,9 @@ svn checkout http://jebgl.googlecode.com/svn/releases/0.1/ jebgl-read-only
 
 == Get necessary JOGL jars ==
 You need the following jars from the JOGL project:
-  * [http://jogamp.org/deployment/webstart/jogl.all.jar jogl.all.jar]
-  * [http://jogamp.org/deployment/webstart/nativewindow.all.jar nativewindow.all.jar]
-  * [http://jogamp.org/deployment/webstart/gluegen-rt.jar gluegen-rt.jar]
+  * [http://jebgl.com/webstart/jogl.all.jar jogl.all.jar]
+  * [http://jebgl.com/webstart/nativewindow.all.jar nativewindow.all.jar]
+  * [http://jebgl.com/webstart/gluegen-rt.jar gluegen-rt.jar]
 
 Put them in a directory called `webstart` inside your newly created `jebgl-read-only` directory
 

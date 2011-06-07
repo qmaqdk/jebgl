@@ -1,5 +1,5 @@
 #summary Instructions on how to use JebGL on your page.
-#labels Phase-Deploy
+#labels Featured
 
 =Using JebGL=
 Include `jebgl.js`

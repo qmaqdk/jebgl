@@ -8,6 +8,9 @@ The texture images are actually loaded by the applet. It grabs the URL from the 
 === There's a gray box where the applet should be in Chrome ===
 There's an issue with setting applet permissions in Chrome. If you set _always allow_ the applet wont subsequently load. Until this is fixed you can use _run once_.
 
+=== The applet never starts after I reload the page ===
+Known bug. Try reloading again.
+
 = Linux =
 === class not found com.iola.JebGL ===
 This error occurs when using the icedtea-plugin Java plugin. You need to switch to Suns Java plugin instead.

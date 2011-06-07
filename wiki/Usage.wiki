@@ -18,6 +18,7 @@ and instead of a canvas element you use
   <param name="codebase_lookup" value="false">
   <param name="subapplet.classname" value="com.iola.JebGL">
   <param name="subapplet.displayname" value="JebGL Applet">
+  <param name="separate_jvm" value="true"> 
   <param name="noddraw.check" value="true">
   <param name="progressbar" value="true">
   <param name="jnlpNumExtensions" value="1">

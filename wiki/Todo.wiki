@@ -1,7 +1,11 @@
 #summary List of things under development
 
 = Todo =
+=== Applet loading issues ===
+There are still some robustness issues with the Java applet. Loading sometimes stalls, and each browser has their own weirdness. 
 === Framebuffers ===
 Framebuffers and renderbuffers don't yet work.
 === texImage2D ===
-Support for different color models (
+Support for different color models (right now only gl.RGBA is supported)
+=== Implement remaining spec functions ===
+E.g. bufferSubData 

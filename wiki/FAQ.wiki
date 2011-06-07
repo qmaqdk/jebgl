@@ -2,6 +2,9 @@
 #labels Featured
 
 = General =
+=== Does JebGL work with Mesa for graphics cards that don't support OpenGL ===
+It does! But performance is what you'd expect. Anything with a lot of shader action isn't going to run well.
+
 === Some of the texture images don't load ===
 The texture images are actually loaded by the applet. It grabs the URL from the DOM element, and then loads it separately. There is still some development needed for retries, etc.
 

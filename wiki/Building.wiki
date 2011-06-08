@@ -12,8 +12,16 @@ or a release (e.g. 0.1)
 svn checkout http://jebgl.googlecode.com/svn/releases/0.1/ jebgl-read-only
 }}}
 
-== Get necessary JOGL jars ==
-You need the following jars from the JOGL project:
+== Get JOGL ==
+You need some jars from the JOGL project. You can download JOGL [http://jogamp.org/deployment/webstart/archive/ here]. You need both jogl and gluegen, e.g. `jogl-v2.0-rc2.tar.xz` and `gluegen-v2.0-rc2.tar.xz`. The build instructions are as follows (they may not be up to date, check [http://jogamp.org/jogl/doc/HowToBuild.html JOGL's page] for reference)
+{{{
+xzcat jogl-v2.0-rc2.tar.xz | tar x
+xzcat gluegen-v2.0-rc2.tar.xz | tar x
+ln -s gluegen-v2.0-rc2 gluegen
+cd jogl-v2.0-rc2/make
+ant
+}}}
+
   * [http://jebgl.com/webstart/jogl.all.jar jogl.all.jar]
   * [http://jebgl.com/webstart/nativewindow.all.jar nativewindow.all.jar]
   * [http://jebgl.com/webstart/gluegen-rt.jar gluegen-rt.jar]

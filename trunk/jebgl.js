@@ -590,20 +590,21 @@ JebGL.prototype = {
         // Calls f when applet is fully ready
         // Wait for initial applet load
         if (typeof(applet.getSubApplet) == "undefined" || typeof(applet.getSubApplet) == "object") { // The latter part handles Chrome bug
-            setTimeout(function () { JebGL.prototype.waitForApplet(applet, f) }, 200);
-            return;
-        }
-        // Get sub applet
-        if (applet.getSubApplet() == undefined) {
-            setTimeout(function () { JebGL.prototype.waitForApplet(applet, f) }, 100);
-            return;
-        }
-        // Wait until sub applet is active
-        if (!applet.getSubApplet().ready) {
-            // Nearly ready, don't wait as long
             setTimeout(function () { JebGL.prototype.waitForApplet(applet, f) }, 50);
             return;
         }
+        // Get sub applet
+        if (typeof(applet.getSubApplet()) == "undefined" || applet.getSubApplet() == null) {
+            setTimeout(function () { JebGL.prototype.waitForApplet(applet, f) }, 50);
+            return;
+        }
+	// Applet sometimes doesn't reload correctly. This catches that state.
+        if (typeof(applet.getSubApplet().ready) != "boolean" || !applet.getSubApplet().ready) {
+            // Nearly ready, don't wait as long
+            setTimeout(function () { JebGL.prototype.waitForApplet(applet, f) }, 50);
+            return;
+	}
+
         // Add getContext function to applet
         applet.getContext = function () { return new JebGL(applet); };
 
@@ -621,13 +622,13 @@ JebGL.prototype = {
     submit: function() {
         // Zero pad all lists
         for (var i=0; i<this.maxCalls; i++) {
-            if (this.callList[i] == undefined) this.callList[i] = 0;
+            if (typeof(this.callList[i]) == "undefined") this.callList[i] = 0;
         }
         for (var i=0; i<this.maxInts; i++) {
-            if (this.intList[i] == undefined) this.intList[i] = 0;
+            if (typeof(this.intList[i]) == "undefined") this.intList[i] = 0;
         }
         for (var i=0; i<this.maxFloats; i++) {
-            if (this.floatList[i] == undefined) this.floatList[i] = 0.0;
+            if (typeof(this.floatList[i]) == "undefined") this.floatList[i] = 0.0;
         }
         this.JebApp.call(this.callList[0], this.callList[1], this.callList[2],
                          this.callList[3], this.callList[4], this.callList[5],
@@ -744,9 +745,13 @@ JebGL.prototype = {
             }
             this.submit();
         }
-        this.callList.push(f);
-        this.intList = this.intList.concat(intParams);
-        this.floatList = this.floatList.concat(floatParams);
+        this.callList[this.callList.length] = f;
+	for (var i=0, l=intParams.length; i<l; i++) {
+	    this.intList[this.intList.length] = intParams[i];
+        }
+	for (var i=0, l=floatParams.length; i<l; i++) {
+	    this.floatList[this.floatList.length] = floatParams[i];
+	}
         if (!this.callTimer) {
             this.setTimer();
         }

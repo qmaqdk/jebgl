@@ -72,6 +72,8 @@ The `archive` parameters specifies the jebgl.jar and its dependencies. JebGL is 
 `codebase_lookup` is just for performance, and the `subapplet` parameters specify the class which the applet launcher launches. The `separate_jvm` parameter tells the browser to launch JebGL in its own JVM. Some browsers have problems reloading the applet if this isn't done.
 
 ==Optional: host the jars==
+*Note*: This is actually not optional for Safari. All jars must come from the same origin for JebGL to work in Safari.
+
 FIXME
 
 ==Wait for applet before starting==

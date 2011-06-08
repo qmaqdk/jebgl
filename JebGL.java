@@ -39,6 +39,7 @@ import javax.media.opengl.GLRunnable;
 import javax.media.opengl.GLCapabilities;
 import javax.media.opengl.GL2;
 import javax.media.opengl.GLAutoDrawable;
+import javax.media.opengl.GLException;
 import javax.media.opengl.awt.GLCanvas;
 import com.jogamp.opengl.util.AnimatorBase;
 import javax.media.opengl.GLAnimatorControl;
@@ -532,29 +533,53 @@ public class JebGL extends Applet {
             return this.running;
         }
     }
-    
+
+    public void addCanvas(GLCanvas canvas) {
+        // Sometimes canvas isn't quite ready, 
+        // so we keep trying until we succeed
+        try {
+            add(canvas, BorderLayout.CENTER);
+        } catch (GLException e) {
+            canvas.setVisible(true); // May fix a bug where NativeSurface never gets ready
+            // Wait 100 ms
+            long t0, t1;
+            t0 = System.currentTimeMillis();
+            do {
+                t1 = System.currentTimeMillis();
+            } while ((t1-t0) < 100);
+            addCanvas(canvas);
+        }
+    }
+
     public void init() {
         GLProfile.initSingleton(false);
+        System.err.println("1");
         setLayout(new BorderLayout());
         GLCapabilities caps = new GLCapabilities(GLProfile.get(GLProfile.GL2ES2));
+        System.err.println("2");
         caps.setNumSamples(4); // Enable AA
         caps.setSampleBuffers(true); // Needed for AA
         caps.setDoubleBuffered(true);
         canvas = new GLCanvas(caps);
+        addCanvas(canvas);
         canvas.setSize(getSize());
         canvas.setAutoSwapBufferMode(true);
-        add(canvas, BorderLayout.CENTER);
+        System.err.println("3");
 
         // Allocate arrays for call method
         calls = new int[this.maxCalls];
         ints = new int[this.maxInts];
         floats = new float[this.maxFloats];
+        System.err.println("4");
         
         // Set dummy animator to prevent external redraw
         animator = new NullAnimator(canvas);
+        System.err.println("5");
+
     }
     
     public void start() {
+        System.err.println("6");
         animator.start();
         ready = true;
     }
@@ -564,6 +589,9 @@ public class JebGL extends Applet {
     }
     
     public void destroy() {
+        ready = false;
+        // Close down GLCanvas
+        remove(canvas);
     }
 
     // Method used in JavaScript to call a number of gl commands simultaneously

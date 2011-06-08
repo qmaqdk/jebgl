@@ -2,6 +2,7 @@
 #labels Featured
 
 =Using JebGL=
+==Quick start==
 Include `jebgl.js`
 {{{
 <script type="text/javascript" src="http://jebgl.com/jebgl.js"></script>
@@ -34,7 +35,15 @@ JebGL.prototype.waitForApplet(document.getElementById('canvas'),fun);
 }}}
 where `fun` is the callback function to call when the applet is ready for drawing.
 
-=Details=
+==Include jebgl.js==
+
+==Replace canvas with applet==
+
+==Optional: host the jars==
+
+==Wait for applet before starting==
+
+==Details==
 The parameter
 {{{
 <param name="separate_jvm" value="true"> 

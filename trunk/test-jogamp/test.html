@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>JebGL test</title>
+  <script type="text/javascript" src="../jebgl.js"></script>
+  <script id="shader-vs" type="x-shader/x-vertex">
+    attribute vec2 pos;
+
+    void main(void) {
+        gl_Position = vec4(pos.x, pos.y, 0.0, 1.0);
+    }
+  </script>
+  <script>
+    var vSource = [
+      "attribute vec2 pos;",
+      "void main(void) {",
+      "gl_Position = vec4(pos.x, pos.y, 0.0, 1.0);",
+      "}"
+      ].join("\n");
+
+    var fSource = [
+      "#ifdef GL_ES",
+      "precision highp float;",
+      "#endif",
+      "uniform float time;",
+      "void main(void)",
+      "{",
+      "float cox = sin(cos(0.1*time) + 0.1*gl_FragCoord.x);",
+      "float coy = sin(sin(0.1*time) + 0.1*gl_FragCoord.y);",
+      "float co = cox*coy;",
+      "if (co >= 0.0) {",
+      "gl_FragColor = vec4(co, 0.0, 0.0, 1.0 );",
+      "} else {",
+      "gl_FragColor = vec4(0.0, 0.0, -co, 1.0);",
+      "}",
+      "}",
+      ].join("\n");
+
+    var gl,
+        prog,
+        buf,
+        pa, 
+        tu,
+        time = 0;
+
+    function initShaders() {
+       prog = gl.createProgram();
+       var vs = gl.createShader(gl.VERTEX_SHADER);
+       var fs = gl.createShader(gl.FRAGMENT_SHADER);
+
+       gl.shaderSource(vs, vSource);
+       gl.shaderSource(fs, fSource);
+
+       gl.compileShader(vs);
+       gl.compileShader(fs);
+
+       if (!gl.getShaderParameter(vs, gl.COMPILE_STATUS)) {
+          var infoLog = gl.getShaderInfoLog(vs);
+          gl.deleteProgram(prog);
+          alert("VS ERROR: " + infoLog);
+       }
+       
+       if (!gl.getShaderParameter(fs, gl.COMPILE_STATUS)) {
+          var infoLog = gl.getShaderInfoLog(fs);
+          gl.deleteProgram(prog);
+          alert("FS ERROR: " + infoLog);
+       }
+       
+       gl.attachShader(prog, vs);
+       gl.attachShader(prog, fs);
+
+       gl.deleteShader(vs);
+       gl.deleteShader(fs);
+
+       gl.linkProgram(prog);
+       gl.useProgram(prog);
+    }
+
+    function initBuffer() {
+       var vertices = new Float32Array([ -1., -1.,   
+                                          1., -1.,    
+                                          -1.,  1.,     
+                                          1., -1.,    
+                                          1.,  1.,    
+                                          -1.,  1.]);
+       buf = gl.createBuffer();
+       gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+       gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
+    }
+
+    function draw() {
+        gl.clear(gl.COLOR_BUFFER_BIT);
+        gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+        gl.uniform1f(tu, time);
+        gl.vertexAttribPointer(pa, 2, gl.FLOAT, false, 0, 0);
+        gl.enableVertexAttribArray(pa);
+        gl.drawArrays(gl.TRIANGLES, 0, 6);
+        gl.disableVertexAttribArray(pa);
+    }
+
+    function tick() {
+        draw()
+        time++;
+        setTimeout(tick, 10);
+    }
+
+    function run() {
+        var canvas = document.getElementById('canvas');
+        gl = canvas.getContext("experimental-webgl");
+
+        initShaders();
+        initBuffer();
+        
+        gl.viewport(0, 0, canvas.width, canvas.height);
+        gl.clearColor(0.0, 0.0, 0.0, 0.0);
+        pl = gl.getAttribLocation(prog, "pos");
+        tu = gl.getUniformLocation(prog, "time");
+
+        tick();
+    }
+ 
+    window.onload = function() {
+       JebGL.prototype.waitForApplet(document.getElementById('canvas'),run);
+    };
+  </script>
+  </head>
+  <body>
+  <applet code="org.jdesktop.applet.util.JNLPAppletLauncher"
+          width=300 height=300 id="canvas">
+  <param name="archive" value="http://jogamp.org/deployment/util/applet-launcher.jar,
+                               http://jogamp.org/deployment/webstart/jogl.all.jar,
+                               http://jogamp.org/deployment/webstart/nativewindow.all.jar,
+                               http://jogamp.org/deployment/webstart/gluegen-rt.jar,
+                               ../jebgl.jar">
+  <param name="codebase_lookup" value="false">
+  <param name="subapplet.classname" value="com.iola.JebGL">
+  <param name="subapplet.displayname" value="JebGL Applet">
+  <param name="separate_jvm" value="true"> 
+  <param name="noddraw.check" value="true">
+  <param name="progressbar" value="true">
+  <param name="jnlpNumExtensions" value="1">
+  <param name="jnlpExtension1"
+         value="http://jogamp.org/deployment/webstart/jogl-core.jnlp"></applet>
+  </body>
+</html>

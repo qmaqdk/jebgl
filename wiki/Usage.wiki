@@ -38,8 +38,38 @@ where `fun` is the callback function to call when the applet is ready for drawin
 Now `document.getElementById('canvas').getContext('experimental-webgl')` returns a gl object which you interact with exactly as if it was a normal WebGL context.
 
 ==Include jebgl.js==
+JebGL has a JavaScript and a Java part. This allows us to wrap the oddities of the interaction with the Java applet and allows you to use JebGL objects as if they were WebGL objects by, e.g. adding properties.
+
+To begin using JebGL you need to include the JavaScript by adding
+{{{
+<script type="text/javascript" src="http://jebgl.com/jebgl.js"></script>
+}}}
+You will probably want to host the JavaScript and subsequent jar files on your own site.
 
 ==Replace canvas with applet==
+Next you need to replace your canvas with the JebGL applet. Do so by adding the following
+{{{
+<applet code="org.jdesktop.applet.util.JNLPAppletLauncher"
+          width=300 height=300 id="canvas">
+  <param name="archive" value="http://jebgl.com/webstart/applet-launcher.jar,
+                               http://jebgl.com/webstart/jogl.all.jar,
+                               http://jebgl.com/webstart/nativewindow.all.jar,
+                               http://jebgl.com/webstart/gluegen-rt.jar,
+                               http://jebgl.com/jebgl.jar">
+  <param name="codebase_lookup" value="false">
+  <param name="subapplet.classname" value="com.iola.JebGL">
+  <param name="subapplet.displayname" value="JebGL Applet">
+  <param name="separate_jvm" value="true"> 
+  <param name="noddraw.check" value="true">
+  <param name="progressbar" value="true">
+  <param name="jnlpNumExtensions" value="1">
+  <param name="jnlpExtension1"
+         value="http://jebgl.com/webstart/jogl-core.jnlp">
+</applet>
+}}}
+The `archive` parameters specifies the jebgl.jar and its dependencies. JebGL is launched through the [http://java.net/projects/applet-launcher JNLP applet launcher], which allows the applet to use signed native code from the [http://jogamp.org/jogl/www/ JOGL project].
+
+`codebase_lookup` is just for performance, and the `subapplet` parameters specify the class which the applet launcher launches. The `separate_jvm` parameter tells the browser to launch JebGL in its own JVM. Some browsers have problems reloading the applet if this isn't done.
 
 ==Optional: host the jars==
 

@@ -33,3 +33,10 @@ The last thing you need to do is wait for the applet being ready (it can still b
 JebGL.prototype.waitForApplet(document.getElementById('canvas'),fun);
 }}}
 where `fun` is the callback function to call when the applet is ready for drawing.
+
+=Details=
+The parameter
+{{{
+<param name="separate_jvm" value="true"> 
+}}}
+asks the browser to start a new jvm for each JebGL instance. This fixes a problem where the applet would fail on reloads with a GLException.

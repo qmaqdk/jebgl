@@ -1,9 +1,8 @@
 #summary Instructions for building JebGL from the source code.
 #labels Featured
 
-= Building JebGL =
-== Get the source ==
-Get the latest code
+= Get the source =
+However you want to deploy JebGL you need the latest code
 {{{
 svn checkout http://jebgl.googlecode.com/svn/trunk/ jebgl-read-only
 }}}
@@ -12,21 +11,49 @@ or a release (e.g. 0.1)
 svn checkout http://jebgl.googlecode.com/svn/releases/0.1/ jebgl-read-only
 }}}
 
+= Building JebGL (using remote jars from jogamp.org) =
+== Get jars from jogamp.org ==
+{{{
+mkdir -p jogl/build/jar
+cd jogl/build/jar
+wget http://jogamp.org/deployment/webstart/jogl.all.jar
+wget http://jogamp.org/deployment/webstart/nativewindow.all.jar
+wget http://jogamp.org/deployment/webstart/gluegen-rt.jar
+}}}
+== Build JebGL ==
+{{{
+cd ../../../jebgl-read-only
+make
+}}}
+You should now have a jebgl.jar in your current directory.
+== Testing your build ==
+{{{
+cd test
+python -m SimpleHTTPServer 1080
+}}}
+and point your browser to http://localhost:1080/test.html
+
+= Building JebGL (with all jars local) =
+== Get Applet Launcher ==
+While you don't need [http://java.net/projects/applet-launcher applet-launcher] to build JebGL, you need it for testing your build. Run the following in a terminal:
+{{{
+svn checkout https://svn.java.net/svn/applet-launcher~svn/trunk applet-launcher
+cd applet-launcher
+ant
+cd ..
+}}}
+
 == Get JOGL ==
-You need some jars from the JOGL project. You can download JOGL [http://jogamp.org/deployment/webstart/archive/ here]. You need both jogl and gluegen, e.g. `jogl-v2.0-rc2.tar.xz` and `gluegen-v2.0-rc2.tar.xz`. The build instructions are as follows (they may not be up to date, check [http://jogamp.org/jogl/doc/HowToBuild.html JOGL's page] for reference)
+You need some jars from the JOGL project. You can download JOGL [http://jogamp.org/deployment/webstart/archive/ here]. You need both jogl and gluegen, e.g. `jogl-v2.0-rc2.tar.xz` and `gluegen-v2.0-rc2.tar.xz`. The build instructions are as follows (they may not be up to date, check [http://jogamp.org/jogl/doc/HowToBuild.html JOGL's page] for reference). Open a terminal and run the following:
 {{{
 xzcat jogl-v2.0-rc2.tar.xz | tar x
 xzcat gluegen-v2.0-rc2.tar.xz | tar x
+ln -s jogl-v2.0-rc2 jogl
 ln -s gluegen-v2.0-rc2 gluegen
-cd jogl-v2.0-rc2/make
+cd jogl/make
 ant
 }}}
-
-  * [http://jebgl.com/webstart/jogl.all.jar jogl.all.jar]
-  * [http://jebgl.com/webstart/nativewindow.all.jar nativewindow.all.jar]
-  * [http://jebgl.com/webstart/gluegen-rt.jar gluegen-rt.jar]
-
-Put them in a directory called `webstart` inside your newly created `jebgl-read-only` directory
+If the build is successful the finished jars will be in the `jogl/build/jar` directory.
 
 == Build ==
 Open a terminal and call

@@ -12,7 +12,7 @@ svn checkout http://jebgl.googlecode.com/svn/releases/0.1/ jebgl
 }}}
 
 = Building JebGL (using remote jars from jogamp.org) =
-*Note: this does not work in Safari. Safari needs the jars coming from the same origin, see below.*
+*Note*: this does not work in Safari. Safari needs the jars coming from the same origin, see below.
 == Get jars from jogamp.org ==
 {{{
 mkdir -p jogl/build/jar
@@ -106,3 +106,5 @@ Run the following in the parent directory to `jebgl`, i.e. the directory contain
 python -m SimpleHTTPServer 1080
 }}}
 Now point your browser to http://localhost:1080/jebgl/test-local/test.html.
+
+*Note*: This only works from your local machine, as the JNLP-files have absolute URIs to `localhost:1080`

@@ -38,7 +38,7 @@ Run the following in the `jebgl` directory:
 {{{
 python -m SimpleHTTPServer 1080
 }}}
-and point your browser to http://localhost:1080/test-jebgl/test.html. You should now see an oscillating red/blue pattern.
+and point your browser to http://localhost:1080/test-jogamp/test.html. You should now see an oscillating red/blue pattern.
 
 = Building JebGL (with all jars local) =
 == Get Applet Launcher ==

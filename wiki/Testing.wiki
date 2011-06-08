@@ -1,5 +1,4 @@
 #summary Instructions for locally testing your JebGL build
-#labels Featured
 
 = Testing JebGL functionality =
 FIXME

@@ -35,6 +35,8 @@ JebGL.prototype.waitForApplet(document.getElementById('canvas'),fun);
 }}}
 where `fun` is the callback function to call when the applet is ready for drawing.
 
+Now `document.getElementById('canvas').getContext('experimental-webgl')` returns a gl object which you interact with exactly as if it was a normal WebGL context.
+
 ==Include jebgl.js==
 
 ==Replace canvas with applet==

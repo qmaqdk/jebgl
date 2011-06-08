@@ -12,6 +12,7 @@ svn checkout http://jebgl.googlecode.com/svn/releases/0.1/ jebgl-read-only
 }}}
 
 = Building JebGL (using remote jars from jogamp.org) =
+*Note: this does not work in Safari. Safari needs the jars coming from the same origin, see below.*
 == Get jars from jogamp.org ==
 {{{
 mkdir -p jogl/build/jar
@@ -27,33 +28,66 @@ make
 }}}
 You should now have a jebgl.jar in your current directory.
 == Testing your build ==
+Run the following in the `jebgl-read-only` directory:
 {{{
-cd test
 python -m SimpleHTTPServer 1080
 }}}
-and point your browser to http://localhost:1080/test.html
+and point your browser to http://localhost:1080/test-jogamp/test.html. You should now see an oscillating red/blue pattern.
 
 = Building JebGL (with all jars local) =
 == Get Applet Launcher ==
 While you don't need [http://java.net/projects/applet-launcher applet-launcher] to build JebGL, you need it for testing your build. Run the following in a terminal:
 {{{
-svn checkout https://svn.java.net/svn/applet-launcher~svn/trunk applet-launcher
+mkdir applet-launcher
 cd applet-launcher
-ant
+wget http://jogamp.org/deployment/util/applet-launcher.jar
 cd ..
 }}}
+We get it from jogamp because it needs to be signed to run native code.
 
 == Get JOGL ==
-You need some jars from the JOGL project. You can download JOGL [http://jogamp.org/deployment/webstart/archive/ here]. You need both jogl and gluegen, e.g. `jogl-v2.0-rc2.tar.xz` and `gluegen-v2.0-rc2.tar.xz`. The build instructions are as follows (they may not be up to date, check [http://jogamp.org/jogl/doc/HowToBuild.html JOGL's page] for reference). Open a terminal and run the following:
+Get the jars
 {{{
-xzcat jogl-v2.0-rc2.tar.xz | tar x
-xzcat gluegen-v2.0-rc2.tar.xz | tar x
-ln -s jogl-v2.0-rc2 jogl
-ln -s gluegen-v2.0-rc2 gluegen
-cd jogl/make
-ant
+mkdir -p jogl/build/jar
+cd jogl/build/jar
+wget http://jogamp.org/deployment/webstart/jogl.all.jar
+wget http://jogamp.org/deployment/webstart/jogl.core.jar
+wget http://jogamp.org/deployment/webstart/jogl.util.jar
+wget http://jogamp.org/deployment/webstart/nativewindow.all.jar
+wget http://
 }}}
-If the build is successful the finished jars will be in the `jogl/build/jar` directory.
+Get the native jars (you only need the ones matching your system)
+{{{
+wget http://jogamp.org/deployment/webstart/jogl-natives-windows-i586.jar
+wget http://jogamp.org/deployment/webstart/jogl-natives-windows-amd64.jar
+wget http://jogamp.org/deployment/webstart/jogl-natives-linux-i586.jar
+wget http://jogamp.org/deployment/webstart/jogl-natives-linux-amd64.jar
+wget http://jogamp.org/deployment/webstart/jogl-natives-macosx-universal.jar
+wget http://jogamp.org/deployment/webstart/nativewindow-natives-windows-i586.jar
+wget http://jogamp.org/deployment/webstart/nativewindow-natives-windows-amd64.jar
+wget http://jogamp.org/deployment/webstart/nativewindow-natives-linux-i586.jar
+wget http://jogamp.org/deployment/webstart/nativewindow-natives-linux-amd64.jar
+wget http://jogamp.org/deployment/webstart/nativewindow-natives-macosx-universal.jar
+cd ../../..
+}}}
+
+== Get gluegen ==
+{{{
+mkdir -p gluegen/build
+cd gluegen/build
+wget http://jogamp.org/deployment/webstart/gluegen-rt.jar
+}}}
+Get the native jars (you only need the one matching your system)
+{{{
+wget http://jogamp.org/deployment/webstart/gluegen-rt-natives-windows-i586.jar
+wget http://jogamp.org/deployment/webstart/gluegen-rt-natives-windows-amd64.jar
+wget http://jogamp.org/deployment/webstart/gluegen-rt-natives-linux-i586.jar
+wget http://jogamp.org/deployment/webstart/gluegen-rt-natives-linux-amd64.jar
+wget http://jogamp.org/deployment/webstart/gluegen-rt-natives-macosx-universal.jar
+cd ../..
+}}}
+
+== Change jnlp files ==
 
 == Build ==
 Open a terminal and call
@@ -62,5 +96,9 @@ make
 }}}
 in the `jebgl-read-only` directory. This should build a jar file called `jebgl.jar`
 
-== Testing ==
-See [http://code.google.com/p/jebgl/wiki/Testing Testing]
+== Testing your build ==
+Run the following in the parent directory to `jebgl-read-only`, i.e. the directory containing `jebgl-read-only`, `jogl`, and `applet-launcher`:
+{{{
+python -m SimpleHTTPServer 1080
+}}}
+Now point your browser to http://localhost:1080/jebgl-read-only/test-local/test.html.

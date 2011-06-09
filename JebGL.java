@@ -33,6 +33,7 @@ import java.nio.*;
 import java.net.URL;
 import java.net.MalformedURLException;
 import java.awt.image.PixelGrabber;
+import java.awt.MediaTracker;
 import javax.media.opengl.GLProfile;
 import javax.media.opengl.GLRunnable;
 //import javax.media.opengl.DebugGL2;
@@ -59,6 +60,8 @@ public class JebGL extends Applet {
     private int[] calls;
     private int[] ints;
     private float[] floats;
+
+    private MediaTracker mt; // MediaTracker
 
     /* Ready all WebGL enums, cf
      * http://www.khronos.org/registry/webgl/specs/latest/#5.13
@@ -553,10 +556,8 @@ public class JebGL extends Applet {
 
     public void init() {
         GLProfile.initSingleton(false);
-        System.err.println("1");
         setLayout(new BorderLayout());
-        GLCapabilities caps = new GLCapabilities(GLProfile.get(GLProfile.GL2ES2));
-        System.err.println("2");
+        GLCapabilities caps = new GLCapabilities(GLProfile.get(GLProfile.GL2));
         caps.setNumSamples(4); // Enable AA
         caps.setSampleBuffers(true); // Needed for AA
         caps.setDoubleBuffered(true);
@@ -564,22 +565,20 @@ public class JebGL extends Applet {
         addCanvas(canvas);
         canvas.setSize(getSize());
         canvas.setAutoSwapBufferMode(true);
-        System.err.println("3");
 
         // Allocate arrays for call method
         calls = new int[this.maxCalls];
         ints = new int[this.maxInts];
         floats = new float[this.maxFloats];
-        System.err.println("4");
+
+        // Create a media tracker
+        mt = new MediaTracker(this);
         
         // Set dummy animator to prevent external redraw
         animator = new NullAnimator(canvas);
-        System.err.println("5");
-
     }
     
     public void start() {
-        System.err.println("6");
         animator.start();
         ready = true;
     }
@@ -1403,6 +1402,15 @@ public class JebGL extends Applet {
         
         public void run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
+
+            //System.err.println("Chosen GLCapabilities: " + drawable.getChosenGLCapabilities());
+            //System.err.println("INIT GL IS: " + gl.getClass().getName());
+            //System.err.println("GL_VENDOR: " + gl.glGetString(GL2.GL_VENDOR));
+            //System.err.println("GL_RENDERER: " + gl.glGetString(GL2.GL_RENDERER));
+            //System.err.println("GL_VERSION: " + gl.glGetString(GL2.GL_VERSION));
+
+            //System.err.println(gl.isFunctionAvailable("glCreateShader"));
+
             this.id = gl.glCreateShader(type);
         }
     }
@@ -2447,15 +2455,23 @@ public class JebGL extends Applet {
             
             try {
                 Image img = getImage(new URL(url));
-                int[] data = new int[width*height];
-                PixelGrabber pg = new PixelGrabber(img, 0, 0, width, height, data, 0, width);
+
+                mt.addImage(img, 1);
                 try {
-                    pg.grabPixels();
+                    mt.waitForAll();
+                } catch (InterruptedException e) {
+                    System.err.println("getImage interrupted for " + url);
+                    return;
+                }
+                    
+                int[] data = new int[width*height];
+                try {
+                    (new PixelGrabber(img, 0, 0, width, height, data, 0, width)).grabPixels();
                 } catch (InterruptedException e) {
                     System.err.println("grabPixels interrupted for " + url);
                     return;
                 }
-                
+
                 // FIXME: This needs to check the color model, etc.
                 if (unpack_flip_y_webgl == GL_TRUE) {
                     for (int j=height-1; j>=0; j--) {
@@ -2479,6 +2495,11 @@ public class JebGL extends Applet {
                     }
                 }
                 pixels.position(0);
+
+                if ((mt.statusAll(false) & MediaTracker.ERRORED) != 0) {
+                    System.err.println("MediaTracker error on " + url);
+                }
+
             } catch (MalformedURLException e) {
                 System.err.println("Malformed URL: " + url);
                 return;

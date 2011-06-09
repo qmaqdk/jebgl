@@ -1145,7 +1145,9 @@ JebGL.prototype = {
         try {
             this.JebApp.glFinish();
         } catch (e) {
-            throw new Error(e);
+            if (typeof(applet) != "undefined" && typeof(applet.getSubApplet().ready) == "boolean" && applet.getSubApplet().ready) {
+                throw new Error(e);
+            } // Else the applet is closing and this error may occur in some browsers
         }
     },
 

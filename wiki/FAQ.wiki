@@ -6,10 +6,10 @@
 It does! But performance is what you'd expect. Anything with a lot of shader action isn't going to run well.
 
 === Some of the texture images don't load ===
-The texture images are actually loaded by the applet. It grabs the URL from the DOM element, and then loads it separately. There is still some development needed for retries, etc.
+The image.onload is very unreliable on older browsers, and if a script depends on this for texture setup it might not always work. As a workaround you can include the images in the HTML and place them off screen. This way they're already loaded when your script needs them and you can run texture setup directly (see lessons 05 and up).
 
 === The applet never starts after I reload the page ===
-This bug should be fixed. Please let us know otherwise.
+JebGL doesn't work well when sharing a JVM with a previous instance. This is the reason we set the `separate_jvm` parameter. If this bug still occurs, please let us know.
 
 = Linux =
 === class not found com.iola.JebGL ===
@@ -19,5 +19,5 @@ This error occurs when using the icedtea-plugin Java plugin. You need to switch 
 There's an issue with setting applet permissions in Chrome on Linux. If you set _always allow_ the applet wont subsequently load. Until this is fixed you can use _run once_.
 
 = Windows =
-=== LessonXX doesn't work in IE6 ===
-Some of the lessons still need to be ported to IE6. The errors are with the js, not JebGL.
+=== Performance is sometimes bad in IE9 ===
+This is a known issue. We're working on it.

@@ -11,6 +11,10 @@ The image.onload is very unreliable on older browsers, and if a script depends o
 === The applet never starts after I reload the page ===
 JebGL doesn't work well when sharing a JVM with a previous instance. This is the reason we set the `separate_jvm` parameter. If this bug still occurs, please let us know.
 
+= Windows =
+=== Performance is sometimes bad in IE9 ===
+This is a known issue. We're working on it.
+
 = Linux =
 === class not found com.iola.JebGL ===
 This error occurs when using the icedtea-plugin Java plugin. You need to switch to Suns Java plugin instead.
@@ -18,6 +22,6 @@ This error occurs when using the icedtea-plugin Java plugin. You need to switch 
 === There's a gray box where the applet should be in Chrome ===
 There's an issue with setting applet permissions in Chrome on Linux. If you set _always allow_ the applet wont subsequently load. Until this is fixed you can use _run once_.
 
-= Windows =
-=== Performance is sometimes bad in IE9 ===
-This is a known issue. We're working on it.
+= Mac =
+=== JebGL never shows anything in Firefox, Chrome and Opera ===
+There's bug in JOGL on Mac. It only works in Safari right now.

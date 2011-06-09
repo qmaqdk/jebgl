@@ -732,7 +732,7 @@ JebGL.prototype = {
     },
 
     setTimer: function() {
-        var sbmt = this.bind(this.flush);
+        var sbmt = this.bind(this.finish); // Run glFinish every 100ms
         this.callTimer = setTimeout(sbmt, 1000/10);
     },
 
@@ -1023,7 +1023,7 @@ JebGL.prototype = {
         try {
             var shader = new JebGLShader(this.JebApp.glCreateShader(type));
         } catch (e) {
-            throw new Error(e);
+            throw new Error("It appears your GPU doesn't support OpenGL 2.0. JebGL requires OpenGL 2.0 or more. (details: glCreateShader method not available)");
         }
         return shader;
     },
@@ -1604,8 +1604,6 @@ JebGL.prototype = {
     },
 
     pixelStorei: function(pname, param) {
-        // Make sure we've submitted eventual bindTexture commands
-        // this.submit();
         if (param === true) {
             this.addCall(this.CALL_PIXEL_STOREI, [pname, this.TRUE], []);
         } else if (param === false) {

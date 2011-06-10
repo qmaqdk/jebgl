@@ -121,26 +121,14 @@
     }
  
     window.onload = function() {
-       JebGL.prototype.waitForApplet(document.getElementById('canvas'),run);
+      jebgl(document.getElementById('canvas'), run, {
+         jebglLocation: "/jebgl/",
+         jarLocation: "/webstart/",
+         jnlpLocation: "http://localhost:1080/jebgl/test-local/"});
     };
   </script>
   </head>
   <body>
-  <applet code="org.jdesktop.applet.util.JNLPAppletLauncher"
-          width=300 height=300 id="canvas">
-  <param name="archive" value="/applet-launcher/applet-launcher.jar,
-                               /jogl/build/jar/jogl.all.jar,
-                               /jogl/build/jar/nativewindow.all.jar,
-                               /gluegen/build/gluegen-rt.jar,
-                               /jebgl/jebgl.jar">
-  <param name="codebase_lookup" value="false">
-  <param name="subapplet.classname" value="com.iola.JebGL">
-  <param name="subapplet.displayname" value="JebGL Applet">
-  <param name="separate_jvm" value="true"> 
-  <param name="noddraw.check" value="true">
-  <param name="progressbar" value="true">
-  <param name="jnlpNumExtensions" value="1">
-  <param name="jnlpExtension1"
-         value="http://localhost:1080/jebgl/test-local/jogl-core.jnlp"></applet>
+  <canvas id="canvas" width=300 height=300></canvas>
   </body>
 </html>

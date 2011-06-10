@@ -11,100 +11,59 @@ or a release (e.g. 0.1)
 svn checkout http://jebgl.googlecode.com/svn/releases/0.1/ jebgl
 }}}
 
-= Building JebGL (using remote jars) =
-*Note*: this does not work in Safari. Safari needs the jars coming from the same origin, see below.
-== Get jars from jogamp.org ==
+= Building JebGL =
+== Get jars from jebgl.googlecode.com ==
+In the newly created `jebgl` directory do the following:
 {{{
-mkdir -p jogl/build/jar
-cd jogl/build/jar
-wget http://jogamp.org/deployment/webstart/jogl.all.jar
-wget http://jogamp.org/deployment/webstart/nativewindow.all.jar
-cd ../../..
-}}}
-{{{
-mkdir -p gluegen/build
-cd gluegen/build
-wget http://jogamp.org/deployment/webstart/gluegen-rt.jar
-cd ../..
+mkdir webstart
+cd webstart
+wget http://jebgl.googlecode.com/svn/webstart/jogl.all.jar
+wget http://jebgl.googlecode.com/svn/webstart/nativewindow.all.jar
+wget http://jebgl.googlecode.com/svn/webstart/gluegen-rt.jar
+cd ..
 }}}
 == Build JebGL ==
+Now just run 
 {{{
-cd jebgl
 make
 }}}
-You should now have a jebgl.jar in your current directory.
-== Testing your build ==
+You should now have a jebgl.jar in your directory.
+
+= Testing your build =
+== Testing with remote jar files ==
+*Note*: this does not work in Safari. Safari needs the jars coming from the same origin, see below.
+
 Run the following in the `jebgl` directory:
 {{{
 python -m SimpleHTTPServer 1080
 }}}
-and point your browser to http://localhost:1080/test-jogamp/test.html. You should now see an oscillating red/blue pattern.
+and point your browser to http://localhost:1080/test-googlecode/test.html. If all went well you should now see an oscillating red/blue pattern.
 
-= Building JebGL (with all jars local) =
-== Get Applet Launcher ==
-While you don't need [http://java.net/projects/applet-launcher applet-launcher] to build JebGL, you need it for testing your build. Run the following in a terminal:
+== Testing with all jar files local ==
+We need to download some more jar files, so do the following:
 {{{
-mkdir applet-launcher
-cd applet-launcher
-wget http://jogamp.org/deployment/util/applet-launcher.jar
+cd webstart
+wget http://jebgl.googlecode.com/svn/webstart/applet-launcher.jar
+}}}
+This is the applet launcher that actually runs JebGL. In addition we need the native jar files (you only need the ones matching your system):
+{{{
+wget http://jebgl.googlecode.com/svn/webstart/jogl-natives-windows-i586.jar
+wget http://jebgl.googlecode.com/svn/webstart/jogl-natives-windows-amd64.jar
+wget http://jebgl.googlecode.com/svn/webstart/jogl-natives-linux-i586.jar
+wget http://jebgl.googlecode.com/svn/webstart/jogl-natives-linux-amd64.jar
+wget http://jebgl.googlecode.com/svn/webstart/jogl-natives-macosx-universal.jar
+wget http://jebgl.googlecode.com/svn/webstart/nativewindow-natives-windows-i586.jar
+wget http://jebgl.googlecode.com/svn/webstart/nativewindow-natives-windows-amd64.jar
+wget http://jebgl.googlecode.com/svn/webstart/nativewindow-natives-linux-i586.jar
+wget http://jebgl.googlecode.com/svn/webstart/nativewindow-natives-linux-amd64.jar
+wget http://jebgl.googlecode.com/svn/webstart/nativewindow-natives-macosx-universal.jar
 cd ..
 }}}
-We get it from jogamp because it needs to be signed to run native code.
 
-== Get JOGL ==
-Get the jars
-{{{
-mkdir -p jogl/build/jar
-cd jogl/build/jar
-wget http://jogamp.org/deployment/webstart/jogl.all.jar
-wget http://jogamp.org/deployment/webstart/jogl.core.jar
-wget http://jogamp.org/deployment/webstart/jogl.util.jar
-wget http://jogamp.org/deployment/webstart/nativewindow.all.jar
-}}}
-Get the native jars (you only need the ones matching your system)
-{{{
-wget http://jogamp.org/deployment/webstart/jogl-natives-windows-i586.jar
-wget http://jogamp.org/deployment/webstart/jogl-natives-windows-amd64.jar
-wget http://jogamp.org/deployment/webstart/jogl-natives-linux-i586.jar
-wget http://jogamp.org/deployment/webstart/jogl-natives-linux-amd64.jar
-wget http://jogamp.org/deployment/webstart/jogl-natives-macosx-universal.jar
-wget http://jogamp.org/deployment/webstart/nativewindow-natives-windows-i586.jar
-wget http://jogamp.org/deployment/webstart/nativewindow-natives-windows-amd64.jar
-wget http://jogamp.org/deployment/webstart/nativewindow-natives-linux-i586.jar
-wget http://jogamp.org/deployment/webstart/nativewindow-natives-linux-amd64.jar
-wget http://jogamp.org/deployment/webstart/nativewindow-natives-macosx-universal.jar
-cd ../../..
-}}}
-
-== Get gluegen ==
-{{{
-mkdir -p gluegen/build
-cd gluegen/build
-wget http://jogamp.org/deployment/webstart/gluegen-rt.jar
-}}}
-Get the native jars (you only need the one matching your system)
-{{{
-wget http://jogamp.org/deployment/webstart/gluegen-rt-natives-windows-i586.jar
-wget http://jogamp.org/deployment/webstart/gluegen-rt-natives-windows-amd64.jar
-wget http://jogamp.org/deployment/webstart/gluegen-rt-natives-linux-i586.jar
-wget http://jogamp.org/deployment/webstart/gluegen-rt-natives-linux-amd64.jar
-wget http://jogamp.org/deployment/webstart/gluegen-rt-natives-macosx-universal.jar
-cd ../..
-}}}
-
-== Build ==
-Open a terminal and call
-{{{
-cd jebgl
-make
-}}}
-This should build a jar file called `jebgl.jar`
-
-== Testing your build ==
-Run the following in the parent directory to `jebgl`, i.e. the directory containing `jebgl`, `jogl`, `gluegen`, and `applet-launcher`:
+Now run the following command in the `jebgl` directory:
 {{{
 python -m SimpleHTTPServer 1080
 }}}
-Now point your browser to http://localhost:1080/jebgl/test-local/test.html.
+and point your browser to http://localhost:1080/test-local/test.html.
 
-*Note*: This only works from your local machine, as the JNLP-files have absolute URIs to `localhost:1080`
+*Note*: This only works from your local machine, as the `test.html` uses local JNLP-files which must have absolute URIs, in our case set to `localhost:1080`

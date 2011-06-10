@@ -24,6 +24,8 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+(function() {
+
 /*
  * Make fake ArrayViews for browsers that don't know them
  */
@@ -100,7 +102,7 @@ JebGLTexture.prototype = {
     type: "Emulated WebGLTexture"
 }
 
-function JebGL(applet) {
+function JebGLCanvas(applet) {
     // Store applet as canvas and get the actual JebGL applet
     this.canvas = applet;
     this.JebApp = applet.getSubApplet();
@@ -585,33 +587,7 @@ function JebGL(applet) {
     this.callTimer = null;
 }
 
-JebGL.prototype = {
-    waitForApplet: function(applet, f) {
-        // Calls f when applet is fully ready
-        // Wait for initial applet load
-        if (typeof(applet.getSubApplet) == "undefined" || typeof(applet.getSubApplet) == "object") { // The latter part handles Chrome bug
-            setTimeout(function () { JebGL.prototype.waitForApplet(applet, f) }, 50);
-            return;
-        }
-        // Get sub applet
-        if (typeof(applet.getSubApplet()) == "undefined" || applet.getSubApplet() == null) {
-            setTimeout(function () { JebGL.prototype.waitForApplet(applet, f) }, 50);
-            return;
-        }
-	// Applet sometimes doesn't reload correctly. This catches that state.
-        if (typeof(applet.getSubApplet().ready) != "boolean" || !applet.getSubApplet().ready) {
-            // Nearly ready, don't wait as long
-            setTimeout(function () { JebGL.prototype.waitForApplet(applet, f) }, 50);
-            return;
-	}
-
-        // Add getContext function to applet
-        applet.getContext = function () { return new JebGL(applet); };
-
-        // If we made it here we're ready
-        f();
-    },
-
+JebGLCanvas.prototype = {
     bind: function(method) {
         var _this = this;
         return function() {
@@ -1873,3 +1849,96 @@ JebGL.prototype = {
     }
 
 }
+
+function waitForApplet(applet, f) {
+    // Wait for initial applet load
+    if (typeof(applet.getSubApplet) == "undefined" || typeof(applet.getSubApplet) == "object") { // The latter part handles a Chrome bug
+        setTimeout(function () { waitForApplet(applet, f) }, 50);
+        return;
+    }
+    // Get sub applet
+    if (typeof(applet.getSubApplet()) == "undefined" || applet.getSubApplet() == null) {
+        setTimeout(function () { waitForApplet(applet, f) }, 50);
+        return;
+    }
+    // Applet sometimes doesn't reload correctly. This catches that state.
+    if (typeof(applet.getSubApplet().ready) != "boolean" || !applet.getSubApplet().ready) {
+        // Nearly ready, don't wait as long
+        setTimeout(function () { waitForApplet(applet, f) }, 50);
+        return;
+    }
+
+    // Add getContext function to applet
+    applet.getContext = function () { return new JebGLCanvas(applet); };
+
+    // If we made it here we're ready
+    f();
+}
+
+    window.jebgl = function(canvas, callback, settings) {
+    // Calls callback when applet is fully ready
+
+    // Default settings
+    var jebglJar = "http://jebgl.googlecode.com/files/jebgl-0.1.jar",
+        jarLocation = "http://jebgl.googlecode.com/svn/webstart/",
+        jnlpLocation = "http://jebgl.googlecode.com/svn/webstart/",
+        alwaysApplet = false;
+
+    if (typeof(settings) != "undefined") {
+        if (typeof(settings.jebglJar) != "undefined") jebglJar = settings.jebglJar;
+        if (typeof(settings.jarLocation) != "undefined") jarLocation = settings.jarLocation;
+        if (typeof(settings.jnlpLocation) != "undefined") jnlpLocation = settings.jnlpLocation;
+        if (typeof(settings.alwaysApplet) != "undefined") alwaysApplet = settings.alwaysApplet;
+    }
+
+    if (typeof(canvas.getContext) != "undefined") {
+        try {
+            var c = canvas.getContext("experimental-webgl");
+            if (c != null && !alwaysApplet) {
+                callback();
+                return;
+            }
+        } catch (e) {
+            // Do nothing
+        }
+    }
+
+    // Ready applet element
+    var applet = document.createElement("applet");
+    applet.setAttribute("code", "org.jdesktop.applet.util.JNLPAppletLauncher");
+    applet.setAttribute("width", canvas.offsetWidth);
+    applet.setAttribute("height", canvas.offsetHeight);
+
+    // Copy attributes
+    for (i = 0; i < canvas.attributes.length; i++) {
+        applet.setAttribute(canvas.attributes[i].nodeName, canvas.attributes[i].nodeValue);
+    }
+
+    // Copy inline CSS
+    applet.style.cssText = canvas.style.cssText;
+
+    var appletParameters = ['<param name="archive" value="' + jarLocation + '/applet-launcher.jar,',
+        jarLocation + '/jogl.all.jar,',
+        jarLocation + '/nativewindow.all.jar,',
+        jarLocation + '/gluegen-rt.jar,',
+        jebglJar + '">',
+        '<param name="codebase_lookup" value="false">',
+        '<param name="subapplet.classname" value="com.iola.JebGL">',
+        '<param name="subapplet.displayname" value="JebGL Applet">',
+        '<param name="separate_jvm" value="true">',
+        '<param name="noddraw.check" value="true">',
+        '<param name="progressbar" value="true">',
+        '<param name="jnlpNumExtensions" value="1">',
+        '<param name="jnlpExtension1"',
+        'value="' + jnlpLocation + '/jogl-core.jnlp">'
+        ].join("\n");
+    applet.innerHTML = appletParameters;
+
+    // replace the canvas with the applet
+    canvas.parentNode.replaceChild(applet, canvas);
+
+    // wait for the applet to load
+    waitForApplet(applet, callback);
+}
+
+})();

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<jnlp codebase="http://localhost:1080/gluegen/build/"
+<jnlp codebase="http://localhost:1080/webstart/"
       href="gluegen-rt.jnlp" version="JOGAMP_VERSION">
   <information>
     <title>GlueGen Runtime v2</title>

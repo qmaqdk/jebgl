@@ -5,17 +5,17 @@
 ==Quick start==
 Include `jebgl.js`
 {{{
-<script type="text/javascript" src="http://jebgl.com/jebgl.js"></script>
+<script type="text/javascript" src="http://example.com/jebgl.js"></script>
 }}}
 and instead of a canvas element you use
 {{{
 <applet code="org.jdesktop.applet.util.JNLPAppletLauncher"
           width=300 height=300 id="canvas">
-  <param name="archive" value="http://jebgl.com/webstart/applet-launcher.jar,
-                               http://jebgl.com/webstart/jogl.all.jar,
-                               http://jebgl.com/webstart/nativewindow.all.jar,
-                               http://jebgl.com/webstart/gluegen-rt.jar,
-                               http://jebgl.com/jebgl.jar">
+  <param name="archive" value="http://jebgl.googlecode.com/svn/webstart/applet-launcher.jar,
+                               http://jebgl.googlecode.com/svn/webstart/jogl.all.jar,
+                               http://jebgl.googlecode.com/svn/webstart/nativewindow.all.jar,
+                               http://jebgl.googlecode.com/svn/webstart/gluegen-rt.jar,
+                               http://example.com/jebgl.jar">
   <param name="codebase_lookup" value="false">
   <param name="subapplet.classname" value="com.iola.JebGL">
   <param name="subapplet.displayname" value="JebGL Applet">
@@ -24,7 +24,7 @@ and instead of a canvas element you use
   <param name="progressbar" value="true">
   <param name="jnlpNumExtensions" value="1">
   <param name="jnlpExtension1"
-         value="http://jebgl.com/webstart/jogl-core.jnlp">
+         value="http://jebgl.googlecode.com/svn/webstart/jogl-core.jnlp">
 </applet>
 }}}
 You can of course host the js, jar, and jnlp files on your own site, but remember to change all relevent URIs in the JNLP-files (including all the dependent JNLP-files in jogl-core.jnlp).
@@ -42,7 +42,7 @@ JebGL has a JavaScript and a Java part. This allows us to wrap the oddities of t
 
 To begin using JebGL you need to include the JavaScript by adding
 {{{
-<script type="text/javascript" src="http://jebgl.com/jebgl.js"></script>
+<script type="text/javascript" src="http://example.com/jebgl.js"></script>
 }}}
 You will probably want to host the JavaScript and subsequent jar files on your own site.
 
@@ -51,11 +51,11 @@ Next you need to replace your canvas with the JebGL applet. Do so by adding the 
 {{{
 <applet code="org.jdesktop.applet.util.JNLPAppletLauncher"
           width=300 height=300 id="canvas">
-  <param name="archive" value="http://jebgl.com/webstart/applet-launcher.jar,
-                               http://jebgl.com/webstart/jogl.all.jar,
-                               http://jebgl.com/webstart/nativewindow.all.jar,
-                               http://jebgl.com/webstart/gluegen-rt.jar,
-                               http://jebgl.com/jebgl.jar">
+  <param name="archive" value="http://jebgl.googlecode.com/svn/webstart/applet-launcher.jar,
+                               http://jebgl.googlecode.com/svn/webstart/jogl.all.jar,
+                               http://jebgl.googlecode.com/svn/webstart/nativewindow.all.jar,
+                               http://jebgl.googlecode.com/svn/webstart/gluegen-rt.jar,
+                               http://example.com/jebgl.jar">
   <param name="codebase_lookup" value="false">
   <param name="subapplet.classname" value="com.iola.JebGL">
   <param name="subapplet.displayname" value="JebGL Applet">
@@ -64,14 +64,14 @@ Next you need to replace your canvas with the JebGL applet. Do so by adding the 
   <param name="progressbar" value="true">
   <param name="jnlpNumExtensions" value="1">
   <param name="jnlpExtension1"
-         value="http://jebgl.com/webstart/jogl-core.jnlp">
+         value="http://jebgl.googlecode.com/svn/webstart/jogl-core.jnlp">
 </applet>
 }}}
 The `archive` parameters specifies the jebgl.jar and its dependencies. JebGL is launched through the [http://java.net/projects/applet-launcher JNLP applet launcher], which allows the applet to use signed native code from the [http://jogamp.org/jogl/www/ JOGL project].
 
 `codebase_lookup` is just for performance, and the `subapplet` parameters specify the class which the applet launcher launches. The `separate_jvm` parameter tells the browser to launch JebGL in its own JVM. Some browsers have problems reloading the applet if this isn't done (it fails with a GlException about not being able to lockSurface).
 
-==Optional: host the jars==
+==Strongly recommended: host the jars==
 *Note*: This is actually not optional for Safari. All jars must come from the same origin for JebGL to work in Safari.
 
 To host the jars on your own site you obviously need to change the parameters above to reflect where the jars are located. In addition you need to change the following jnlp-files:
@@ -80,13 +80,13 @@ jogl-core.jnlp
 nativewindow.jnlp
 gluegen-rt.jnlp
 }}}
-You can get them from `http://jebgl.com/webstart`. You need to change the line 
+You can get them from `http://jebgl.googlecode.com/svn/webstart`. You need to change the line 
 {{{
-<jnlp codebase="http://jebgl.com/webstart/"
+<jnlp codebase="http://jebgl.googlecode.com/svn/webstart/"
 }}}
 and any references to other jnlp-files
 {{{
-<extension name="gluegen-rt"   href="http://jebgl.com/webstart/gluegen-rt.jnlp" />
+<extension name="gluegen-rt"   href="http://jebgl.googlecode.com/svn/webstart/gluegen-rt.jnlp" />
 }}}
 to reflect where the files are located on your site.
 
@@ -109,7 +109,7 @@ gluegen-rt-natives-macosx-universal.jar
 gluegen-rt-natives-windows-amd64.jar
 gluegen-rt-natives-windows-i586.jar
 }}}
-These can also be found in `http://jebgl.com/webstart`.
+These can also be found in `http://jebgl.googlecode.com/svn/webstart`.
 
 ==Wait for applet before starting==
 Browsers often run their `onload` functions before the applet is fully loaded and ready for gl commands. To accommodate this use the `waitForApplet` function in the `JebGL.prototype`. E.g. if you want to call a function `start()` you would put

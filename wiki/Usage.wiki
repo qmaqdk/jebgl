@@ -69,19 +69,51 @@ Next you need to replace your canvas with the JebGL applet. Do so by adding the 
 }}}
 The `archive` parameters specifies the jebgl.jar and its dependencies. JebGL is launched through the [http://java.net/projects/applet-launcher JNLP applet launcher], which allows the applet to use signed native code from the [http://jogamp.org/jogl/www/ JOGL project].
 
-`codebase_lookup` is just for performance, and the `subapplet` parameters specify the class which the applet launcher launches. The `separate_jvm` parameter tells the browser to launch JebGL in its own JVM. Some browsers have problems reloading the applet if this isn't done.
+`codebase_lookup` is just for performance, and the `subapplet` parameters specify the class which the applet launcher launches. The `separate_jvm` parameter tells the browser to launch JebGL in its own JVM. Some browsers have problems reloading the applet if this isn't done (it fails with a GlException about not being able to lockSurface).
 
 ==Optional: host the jars==
 *Note*: This is actually not optional for Safari. All jars must come from the same origin for JebGL to work in Safari.
 
-FIXME
+To host the jars on your own site you obviously need to change the parameters above to reflect where the jars are located. In addition you need to change the following jnlp-files:
+{{{
+jogl-core.jnlp
+nativewindow.jnlp
+gluegen-rt.jnlp
+}}}
+You can get them from `http://jebgl.com/webstart`. You need to change the line 
+{{{
+<jnlp codebase="http://jebgl.com/webstart/"
+}}}
+and any references to other jnlp-files
+{{{
+<extension name="gluegen-rt"   href="http://jebgl.com/webstart/gluegen-rt.jnlp" />
+}}}
+to reflect where the files are located on your site.
+
+You also need to download the applet-launcher and the native jar-files (these are the ones the jnlp-files reference)
+{{{
+applet-launcher.jar
+jogl-natives-linux-amd64.jar
+jogl-natives-linux-i586.jar
+jogl-natives-macosx-universal.jar
+jogl-natives-windows-amd64.jar
+jogl-natives-windows-i586.jar
+nativewindow-natives-linux-amd64.jar
+nativewindow-natives-linux-i586.jar
+nativewindow-natives-macosx-universal.jar
+nativewindow-natives-windows-amd64.jar
+nativewindow-natives-windows-i586.jar
+gluegen-rt-natives-linux-amd64.jar
+gluegen-rt-natives-linux-i586.jar
+gluegen-rt-natives-macosx-universal.jar
+gluegen-rt-natives-windows-amd64.jar
+gluegen-rt-natives-windows-i586.jar
+}}}
+These can also be found in `http://jebgl.com/webstart`.
 
 ==Wait for applet before starting==
-FIXME
-
-==Details==
-The parameter
+Browsers often run their `onload` functions before the applet is fully loaded and ready for gl commands. To accommodate this use the `waitForApplet` function in the `JebGL.prototype`. E.g. if you want to call a function `start()` you would put
 {{{
-<param name="separate_jvm" value="true"> 
+JebGL.prototype.waitForApplet(document.getElementById('jebgl-applet'), start);
 }}}
-asks the browser to start a new jvm for each JebGL instance. This fixes a problem where the applet would fail on reloads with a GLException.
+wherever you want to trigger the `start()` function. 

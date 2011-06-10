@@ -2,7 +2,7 @@
 <html>
 
 <head>
-<title>Learning JebGL &mdash; lesson 1</title>
+<title>Learning JebGL &mdash; lesson 3</title>
 <meta charset="utf-8">
 
 <script type="text/javascript" src="glMatrix-0.9.5.min.js"></script>
@@ -13,26 +13,32 @@
     precision highp float;
     #endif
 
+    varying vec4 vColor;
+
     void main(void) {
-        gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
+        gl_FragColor = vColor;
     }
 </script>
 
 <script id="shader-vs" type="x-shader/x-vertex">
     attribute vec3 aVertexPosition;
+    attribute vec4 aVertexColor;
 
     uniform mat4 uMVMatrix;
     uniform mat4 uPMatrix;
 
+    varying vec4 vColor;
+
     void main(void) {
         gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+        vColor = aVertexColor;
     }
 </script>
 
 
 <script type="text/javascript">
-
     var gl;
+
     function initGL(canvas) {
         try {
             gl = canvas.getContext("experimental-webgl");
@@ -44,7 +50,6 @@
             alert("Could not initialise WebGL, sorry :-(");
         }
     }
-
 
     function getShader(gl, id) {
         var shaderScript = document.getElementById(id);
@@ -96,13 +101,31 @@
         shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "aVertexPosition");
         gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
 
+        shaderProgram.vertexColorAttribute = gl.getAttribLocation(shaderProgram, "aVertexColor");
+        gl.enableVertexAttribArray(shaderProgram.vertexColorAttribute);
+
         shaderProgram.pMatrixUniform = gl.getUniformLocation(shaderProgram, "uPMatrix");
         shaderProgram.mvMatrixUniform = gl.getUniformLocation(shaderProgram, "uMVMatrix");
     }
 
 
     var mvMatrix = mat4.create();
+    var mvMatrixStack = [];
     var pMatrix = mat4.create();
+
+    function mvPushMatrix() {
+        var copy = mat4.create();
+        mat4.set(mvMatrix, copy);
+        mvMatrixStack.push(copy);
+    }
+
+    function mvPopMatrix() {
+        if (mvMatrixStack.length == 0) {
+            throw "Invalid popMatrix!";
+        }
+        mvMatrix = mvMatrixStack.pop();
+    }
+
 
     function setMatrixUniforms() {
         gl.uniformMatrix4fv(shaderProgram.pMatrixUniform, false, pMatrix);
@@ -110,9 +133,15 @@
     }
 
 
+    function degToRad(degrees) {
+        return degrees * Math.PI / 180;
+    }
+
 
     var triangleVertexPositionBuffer;
+    var triangleVertexColorBuffer;
     var squareVertexPositionBuffer;
+    var squareVertexColorBuffer;
 
     function initBuffers() {
         triangleVertexPositionBuffer = gl.createBuffer();
@@ -126,6 +155,18 @@
         triangleVertexPositionBuffer.itemSize = 3;
         triangleVertexPositionBuffer.numItems = 3;
 
+        triangleVertexColorBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, triangleVertexColorBuffer);
+        var colors = [
+            1.0, 0.0, 0.0, 1.0,
+            0.0, 1.0, 0.0, 1.0,
+            0.0, 0.0, 1.0, 1.0,
+        ];
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colors), gl.STATIC_DRAW);
+        triangleVertexColorBuffer.itemSize = 4;
+        triangleVertexColorBuffer.numItems = 3;
+
+
         squareVertexPositionBuffer = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, squareVertexPositionBuffer);
         vertices = [
@@ -133,12 +174,26 @@
             -1.0,  1.0,  0.0,
              1.0, -1.0,  0.0,
             -1.0, -1.0,  0.0
-        ];
+            ];
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
         squareVertexPositionBuffer.itemSize = 3;
         squareVertexPositionBuffer.numItems = 4;
+
+        squareVertexColorBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, squareVertexColorBuffer);
+        colors = []
+        for (var i=0; i < 4; i++) {
+            colors = colors.concat([0.5, 0.5, 1.0, 1.0]);
+        }
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colors), gl.STATIC_DRAW);
+        squareVertexColorBuffer.itemSize = 4;
+        squareVertexColorBuffer.numItems = 4;
     }
 
+
+
+    var rTri = 0;
+    var rSquare = 0;
 
     function drawScene() {
         gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
@@ -149,44 +204,80 @@
         mat4.identity(mvMatrix);
 
         mat4.translate(mvMatrix, [-1.5, 0.0, -7.0]);
+
+        mvPushMatrix();
+        mat4.rotate(mvMatrix, degToRad(rTri), [0, 1, 0]);
+
         gl.bindBuffer(gl.ARRAY_BUFFER, triangleVertexPositionBuffer);
         gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, triangleVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
+
+        gl.bindBuffer(gl.ARRAY_BUFFER, triangleVertexColorBuffer);
+        gl.vertexAttribPointer(shaderProgram.vertexColorAttribute, triangleVertexColorBuffer.itemSize, gl.FLOAT, false, 0, 0);
+
         setMatrixUniforms();
         gl.drawArrays(gl.TRIANGLES, 0, triangleVertexPositionBuffer.numItems);
+        mvPopMatrix();
 
 
         mat4.translate(mvMatrix, [3.0, 0.0, 0.0]);
+
+        mvPushMatrix();
+        mat4.rotate(mvMatrix, degToRad(rSquare), [1, 0, 0]);
+
         gl.bindBuffer(gl.ARRAY_BUFFER, squareVertexPositionBuffer);
         gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, squareVertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
+
+        gl.bindBuffer(gl.ARRAY_BUFFER, squareVertexColorBuffer);
+        gl.vertexAttribPointer(shaderProgram.vertexColorAttribute, squareVertexColorBuffer.itemSize, gl.FLOAT, false, 0, 0);
+
         setMatrixUniforms();
         gl.drawArrays(gl.TRIANGLE_STRIP, 0, squareVertexPositionBuffer.numItems);
+
+        mvPopMatrix();
     }
 
 
+    var lastTime = 0;
+
+    function animate() {
+        var timeNow = new Date().getTime();
+        if (lastTime != 0) {
+            var elapsed = timeNow - lastTime;
+
+            rTri += (90 * elapsed) / 1000.0;
+            rSquare += (75 * elapsed) / 1000.0;
+        }
+        lastTime = timeNow;
+    }
+
+
+    function tick() {
+        drawScene();
+        animate();
+        requestAnimFrame(tick);
+    }
+
 
     function webGLStart() {
-        var canvas = document.getElementById("lesson01-canvas");
+        var canvas = document.getElementById("lesson03-canvas");
         initGL(canvas);
-        initShaders();
+        initShaders()
         initBuffers();
 
         gl.clearColor(0.0, 0.0, 0.0, 1.0);
         gl.enable(gl.DEPTH_TEST);
 
-        drawScene();
+        tick();
     }
-
 
 </script>
 
-
 </head>
 
-
-<body onload="JebGL.prototype.waitForApplet(document.getElementById('lesson01-canvas'),webGLStart);">
-  <p>Previous lesson - <a href="lesson02.html">Next lesson</a></p>
+<body onload="JebGL.prototype.waitForApplet(document.getElementById('lesson03-canvas'),webGLStart);">
+  <p><a href="lesson02.html">Previous lesson</a> - <a href="lesson04.html">Next lesson</a></p>
   <applet code="org.jdesktop.applet.util.JNLPAppletLauncher"
-          width=500 height=500 id="lesson01-canvas">
+          width=500 height=500 id="lesson03-canvas">
   <param name="archive" value="webstart/applet-launcher.jar,
                                webstart/newt.all.jar,
                                webstart/jogl.all.jar,
@@ -202,6 +293,24 @@
   <param name="jnlpNumExtensions" value="1">
   <param name="jnlpExtension1"
          value="http://jebgl.com/webstart/jogl-core.jnlp"></applet>
+
+<p>See the original LearningWebGL.com <a href="http://learningwebgl.com/lessons/lesson03/index.html">lesson03</a>.</p> 
 </body>
-<p>See the original LearningWebGL.com <a href="http://learningwebgl.com/lessons/lesson01/index.html">lesson01</a>.</p> 
+
+<script type="text/javascript">
+// Modified, cross-browser requestAnimationFrame. The fallback provided by 
+// Google didn't cap the framerate at 60 Hz. It does now.
+requestAnimFrame = (function () {
+  return window.requestAnimationFrame ||
+         window.webkitRequestAnimationFrame ||
+         window.mozRequestAnimationFrame ||
+         window.oRequestAnimationFrame ||
+         window.msRequestAnimationFrame ||
+         function(callback, element) {
+           // Set new timeout only if we've finished the previous one
+           if(typeof(window.reqAnimFrameTimeout) == "undefined") window.reqAnimFrameTimeout = window.setTimeout(function() { window.reqAnimFrameTimeout = undefined; callback(); }, 1000/70);
+         };
+})();
+</script>
+
 </html>

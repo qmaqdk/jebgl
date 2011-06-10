@@ -2,6 +2,9 @@
 #labels Featured
 
 = General =
+=== Event listeners don't work ===
+The Java applet gets all the events when it is selected, so you may need to click somewhere outside the applet to use e.g. keyboard events. We're working on sending back the events from the Java applet.
+
 === Does JebGL work with Mesa for graphics cards that don't support OpenGL ===
 It does! But performance is what you'd expect. Anything with a lot of shader action isn't going to run well.
 

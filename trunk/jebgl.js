@@ -1917,22 +1917,23 @@ function waitForApplet(applet, f) {
     // Copy inline CSS
     applet.style.cssText = canvas.style.cssText;
 
-    var appletParameters = ['<param name="archive" value="' + jarLocation + '/applet-launcher.jar,',
-        jarLocation + '/jogl.all.jar,',
-        jarLocation + '/nativewindow.all.jar,',
-        jarLocation + '/gluegen-rt.jar,',
-        jebglJar + '">',
-        '<param name="codebase_lookup" value="false">',
-        '<param name="subapplet.classname" value="com.iola.JebGL">',
-        '<param name="subapplet.displayname" value="JebGL Applet">',
-        '<param name="separate_jvm" value="true">',
-        '<param name="noddraw.check" value="true">',
-        '<param name="progressbar" value="true">',
-        '<param name="jnlpNumExtensions" value="1">',
-        '<param name="jnlpExtension1"',
-        'value="' + jnlpLocation + '/jogl-core.jnlp">'
-        ].join("\n");
-    applet.innerHTML = appletParameters;
+    var appletParameters = [
+        ['archive', jarLocation + '/applet-launcher.jar,' + jarLocation + '/jogl.all.jar,' + jarLocation + '/nativewindow.all.jar,' + jarLocation + '/gluegen-rt.jar,' + jebglJar],
+        ['codebase_lookup', 'false'],
+        ['subapplet.classname', 'com.iola.JebGL'],
+        ['subapplet.displayname', 'JebGL Applet'],
+        ['separate_jvm', 'true'],
+        ['noddraw.check', 'true'],
+        ['progressbar', 'true'],
+        ['jnlpNumExtensions', '1'],
+        ['jnlpExtension1', jnlpLocation + '/jogl-core.jnlp']];
+        
+    for (var i=0, l=appletParameters.length; i<l; i++) {
+        var p = document.createElement("param");
+        p.setAttribute("name", appletParameters[i][0]);
+        p.setAttribute("value", appletParameters[i][1]);
+        applet.appendChild(p);
+    }
 
     // replace the canvas with the applet
     canvas.parentNode.replaceChild(applet, canvas);

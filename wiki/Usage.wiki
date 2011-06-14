@@ -48,7 +48,7 @@ and any references to other jnlp-files
 {{{
 <extension name="gluegen-rt"   href="http://jebgl.googlecode.com/svn/webstart/gluegen-rt.jnlp" />
 }}}
-to reflect where the files are located on your site.
+to reflect where the files are located on your site. Due to the security model of jnlp files these URLs _must_ be absolute.
 
 You also need to download the applet-launcher and the native jar-files (these are the ones the jnlp-files reference)
 {{{
@@ -74,7 +74,7 @@ gluegen-rt-natives-windows-i586.jar
 }}}
 These can also be found in `http://jebgl.googlecode.com/svn/webstart`.
 
-Finally, you need to let JebGL know where the jar and jnlp files are:
+Finally, you need to let JebGL know where the jar and jnlp files are by setting the `jebglJar`, `jarLocation`, and `jnlpLocation` settings:
 {{{
 <script type="text/javascript" src="http://jebgl.googlecode.com/files/jebgl-0.1.js"></script>
 <script type="text/javascript">
@@ -84,9 +84,10 @@ Finally, you need to let JebGL know where the jar and jnlp files are:
       drawHandler(context);
     }, {
       jebglJar: "url/to/jebgl-0.1.jar",
-      jarLocation: "url/to/folder/containing/jars/above",
+      jarLocation: "url/to/folder/containing/all/other/jars/above",
       jnlpLocation: "http://absolute/url/to/jnlp/files/above"
     });
   });
 </script>
 }}}
+The URL to the jnlp files _must_ be absolute; JebGL uses [http://java.net/projects/applet-launcher applet-launcher] which will not accept relative URLs both to and within the jnlp files.

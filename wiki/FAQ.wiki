@@ -2,8 +2,11 @@
 #labels Featured
 
 = General =
+=== Does JebGL run hardware accelerated or are some parts software rendered? ===
+JebGL requires an OpenGL 2.0 compatible graphics card and only runs hardware accelerated; there's no software renderering. That being said JebGL does work with Mesa under e.g. Linux.
+
 === Event listeners don't work ===
-The Java applet gets all the events when it is selected, so you may need to click somewhere outside the applet to use e.g. keyboard events. We're working on sending back the events from the Java applet.
+The Java applet gets all the events when it is selected, so you may need to click somewhere outside the applet to use e.g. keyboard events. I'm working on sending back the events from the Java applet.
 
 === Does JebGL work with Mesa for graphics cards that don't support OpenGL ===
 It does! But performance is what you'd expect. Anything with a lot of shader action isn't going to run well.

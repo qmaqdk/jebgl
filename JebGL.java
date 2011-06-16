@@ -72,7 +72,6 @@ public class JebGL extends Applet {
     private MediaTracker mt; // MediaTracker
 
     private JSObject window; // JSObjects
-    private JSObject jebglEvent;
 
     /* Ready all WebGL enums, cf
      * http://www.khronos.org/registry/webgl/specs/latest/#5.13
@@ -650,7 +649,6 @@ public class JebGL extends Applet {
         
         // Get window JSObject
         window = JSObject.getWindow(this);
-        jebglEvent = (JSObject) window.getMember("jebglEvent");
 
         // Enable event listeners
         MouseListener jebglMouse = new JebGLMouseAdapter();

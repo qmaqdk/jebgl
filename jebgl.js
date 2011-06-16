@@ -2093,6 +2093,7 @@
         var jebglJar = "http://jebgl.googlecode.com/files/jebgl-0.1.jar",
             jarLocation = "http://jebgl.googlecode.com/svn/webstart/",
             jnlpLocation = "http://jebgl.googlecode.com/svn/webstart/",
+            alwaysApplet = false,
             development = false;
 
         if (typeof(settings) != "undefined") {
@@ -2100,6 +2101,7 @@
             if (typeof(settings.jarLocation) != "undefined") jarLocation = settings.jarLocation;
             if (typeof(settings.jnlpLocation) != "undefined") jnlpLocation = settings.jnlpLocation;
             if (typeof(settings.development) != "undefined") development = settings.development;
+            if (typeof(settings.alwaysApplet) != "undefined") alwaysApplet = settings.alwaysApplet;
         }
 
         // Add timestamp to jebgl.jar in development mode (cache busting)
@@ -2108,7 +2110,7 @@
         if (typeof(canvas.getContext) != "undefined") {
             try {
                 var c = canvas.getContext("experimental-webgl");
-                if (c != null && !development) {
+                if (c != null && !development && !alwaysApplet) {
                     callback();
                     return;
                 }
@@ -2123,6 +2125,8 @@
         // Emulate width and height attributes
         container.width = canvas.offsetWidth;
         container.height = canvas.offsetHeight;
+        container.style.width = canvas.offsetWidth + 'px';
+        container.style.height = canvas.offsetHeight + 'px';
 
         // Copy attributes
         for (i = 0; i < canvas.attributes.length; i++) {

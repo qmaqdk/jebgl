@@ -121,7 +121,8 @@
     }
  
     window.onload = function() {
-      jebgl(document.getElementById('canvas'), run, { jebglJar: "/jebgl.jar" });
+      jebgl(document.getElementById('canvas'), run, { jebglJar: "../jebgl.jar",
+                                                      development: true});
     };
   </script>
   </head>

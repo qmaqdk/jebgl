@@ -1,6 +1,5 @@
 <!doctype html>
 <html>
-
 <head>
 <title>Learning JebGL &mdash; lesson 15</title>
 <meta charset="utf-8">
@@ -426,96 +425,86 @@
 
         tick();
     }
-
-</script>
-
-<script type="text/javascript">
-
-  var _gaq = _gaq || [];
-  _gaq.push(['_setAccount', 'UA-79097-21']);
-  _gaq.push(['_trackPageview']);
-
-  (function() {
-    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-  })();
-
 </script>
 </head>
-
-<body onload="jebgl(document.getElementById('lesson15-canvas'),webGLStart, 
-      { jebglJar: 'jebgl.jar',
-        jarLocation: '/webstart/',
-        jnlpLocation: 'http://jebgl.com/webstart/',
-        alwaysApplet: true});">
+<body>
   <p><a href="lesson14.html">Previous lesson</a> - Next lesson</p>
   <canvas width=500 height=500 id="lesson15-canvas"></canvas>
   <img src="earth.jpg" id="earth" style="position:absolute; top: -1000px; left: -1000px;"/>
   <img src="earth-specular.gif" id="earth-specular" style="position:absolute; top: -1000px; left: -1000px;"/>
   <br />
-    <input type="checkbox" id="color-map" checked /> Use color map<br/>
-    <input type="checkbox" id="specular-map" checked /> Use specular map<br/>
-    <input type="checkbox" id="lighting" checked /> Use lighting<br/>
+  <input type="checkbox" id="color-map" checked /> Use color map<br/>
+  <input type="checkbox" id="specular-map" checked /> Use specular map<br/>
+  <input type="checkbox" id="lighting" checked /> Use lighting<br/>
+  <h2>Point light:</h2>
+  <table style="border: 0; padding: 10px;">
+      <tr>
+          <td><b>Location:</b>
+          <td>X: <input type="text" id="lightPositionX" value="-10.0" />
+          <td>Y: <input type="text" id="lightPositionY" value="4.0" />
+          <td>Z: <input type="text" id="lightPositionZ" value="-20.0" />
+      </tr>
+      <tr>
+          <td><b>Specular colour:</b>
+          <td>R: <input type="text" id="specularR" value="5.0" />
+          <td>G: <input type="text" id="specularG" value="5.0" />
+          <td>B: <input type="text" id="specularB" value="5.0" />
+      </tr>
+      <tr>
+          <td><b>Diffuse colour:</b>
+          <td>R: <input type="text" id="diffuseR" value="0.8" />
+          <td>G: <input type="text" id="diffuseG" value="0.8" />
+          <td>B: <input type="text" id="diffuseB" value="0.8" />
+      </tr>
+  </table>
+  <h2>Ambient light:</h2>
+  <table style="border: 0; padding: 10px;">
+      <tr>
+          <td><b>Colour:</b>
+          <td>R: <input type="text" id="ambientR" value="0.4" />
+          <td>G: <input type="text" id="ambientG" value="0.4" />
+          <td>B: <input type="text" id="ambientB" value="0.4" />
+      </tr>
+  </table>
+  <br/>
+  Earth texture courtesy of <a href="http://www.esa.int/esaEO/SEMGSY2IU7E_index_0.html">the European Space Agency/Envisat</a>.<br/>
+  <br/>
+  <p>See the original LearningWebGL.com <a href="http://learningwebgl.com/lessons/lesson15/index.html">lesson15</a>.</p> 
 
-    <h2>Point light:</h2>
-
-    <table style="border: 0; padding: 10px;">
-        <tr>
-            <td><b>Location:</b>
-            <td>X: <input type="text" id="lightPositionX" value="-10.0" />
-            <td>Y: <input type="text" id="lightPositionY" value="4.0" />
-            <td>Z: <input type="text" id="lightPositionZ" value="-20.0" />
-        </tr>
-
-        <tr>
-            <td><b>Specular colour:</b>
-            <td>R: <input type="text" id="specularR" value="5.0" />
-            <td>G: <input type="text" id="specularG" value="5.0" />
-            <td>B: <input type="text" id="specularB" value="5.0" />
-        </tr>
-        <tr>
-
-            <td><b>Diffuse colour:</b>
-            <td>R: <input type="text" id="diffuseR" value="0.8" />
-            <td>G: <input type="text" id="diffuseG" value="0.8" />
-            <td>B: <input type="text" id="diffuseB" value="0.8" />
-        </tr>
-    </table>
-
-    <h2>Ambient light:</h2>
-
-    <table style="border: 0; padding: 10px;">
-        <tr>
-            <td><b>Colour:</b>
-            <td>R: <input type="text" id="ambientR" value="0.4" />
-            <td>G: <input type="text" id="ambientG" value="0.4" />
-
-            <td>B: <input type="text" id="ambientB" value="0.4" />
-        </tr>
-    </table>
-    <br/>
-
-    Earth texture courtesy of <a href="http://www.esa.int/esaEO/SEMGSY2IU7E_index_0.html">the European Space Agency/Envisat</a>.<br/>
-    <br/>
-
-<p>See the original LearningWebGL.com <a href="http://learningwebgl.com/lessons/lesson15/index.html">lesson15</a>.</p> 
+  <script type="text/javascript">
+    window.onload = function() {
+        jebgl(document.getElementById('lesson15-canvas'),webGLStart, 
+              { jebglJar: 'jebgl.jar',
+	        jarLocation: '/webstart/',
+		jnlpLocation: 'http://jebgl.com/webstart/',
+		alwaysApplet: true});
+    };
+  </script>
+  <script type="text/javascript">
+    // Modified, cross-browser requestAnimationFrame. The fallback provided by 
+    // Google didn't cap the framerate at 60 Hz. It does now.
+    requestAnimFrame = (function () {
+        return window.requestAnimationFrame ||
+            window.webkitRequestAnimationFrame ||
+            window.mozRequestAnimationFrame ||
+            window.oRequestAnimationFrame ||
+            window.msRequestAnimationFrame ||
+            function(callback, element) {
+                // Set new timeout only if we've finished the previous one
+                if(typeof(window.reqAnimFrameTimeout) == "undefined") window.reqAnimFrameTimeout = window.setTimeout(function() { window.reqAnimFrameTimeout = undefined; callback(); }, 1000/70);
+            };
+    })();
+  </script>
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-79097-21']);
+    _gaq.push(['_trackPageview']);
+    
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
 </body>
-
-<script type="text/javascript">
-// Modified, cross-browser requestAnimationFrame. The fallback provided by 
-// Google didn't cap the framerate at 60 Hz. It does now.
-requestAnimFrame = (function () {
-  return window.requestAnimationFrame ||
-         window.webkitRequestAnimationFrame ||
-         window.mozRequestAnimationFrame ||
-         window.oRequestAnimationFrame ||
-         window.msRequestAnimationFrame ||
-         function(callback, element) {
-           // Set new timeout only if we've finished the previous one
-           if(typeof(window.reqAnimFrameTimeout) == "undefined") window.reqAnimFrameTimeout = window.setTimeout(function() { window.reqAnimFrameTimeout = undefined; callback(); }, 1000/70);
-         };
-})();
-</script>
-
 </html>

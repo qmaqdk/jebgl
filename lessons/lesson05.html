@@ -337,51 +337,48 @@
 
         tick();
     }
-
-
-</script>
-
-<script type="text/javascript">
-
-  var _gaq = _gaq || [];
-  _gaq.push(['_setAccount', 'UA-79097-21']);
-  _gaq.push(['_trackPageview']);
-
-  (function() {
-    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-  })();
-
 </script>
 </head>
-
-
-<body onload="jebgl(document.getElementById('lesson05-canvas'),webGLStart, 
-      { jebglJar: 'jebgl.jar',
-        jarLocation: '/webstart/',
-        jnlpLocation: 'http://jebgl.com/webstart/',
-        alwaysApplet: true});">
+<body>
   <p><a href="lesson04.html">Previous lesson</a> - <a href="lesson06.html">Next lesson</a></p>
   <canvas width=500 height=500 id="lesson05-canvas"></canvas>
   <img src="nehe.gif" id="nehe" style="position:absolute; top: -300px; left: -300px;"/>
-<p>See the original LearningWebGL.com <a href="http://learningwebgl.com/lessons/lesson05/index.html">lesson05</a>.</p> 
+  <p>See the original LearningWebGL.com <a href="http://learningwebgl.com/lessons/lesson05/index.html">lesson05</a>.</p> 
+
+  <script type="text/javascript">
+    window.onload = function() {
+        jebgl(document.getElementById('lesson05-canvas'),webGLStart, 
+              { jebglJar: 'jebgl.jar',
+	        jarLocation: '/webstart/',
+		jnlpLocation: 'http://jebgl.com/webstart/',
+		alwaysApplet: true});
+    };
+  </script>
+  <script type="text/javascript">
+    // Modified, cross-browser requestAnimationFrame. The fallback provided by 
+    // Google didn't cap the framerate at 60 Hz. It does now.
+    requestAnimFrame = (function () {
+        return window.requestAnimationFrame ||
+            window.webkitRequestAnimationFrame ||
+            window.mozRequestAnimationFrame ||
+            window.oRequestAnimationFrame ||
+            window.msRequestAnimationFrame ||
+            function(callback, element) {
+                // Set new timeout only if we've finished the previous one
+                if(typeof(window.reqAnimFrameTimeout) == "undefined") window.reqAnimFrameTimeout = window.setTimeout(function() { window.reqAnimFrameTimeout = undefined; callback(); }, 1000/70);
+            };
+    })();
+  </script>
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-79097-21']);
+    _gaq.push(['_trackPageview']);
+    
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
 </body>
-
-<script type="text/javascript">
-// Modified, cross-browser requestAnimationFrame. The fallback provided by 
-// Google didn't cap the framerate at 60 Hz. It does now.
-requestAnimFrame = (function () {
-  return window.requestAnimationFrame ||
-         window.webkitRequestAnimationFrame ||
-         window.mozRequestAnimationFrame ||
-         window.oRequestAnimationFrame ||
-         window.msRequestAnimationFrame ||
-         function(callback, element) {
-           // Set new timeout only if we've finished the previous one
-           if(typeof(window.reqAnimFrameTimeout) == "undefined") window.reqAnimFrameTimeout = window.setTimeout(function() { window.reqAnimFrameTimeout = undefined; callback(); }, 1000/70);
-         };
-})();
-</script>
-
 </html>

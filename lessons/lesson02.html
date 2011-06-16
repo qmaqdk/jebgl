@@ -218,33 +218,30 @@
     }
 
 </script>
-
-
-<script type="text/javascript">
-
-  var _gaq = _gaq || [];
-  _gaq.push(['_setAccount', 'UA-79097-21']);
-  _gaq.push(['_trackPageview']);
-
-  (function() {
-    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-  })();
-
-</script>
 </head>
-
-
-<body onload="jebgl(document.getElementById('lesson02-canvas'),webGLStart, 
-      { jebglJar: 'jebgl.jar',
-        jarLocation: '/webstart/',
-        jnlpLocation: 'http://jebgl.com/webstart/',
-        alwaysApplet: true});">
+<body>
   <p><a href="lesson01.html">Previous lesson</a> - <a href="lesson03.html">Next lesson</a></p>
   <canvas width=500 height=500 id="lesson02-canvas"></canvas>
-
-<p>See the original LearningWebGL.com <a href="http://learningwebgl.com/lessons/lesson02/index.html">lesson02</a>.</p> 
+  <p>See the original LearningWebGL.com <a href="http://learningwebgl.com/lessons/lesson02/index.html">lesson02</a>.</p> 
+  <script type="text/javascript">
+    window.onload = function() {
+        jebgl(document.getElementById('lesson02-canvas'),webGLStart, 
+              { jebglJar: 'jebgl.jar',
+	        jarLocation: '/webstart/',
+		jnlpLocation: 'http://jebgl.com/webstart/',
+		alwaysApplet: true});
+    };
+  </script>
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-79097-21']);
+    _gaq.push(['_trackPageview']);
+    
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
 </body>
-
 </html>

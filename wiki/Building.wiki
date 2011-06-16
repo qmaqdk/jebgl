@@ -18,6 +18,7 @@ In the newly created `jebgl` directory run the following:
 make
 }}}
 You should now have a jebgl.jar in your directory.
+*Note*: Release 0.1 didn't include the `webstart` directory in svn, so you need to download it separately. You can find it at http://jebgl.googlecode.com/svn/webstart
 
 = Testing your build =
 == Testing with remote jar files ==

@@ -2123,19 +2123,21 @@
         var container = document.createElement("div");
         
         // Emulate width and height attributes
-        container.width = canvas.offsetWidth;
-        container.height = canvas.offsetHeight;
-        container.style.width = canvas.offsetWidth + 'px';
-        container.style.height = canvas.offsetHeight + 'px';
+        container.width = canvas.width;
+        container.height = canvas.height;
+
+        // Copy inline CSS
+        if (canvas.style.cssText)
+            container.style.cssText = canvas.style.cssText;
+
+        // Make sure size is set correctly
+        container.style.width = canvas.width + 'px';
+        container.style.height = canvas.height + 'px';
 
         // Copy attributes
         for (i = 0; i < canvas.attributes.length; i++) {
             container.setAttribute(canvas.attributes[i].nodeName, canvas.attributes[i].nodeValue);
         }
-
-        // Copy inline CSS
-        if (canvas.style.cssText)
-            container.style.cssText = canvas.style.cssText;
 
         // Ready applet element
         var applet = document.createElement("applet");

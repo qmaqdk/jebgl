@@ -13,17 +13,7 @@ svn checkout http://jebgl.googlecode.com/svn/releases/0.1/ jebgl
 
 = Building JebGL =
 == Get jars from jebgl.googlecode.com ==
-In the newly created `jebgl` directory do the following:
-{{{
-mkdir webstart
-cd webstart
-wget http://jebgl.googlecode.com/svn/webstart/jogl.all.jar
-wget http://jebgl.googlecode.com/svn/webstart/nativewindow.all.jar
-wget http://jebgl.googlecode.com/svn/webstart/gluegen-rt.jar
-cd ..
-}}}
-== Build JebGL ==
-Now just run 
+In the newly created `jebgl` directory run the following:
 {{{
 make
 }}}
@@ -33,37 +23,13 @@ You should now have a jebgl.jar in your directory.
 == Testing with remote jar files ==
 *Note*: this does not work in Safari. Safari needs the jars coming from the same origin, see below.
 
-Run the following in the `jebgl` directory:
-{{{
-python -m SimpleHTTPServer 1080
-}}}
-and point your browser to http://localhost:1080/test-googlecode/test.html. If all went well you should now see an oscillating red/blue pattern.
+Point your browser to `file:///path/to/jebgl/test-googlecode/test.html`. If all went well you should now see an oscillating red/blue pattern.
 
 == Testing with all jar files local ==
-We need to download some more jar files, so do the following:
-{{{
-cd webstart
-wget http://jebgl.googlecode.com/svn/webstart/applet-launcher.jar
-}}}
-This is the applet launcher that actually runs JebGL. In addition we need the native jar files (you only need the ones matching your system):
-{{{
-wget http://jebgl.googlecode.com/svn/webstart/jogl-natives-windows-i586.jar
-wget http://jebgl.googlecode.com/svn/webstart/jogl-natives-windows-amd64.jar
-wget http://jebgl.googlecode.com/svn/webstart/jogl-natives-linux-i586.jar
-wget http://jebgl.googlecode.com/svn/webstart/jogl-natives-linux-amd64.jar
-wget http://jebgl.googlecode.com/svn/webstart/jogl-natives-macosx-universal.jar
-wget http://jebgl.googlecode.com/svn/webstart/nativewindow-natives-windows-i586.jar
-wget http://jebgl.googlecode.com/svn/webstart/nativewindow-natives-windows-amd64.jar
-wget http://jebgl.googlecode.com/svn/webstart/nativewindow-natives-linux-i586.jar
-wget http://jebgl.googlecode.com/svn/webstart/nativewindow-natives-linux-amd64.jar
-wget http://jebgl.googlecode.com/svn/webstart/nativewindow-natives-macosx-universal.jar
-cd ..
-}}}
-
-Now run the following command in the `jebgl` directory:
+Run the following command in the `jebgl` directory:
 {{{
 python -m SimpleHTTPServer 1080
 }}}
-and point your browser to http://localhost:1080/test-local/test.html.
+This starts a HTTP server in your current directory. Now point your browser to http://localhost:1080/test-local/test.html. 
 
 *Note*: This only works from your local machine, as the `test.html` uses local JNLP-files which must have absolute URIs, in our case set to `localhost:1080`

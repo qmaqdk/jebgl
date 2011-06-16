@@ -180,28 +180,29 @@
 </script>
 
 
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-79097-21']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
 </head>
 
 
-<body onload="JebGL.prototype.waitForApplet(document.getElementById('lesson01-canvas'),webGLStart);">
+<body onload="jebgl(document.getElementById('lesson01-canvas'),webGLStart, 
+	      { jebglJar: 'jebgl.jar',
+	        jarLocation: '/webstart/',
+		jnlpLocation: 'http://jebgl.com/webstart/',
+		alwaysApplet: true});">
   <p>Previous lesson - <a href="lesson02.html">Next lesson</a></p>
-  <applet code="org.jdesktop.applet.util.JNLPAppletLauncher"
-          width=500 height=500 id="lesson01-canvas">
-  <param name="archive" value="webstart/applet-launcher.jar,
-                               webstart/newt.all.jar,
-                               webstart/jogl.all.jar,
-                               webstart/nativewindow.all.jar,
-                               webstart/gluegen-rt.jar,
-                               jebgl.jar">
-  <param name="codebase_lookup" value="false">
-  <param name="subapplet.classname" value="com.iola.JebGL">
-  <param name="subapplet.displayname" value="JebGL Applet">
-  <param name="separate_jvm" value="true">
-  <param name="noddraw.check" value="true">
-  <param name="progressbar" value="true">
-  <param name="jnlpNumExtensions" value="1">
-  <param name="jnlpExtension1"
-         value="http://jebgl.com/webstart/jogl-core.jnlp"></applet>
+  <canvas width=500 height=500 id="lesson01-canvas"></canvas>
 </body>
 <p>See the original LearningWebGL.com <a href="http://learningwebgl.com/lessons/lesson01/index.html">lesson01</a>.</p> 
 </html>

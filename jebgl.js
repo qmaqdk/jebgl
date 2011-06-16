@@ -1900,10 +1900,16 @@
                     for (var i=0, l=list.length; i<l; i++) {
                         // Mouse events are triggered on the DOM element
                         var element = list[i],
-                            top = element.offsetTop,
-                            left = element.offsetLeft;
+                            par = element,
+                            top = 0,
+                            left = 0;
+                        // IE offset calculation
+                        do { 
+                            top += par.offsetTop,
+                            left += par.offsetLeft;
+                        } while (par = par.offsetParent);
                         evt.clientX = event.x + left;
-                        evt.clientY = event.y + top;
+                        evt.clientY = event.y + top; 
                         evt.screenX = evt.clientX + window.screenLeft;
                         evt.screenY = evt.clientY + window.screenTop;
                         evt.button = event.button;

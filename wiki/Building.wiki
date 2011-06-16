@@ -12,7 +12,6 @@ svn checkout http://jebgl.googlecode.com/svn/releases/0.1/ jebgl
 }}}
 
 = Building JebGL =
-== Get jars from jebgl.googlecode.com ==
 In the newly created `jebgl` directory run the following:
 {{{
 make

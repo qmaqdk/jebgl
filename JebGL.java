@@ -28,7 +28,15 @@ package com.iola;
 
 import java.applet.*;
 import java.awt.*;
-//import netscape.javascript.*;
+import netscape.javascript.*;
+import com.jogamp.newt.event.KeyAdapter;
+import com.jogamp.newt.event.KeyEvent;
+import com.jogamp.newt.event.KeyListener;
+import com.jogamp.newt.event.MouseAdapter;
+import com.jogamp.newt.event.MouseEvent;
+import com.jogamp.newt.event.MouseListener;
+import com.jogamp.newt.event.awt.AWTKeyAdapter;
+import com.jogamp.newt.event.awt.AWTMouseAdapter;
 import java.nio.*;
 import java.net.URL;
 import java.net.MalformedURLException;
@@ -62,6 +70,9 @@ public class JebGL extends Applet {
     private float[] floats;
 
     private MediaTracker mt; // MediaTracker
+
+    private JSObject window; // JSObjects
+    private JSObject jebglEvent;
 
     /* Ready all WebGL enums, cf
      * http://www.khronos.org/registry/webgl/specs/latest/#5.13
@@ -537,6 +548,69 @@ public class JebGL extends Applet {
         }
     }
 
+    /*
+     * MouseAdapter for mouse events
+     */
+    class JebGLMouseAdapter extends MouseAdapter {
+      private void handle(MouseEvent e, String action) {
+          window.eval("jebglEvent.fire({type: 'mouse', " + 
+                      "action: '" + action + "', " + 
+                      "button: " + e.getButton() + ", " + 
+                      "delta: " + e.getWheelRotation() + ", " + 
+                      "x: " + e.getX() + ", " + 
+                      "y: " + e.getY() + 
+                      "});");
+      }   
+        
+      public void mouseClicked(MouseEvent e) {
+          this.handle(e, "click");
+      }
+      public void mouseDragged(MouseEvent e) {
+          this.handle(e, "move");
+      }
+      public void mouseEntered(MouseEvent e) {
+          this.handle(e, "over");
+      }
+      public void mouseExited(MouseEvent e) {
+          this.handle(e, "out");
+      }
+      public void mouseMoved(MouseEvent e) {
+          this.handle(e, "move");
+      }
+      public void mousePressed(MouseEvent e) {
+          this.handle(e, "down");
+      }
+      public void mouseReleased(MouseEvent e) {
+          this.handle(e, "up");
+      }
+      public void mouseWheelMoved(MouseEvent e) {
+          this.handle(e, "wheel");
+      }
+    }
+
+    /*
+     * KeyAdapter for keyboard events
+     */
+    class JebGLKeyAdapter extends KeyAdapter {
+        private void handle(KeyEvent e, String action) {
+          window.eval("jebglEvent.fire({type: 'key', " + 
+                      "action: '" + action + "', " + 
+                      "keyChar: '" + e.getKeyChar() + "', " + 
+                      "keyCode: " + e.getKeyCode() + 
+                      "});");
+        }
+
+        public void keyPressed(KeyEvent e) {
+            this.handle(e, "down");
+        }
+        public void keyReleased(KeyEvent e) {
+            this.handle(e, "up");
+        }
+        public void keyTyped(KeyEvent e) {
+            this.handle(e, "press");
+        }
+    }
+
     public void addCanvas(GLCanvas canvas) {
         // Sometimes canvas isn't quite ready, 
         // so we keep trying until we succeed
@@ -574,6 +648,17 @@ public class JebGL extends Applet {
         // Create a media tracker
         mt = new MediaTracker(this);
         
+        // Get window JSObject
+        window = JSObject.getWindow(this);
+        jebglEvent = (JSObject) window.getMember("jebglEvent");
+
+        // Enable event listeners
+        MouseListener jebglMouse = new JebGLMouseAdapter();
+        KeyListener jebglKey = new JebGLKeyAdapter();
+        java.awt.Component comp = (java.awt.Component) canvas;
+        new AWTMouseAdapter(jebglMouse).addTo(comp);
+        new AWTKeyAdapter(jebglKey).addTo(comp);
+
         // Set dummy animator to prevent external redraw
         animator = new NullAnimator(canvas);
     }

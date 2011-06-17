@@ -24,35 +24,218 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-(function() {
+ (function() {
+     
+     /*
+      * Make fake ArrayBuffer and typed arrays for browsers that don't know
+      * them. Note: these only appear like typed arrays. You can't share 
+      * ArrayBuffers and you can't do interleaved array types. They are 
+      * mainly used to tell the Java applet how to store the data.
+      * 
+      * Reference: https://www.khronos.org/registry/typedarray/specs/1.0/
+      */
 
-    /*
- * Make fake ArrayViews for browsers that don't know them
- */
+     if (typeof(ArrayBuffer) == "undefined") {
+         window.ArrayBuffer = function(length) {
+             if (typeof(length) == "undefined" || length == null) {
+                // Argument is not optional per spec, but this is what FF4 does.
+                 this.byteLength = 0;
+             } else {
+                 if (length < 0 || length >= Math.pow(2,31)) 
+                     throw new RangeError("invalid array length");
+                 this.byteLength = length;
+             }
+         }
+     }
 
-    if (typeof(Float32Array) == "undefined") {
-        Float32Array = function(a) {
-            var o = { length: a.length };
-            for (var i = 0, l = a.length; i<l; i++) {
-                o[i] = a[i];
-            }
-            return o;
+     // TypedArray base type
+     TypedArray = function(a, b, c) {
+         if (typeof(a) == "undefined") {
+             // Argument is not optional per spec, but this is what FF4 does.
+             this.buffer = new ArrayBuffer();
+             this.byteOffset = 0;
+             this.byteLength = 0;
+             this.length = 0;
+         } else if (a == null) {
+             // Should throw error according to Khronos conformance test
+             throw new Error("invalid arguments");
+         } else if (a instanceof ArrayBuffer) {
+             if (a.byteLength % this.BYTES_PER_ELEMENT != 0) 
+                 throw new Error("invalid arguments");
+             this.buffer = a;
+             if (typeof(b) != "undefined") {
+                 if (b < 0 || b > a.byteLength || b % this.BYTES_PER_ELEMENT != 0) throw new Error("invalid arguments");
+                 this.byteOffset = b;
+             } else {
+                 this.byteOffset = 0;
+             }
+             if (typeof(c) != "undefined") {
+                 if (c < 0 || c > a.byteLength) throw new Error("invalid arguments");
+                 this.length = c;
+             } else {
+                 this.length = a.byteLength / this.BYTES_PER_ELEMENT;
+             }
+             this.byteLength = this.length * this.BYTES_PER_ELEMENT;
+         } else if (a instanceof TypedArray) {
+             this.buffer = a.buffer;
+             for (var i=0, l=a.length; i<l; i++)
+                 this[i] = this.convert(a[i]);
+             this.length = a.length;
+             this.byteOffset = 0;
+             this.byteLength = this.length * this.BYTES_PER_ELEMENT;
+         } else if (a instanceof Array) {
+             this.buffer = new ArrayBuffer(a.length * this.BYTES_PER_ELEMENT);
+             this.byteOffset = 0;
+             this.byteLength = this.buffer.byteLength;
+             this.length = a.length;
+             for (var i=0, l=a.length; i<l; i++)
+                 this[i] = this.convert(a[i]);
+         } else {
+             // Assume a is a number
+             if (a < 0) throw new Error("invalid arguments");
+             this.length = a;
+             this.byteLength = this.length * this.BYTES_PER_ELEMENT;
+             if (this.byteLength >= Math.pow(2,31)) 
+                 throw new Error("size and count too large");
+             this.buffer = new ArrayBuffer(this.byteLength);
+             this.byteOffset = 0;
+             // Initialize to zero
+             for (var i=0; i<this.length; i++)
+                 this[i] = 0;
+         }
+     }
+     TypedArray.prototype = {
+         set: function(a, offset) {
+             if (a instanceof TypedArray || a instanceof Array) {
+                 var begin = 0;
+                 if (typeof(offset) != "undefined")
+                     begin = offset;
+                 if (begin + a.length > this.length || begin < 0) 
+                     throw new Error("invalid arguments");
+                 for (var i=0, l=a.length; i<l; i++)
+                     this[i+begin] = this.convert(a[i]);
+             } else {
+                 throw new Error("invalid arguments");
+             }
+         },
+         subarray: function(begin, end) {
+             if (begin < 0) begin = this.length + begin;
+             if (typeof(end) == "undefined") 
+                 var end = this.length;
+             if (end < 0) end = this.length + end;
+             if (end > this.length) end = this.length;
+             if (begin < 0) begin = 0;
+             var o;
+             if (end < begin) {
+                 o = new this.constructor(0);
+             } else {
+                 o = new this.constructor(end - begin);
+             }
+             for (var i=begin; i<end; i++) 
+                 o[i - begin] = this[i];
+             return o;
+         }
+     }
+
+     function toInt(v) {
+         if (v < 0) {
+             return -1*Math.floor(-1*v);
+         } else {
+             return Math.floor(v);
+         }
+     }
+
+    if (typeof(Int8Array) == "undefined") {
+        window.Int8Array = function(a, b, c) {
+            TypedArray.apply(this, arguments);
         }
+        Int8Array.prototype = new TypedArray();
+        Int8Array.BYTES_PER_ELEMENT = 1;
+        Int8Array.prototype.BYTES_PER_ELEMENT = 1;
+        Int8Array.prototype.constructor = Int8Array;
+        Int8Array.prototype.convert = toInt;
+    }
+
+    if (typeof(Uint8Array) == "undefined") {
+        window.Uint8Array = function(a, b, c) {
+            TypedArray.apply(this, arguments);
+        }
+        Uint8Array.prototype = new TypedArray();
+        Uint8Array.BYTES_PER_ELEMENT = 1;
+        Uint8Array.prototype.BYTES_PER_ELEMENT = 1;
+        Uint8Array.prototype.constructor = Uint8Array;
+        Uint8Array.prototype.convert = toInt;
+    }
+
+    if (typeof(Int16Array) == "undefined") {
+        window.Int16Array = function(a, b, c) {
+            TypedArray.apply(this, arguments);
+        }
+        Int16Array.prototype = new TypedArray();
+        Int16Array.BYTES_PER_ELEMENT = 2;
+        Int16Array.prototype.BYTES_PER_ELEMENT = 2;
+        Int16Array.prototype.constructor = Int16Array;
+        Int16Array.prototype.convert = toInt;
     }
 
     if (typeof(Uint16Array) == "undefined") {
-        Uint16Array = function(a) {
-            var o = { length: a.length };
-            for (var i = 0, l = a.length; i<l; i++) {
-                o[i] = a[i];
-            }
-            return o;
+        window.Uint16Array = function(a, b, c) {
+            TypedArray.apply(this, arguments);
         }
+        Uint16Array.prototype = new TypedArray();
+        Uint16Array.BYTES_PER_ELEMENT = 2;
+        Uint16Array.prototype.BYTES_PER_ELEMENT = 2;
+        Uint16Array.prototype.constructor = Uint16Array;
+        Uint16Array.prototype.convert = toInt;
+    }
+
+    if (typeof(Int32Array) == "undefined") {
+        window.Int32Array = function(a, b, c) {
+            TypedArray.apply(this, arguments);
+        }
+        Int32Array.prototype = new TypedArray();
+        Int32Array.BYTES_PER_ELEMENT = 4;
+        Int32Array.prototype.BYTES_PER_ELEMENT = 4;
+        Int32Array.prototype.constructor = Int32Array;
+        Int32Array.prototype.convert = toInt;
+    }
+
+    if (typeof(Uint32Array) == "undefined") {
+        window.Uint32Array = function(a, b, c) {
+            TypedArray.apply(this, arguments);
+        }
+        Uint32Array.prototype = new TypedArray();
+        Uint32Array.BYTES_PER_ELEMENT = 4;
+        Uint32Array.prototype.BYTES_PER_ELEMENT = 4;
+        Uint32Array.prototype.constructor = Uint32Array;
+        Uint32Array.prototype.convert = toInt;
+    }
+
+    if (typeof(Float32Array) == "undefined") {
+        window.Float32Array = function(a, b, c) {
+            TypedArray.apply(this, arguments);
+        }
+        Float32Array.prototype = new TypedArray();
+        Float32Array.BYTES_PER_ELEMENT = 4;
+        Float32Array.prototype.BYTES_PER_ELEMENT = 4;
+        Float32Array.prototype.constructor = Float32Array;
+        Float32Array.prototype.convert = function(a) { return a;};
+    }
+
+    if (typeof(Float64Array) == "undefined") {
+        window.Float64Array = function(a, b, c) {
+            TypedArray.apply(this, arguments);
+        }
+        Float64Array.prototype = new TypedArray();
+        Float64Array.BYTES_PER_ELEMENT = 8;
+        Float64Array.prototype.BYTES_PER_ELEMENT = 8;
+        Float64Array.prototype.constructor = Float64Array;
+        Float64Array.prototype.convert = function(a) { return a;};
     }
 
     /*
- * JebGL versions of WebGL objects
- */
+     * JebGL versions of WebGL objects
+     */
     
     function JebGLBuffer(id) {
         this.id = id;
@@ -102,7 +285,25 @@
         type: "Emulated WebGLTexture"
     }
 
-    function JebGLCanvas(applet) {
+    function JebGLUniformLocation(id) {
+        this.id = id;
+    }
+
+    JebGLUniformLocation.prototype = {
+        type: "Emulated WebGLUniformLocation"
+    }
+
+    function JebGLActiveInfo(size, type, name) {
+        this.size = size;
+        this.type = type;
+        this.name = name;
+    }
+
+    JebGLActiveInfo.prototype = {
+        type: "Emulated WebGLActiveInfo"
+    }
+
+    function JebGLRenderingContext(applet) {
         // Store applet as canvas and get the actual JebGL applet
         this.JebApp = applet.getSubApplet();
         
@@ -272,6 +473,7 @@
             "MAX_VERTEX_TEXTURE_IMAGE_UNITS",
             "MAX_TEXTURE_IMAGE_UNITS",
             "MAX_FRAGMENT_UNIFORM_VECTORS",
+            "SHADER_COMPILER",
             "SHADER_TYPE",
             "DELETE_STATUS",
             "LINK_STATUS",
@@ -418,6 +620,10 @@
             "RENDERBUFFER_DEPTH_SIZE",
             "RENDERBUFFER_STENCIL_SIZE",
             "NONE",
+            "FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE",
+            "FRAMEBUFFER_ATTACHMENT_OBJECT_NAME",
+            "FRAMEBUFFER_ATTACHMENT_TEXTURE_LEVEL",
+            "FRAMEBUFFER_ATTACHMENT_TEXTURE_CUBE_MAP_FACE",
             "FRAMEBUFFER_COMPLETE",
             "FRAMEBUFFER_INCOMPLETE_ATTACHMENT",
             "FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT",
@@ -427,6 +633,10 @@
             "RENDERBUFFER_BINDING",
             "MAX_RENDERBUFFER_SIZE",
             "INVALID_FRAMEBUFFER_OPERATION",
+            "COLOR_ATTACHMENT0",
+            "DEPTH_ATTACHMENT",
+            "STENCIL_ATTACHMENT",
+            "DEPTH_STENCIL_ATTACHMENT",
             /* WebGL-specific enums */
             "UNPACK_FLIP_Y_WEBGL",
             "UNPACK_PREMULTIPLY_ALPHA_WEBGL",
@@ -586,7 +796,7 @@
         this.callTimer = null;
     }
 
-    JebGLCanvas.prototype = {
+    JebGLRenderingContext.prototype = {
         bind: function(method) {
             var _this = this;
             return function() {
@@ -748,62 +958,73 @@
         },
 
         attachShader: function(program, shader) {
-            if (!(program instanceof JebGLProgram)) 
-                throw new TypeError("attachShader: not a JebGLProgram");
-            if (!(shader instanceof JebGLShader)) 
-                throw new TypeError("attachShader: not a JebGLShader");
-            this.addCall(this.CALL_ATTACH_SHADER, [program.id, shader.id], []);
+            if (program instanceof JebGLProgram && shader instanceof JebGLShader) {
+                this.addCall(this.CALL_ATTACH_SHADER, [program.id, shader.id], []);
+            } else if (typeof(shader) == "undefined" || typeof(program) == "undefined" || shader == null || program == null) {
+                // Don't throw, cf. WebGL conformance test
+                return;
+            } else {
+                throw new TypeError("attachShader: invalid argument");
+            }
         },
 
         bindAttribLocation: function(program, index, name) {
             // Before calling gl methods directly we submit the call list
             this.submit();
-            if (!(program instanceof JebGLProgram)) 
-                throw new TypeError("bindAttribLocation: not a JebGLProgram");
-            try {
-                this.JebApp.glBindAttribLocation(program.id, index, name);
-            } catch (e) {
-                throw new Error(e);
+            if (program instanceof JebGLProgram) {
+                try {
+                    this.JebApp.glBindAttribLocation(program.id, index, name);
+                } catch (e) {
+                    throw new Error(e);
+                }
+            } else if (typeof(program) == "undefined" || program == null) {
+                try {
+                    this.JebApp.glBindAttribLocation(0, index, name);
+                } catch (e) {
+                    throw new Error(e);
+                }
+            } else {
+                throw new TypeError("bindAttribLocation: invalid argument");
             }
         },
         
         bindBuffer: function(target, buffer) {
             if (buffer instanceof JebGLBuffer) {
                 this.addCall(this.CALL_BIND_BUFFER, [target, buffer.id], []);
-            } else if (buffer === null) {
+            } else if (typeof(buffer) == "undefined" || buffer === null) {
                 this.addCall(this.CALL_BIND_BUFFER, [target, 0], []);
             } else {
-                throw new TypeError("bindBuffer: not a JebGLBuffer");
+                throw new TypeError("bindBuffer: invalid argument");
             }
         },
 
         bindFramebuffer: function(target, framebuffer) {
             if (framebuffer instanceof JebGLFramebuffer) {
                 this.addCall(this.CALL_BIND_FRAMEBUFFER, [target, framebuffer.id], []);
-            } else if (framebuffer === null) {
+            } else if (typeof(framebuffer) == "undefined" || framebuffer === null) {
                 this.addCall(this.CALL_BIND_FRAMEBUFFER, [target, 0], []);
             } else {
-                throw new TypeError("bindFramebuffer: not a JebGLFramebuffer");
+                throw new TypeError("bindFramebuffer: invalid argument");
             }
         },
 
         bindRenderbuffer: function(target, renderbuffer) {
             if (renderbuffer instanceof JebGLRenderbuffer) {
                 this.addCall(this.CALL_BIND_RENDERBUFFER, [target, renderbuffer.id], []);
-            } else if (renderbuffer === null) {
+            } else if (typeof(renderbuffer) == "undefined" || renderbuffer === null) {
                 this.addCall(this.CALL_BIND_RENDERBUFFER, [target, 0], []);
             } else { 
-                throw new TypeError("bindRenderbuffer: not a JebGLRenderbuffer");
+                throw new TypeError("bindRenderbuffer: invalid argument");
             }
         },
 
         bindTexture: function(target, texture) {
             if (texture instanceof JebGLTexture) {
                 this.addCall(this.CALL_BIND_TEXTURE, [target, texture.id], []);
-            } else if (texture === null) {
+            } else if (typeof(texture) == "undefined" || texture === null) {
                 this.addCall(this.CALL_BIND_TEXTURE, [target, 0], []);
             } else {
-                throw new TypeError("bindTexture: not a JebGLTexture");
+                throw new TypeError("bindTexture: invalid argument");
             }
         },
 
@@ -831,58 +1052,123 @@
         bufferData: function(target, data, usage) {
             // Make sure we've submitted eventual bindBuffer commands
             this.submit();
-            var size = data.length,
-                it = 0;
-            // IE6 fix - it counts one too many
-            if (isNaN(data[size-1])) size--;
-            if (target == this.ARRAY_BUFFER) {
-                try {
-                    // Calling Java methods with arrays is sloooow, so we do this
-                    this.JebApp.createUploadf(size);
-                    while(it+10 < size) {
-                        this.JebApp.uploadDataf(it, data[it], data[it+1], data[it+2],
-                                                data[it+3], data[it+4], data[it+5],
-                                                data[it+6], data[it+7], data[it+8],
-                                                data[it+9]);
-                        it+=10;
+            if (typeof(data) != "undefined" && data != null && typeof(data.length) != "undefined") {
+                var size = data.length,
+                    it = 0;
+                // IE6 fix - it counts one too many
+                if (isNaN(data[size-1])) size--;
+                if (target == this.ARRAY_BUFFER) {
+                    try {
+                        // Calling Java methods with arrays is sloooow, so we do this
+                        this.JebApp.createUploadf(size);
+                        while(it+10 < size) {
+                            this.JebApp.uploadDataf(it, data[it], data[it+1], data[it+2],
+                                                    data[it+3], data[it+4], data[it+5],
+                                                    data[it+6], data[it+7], data[it+8],
+                                                    data[it+9]);
+                            it+=10;
+                        }
+                        while(it < size) {
+                            this.JebApp.uploadSinglef(it, data[it]);
+                            it++;
+                        }
+                        this.JebApp.glBufferData(target, size, usage);
+                        this.JebApp.deleteUploadf();
+                    } catch (e) {
+                        alert(e.message);
+                        throw new Error(e);
                     }
-                    while(it < size) {
-                        this.JebApp.uploadSinglef(it, data[it]);
-                        it++;
+                } else if (target == this.ELEMENT_ARRAY_BUFFER) {
+                    try {
+                        // Calling Java methods with arrays is sloooow, so we do this
+                        this.JebApp.createUploadi(size);
+                        while(it+10 < size) {
+                            this.JebApp.uploadDatai(it, data[it], data[it+1], data[it+2],
+                                                    data[it+3], data[it+4], data[it+5],
+                                                    data[it+6], data[it+7], data[it+8],
+                                                    data[it+9]);
+                            it+=10;
+                        }
+                        while(it < size) {
+                            this.JebApp.uploadSinglei(it, data[it]);
+                            it++;
+                        }
+                        this.JebApp.glBufferData(target, size, usage);
+                        this.JebApp.deleteUploadi();
+                    } catch (e) {
+                        throw new Error(e);
                     }
-                    this.JebApp.glBufferData(target, size, usage);
-                    this.JebApp.deleteUploadf();
-                } catch (e) {
-                    alert(e.message);
-                    throw new Error(e);
-                }
-            } else if (target == this.ELEMENT_ARRAY_BUFFER) {
-                try {
-                    // Calling Java methods with arrays is sloooow, so we do this
-                    this.JebApp.createUploadi(size);
-                    while(it+10 < size) {
-                        this.JebApp.uploadDatai(it, data[it], data[it+1], data[it+2],
-                                                data[it+3], data[it+4], data[it+5],
-                                                data[it+6], data[it+7], data[it+8],
-                                                data[it+9]);
-                        it+=10;
-                    }
-                    while(it < size) {
-                        this.JebApp.uploadSinglei(it, data[it]);
-                        it++;
-                    }
-                    this.JebApp.glBufferData(target, size, usage);
-                    this.JebApp.deleteUploadi();
-                } catch (e) {
-                    throw new Error(e);
+                } else {
+                    throw new Error("Unknown target for bufferData");
                 }
             } else {
-                throw new Error("Unknown target for bufferData");
+                try {
+                    this.JebApp.glBufferData(target, data, usage);
+                } catch(e) {
+                    throw new Error(e);
+                }
             }
         },
 
         bufferSubData: function(target, offset, data) {
-            throw new Error("Not implemented");
+            // Make sure we've submitted eventual bindBuffer commands
+            this.submit();
+            if (typeof(data) != "undefined" && data != null && typeof(data.length) != "undefined") {
+                var size = data.length,
+                    it = 0;
+                // IE6 fix - it counts one too many
+                if (isNaN(data[size-1])) size--;
+                if (target == this.ARRAY_BUFFER) {
+                    try {
+                        // Calling Java methods with arrays is sloooow, so we do this
+                        this.JebApp.createUploadf(size);
+                        while(it+10 < size) {
+                            this.JebApp.uploadDataf(it, data[it], data[it+1], data[it+2],
+                                                    data[it+3], data[it+4], data[it+5],
+                                                    data[it+6], data[it+7], data[it+8],
+                                                    data[it+9]);
+                            it+=10;
+                        }
+                        while(it < size) {
+                            this.JebApp.uploadSinglef(it, data[it]);
+                            it++;
+                        }
+                        this.JebApp.glBufferSubData(target, offset, size);
+                        this.JebApp.deleteUploadf();
+                    } catch (e) {
+                        alert(e.message);
+                        throw new Error(e);
+                    }
+                } else if (target == this.ELEMENT_ARRAY_BUFFER) {
+                    try {
+                        // Calling Java methods with arrays is sloooow, so we do this
+                        this.JebApp.createUploadi(size);
+                        while(it+10 < size) {
+                            this.JebApp.uploadDatai(it, data[it], data[it+1], data[it+2],
+                                                    data[it+3], data[it+4], data[it+5],
+                                                    data[it+6], data[it+7], data[it+8],
+                                                    data[it+9]);
+                            it+=10;
+                        }
+                        while(it < size) {
+                            this.JebApp.uploadSinglei(it, data[it]);
+                            it++;
+                        }
+                        this.JebApp.glBufferSubData(target, offset, size);
+                        this.JebApp.deleteUploadi();
+                    } catch (e) {
+                        throw new Error(e);
+                    }
+                } else {
+                    throw new Error("Unknown target for bufferSubData");
+                }
+            } else {
+                try {
+                    this.JebApp.glBufferSubData(target, offset, data);
+                } catch(e) {
+                    throw new Error(e);
+                }
+            }
         },
 
         checkFramebufferStatus: function(target) {
@@ -929,8 +1215,11 @@
         compileShader: function(shader) {
             if (shader instanceof JebGLShader) {
                 this.addCall(this.CALL_COMPILE_SHADER, [shader.id], []);
+            } else if (typeof(shader) == "undefined" || shader == null) {
+                // Don't throw, cf. WebGL conformance test
+                return;
             } else {
-                throw new TypeError("compileShader: not a JebGLShader");
+                throw new TypeError("compileShader: invalid argument");
             }
         },
 
@@ -1083,11 +1372,14 @@
         },
 
         detachShader: function(program, shader) {
-            if (!(program instanceof JebGLProgram)) 
-                throw new TypeError("detachShader: not a JebGLProgram");
-            if (!(shader instanceof JebGLShader)) 
-                throw new TypeError("detachShader: not a JebGLShader");
-            this.addCall(this.CALL_DETACH_SHADER, [program.id, shader.id], []);
+            if (program instanceof JebGLProgram && shader instanceof JebGLShader) {
+                this.addCall(this.CALL_DETACH_SHADER, [program.id, shader.id], []);
+            } else if (typeof(shader) == "undefined" || typeof(program) == "undefined" || shader == null || program == null) {
+                // Don't throw, cf. WebGL conformance test
+                return;
+            } else {
+                throw new TypeError("detachShader: invalid argument");
+            }
         },
 
         disable: function(cap) {
@@ -1138,20 +1430,32 @@
         
         framebufferRenderbuffer: function(target, attachment, renderbuffertarget,
                                           renderbuffer) {
-            if (!(renderbuffer instanceof JebGLRenderbuffer))
-                throw new TypeError("framebufferRenderbuffer: not a JebGLRenderbuffer");
-            this.addCall(this.CALL_FRAMEBUFFER_RENDERBUFFER, [target, attachment,
-                                                              renderbuffertarget,
-                                                              renderbuffer.id], []);
+            if (renderbuffer instanceof JebGLRenderbuffer) {
+                this.addCall(this.CALL_FRAMEBUFFER_RENDERBUFFER, [target, attachment,
+                                                                  renderbuffertarget,
+                                                                  renderbuffer.id], []);
+            } else if (typeof(renderbuffer) == "undefined" || renderbuffer == null) {
+                this.addCall(this.CALL_FRAMEBUFFER_RENDERBUFFER, [target, attachment,
+                                                                  renderbuffertarget,
+                                                                  0], []);
+            } else {
+                throw new TypeError("framebufferRenderbuffer: invalid argument");
+            }
         },
 
         framebufferTexture2D: function(target, attachment, textarget,
                                        texture, level) {
-            if (!(texture instanceof JebGLTexture))
-                throw new TypeError("framebufferTexture2D: not a JebGLTexture");
-            this.addCall(this.CALL_FRAMEBUFFER_TEXTURE_2D, [target, attachment,
-                                                            textarget, texture.id,
-                                                            level], []);
+            if (texture instanceof JebGLTexture) {
+                this.addCall(this.CALL_FRAMEBUFFER_TEXTURE_2D, [target, attachment,
+                                                                textarget, texture.id,
+                                                                level], []);
+            } else if (typeof(texture) == "undefined" || texture == null) {
+                this.addCall(this.CALL_FRAMEBUFFER_TEXTURE_2D, [target, attachment,
+                                                                textarget, 0,
+                                                                level], []);
+            } else {
+                throw new TypeError("framebufferTexture2D: invalid argument");
+            }
         },
 
         frontFace: function(mode) {
@@ -1222,7 +1526,7 @@
         },
 
         getParameter: function(pname) {
-            throw new Error("FIXME: not implemented");
+            //throw new Error("FIXME: not implemented");
         },
 
         getBufferParameter: function(target, pname) {
@@ -1276,42 +1580,52 @@
         },
 
         getProgramParameter: function(program, pname) {
-            // Before calling gl methods directly we submit the call list
-            this.submit();
-            if (!(program instanceof JebGLProgram)) 
-                throw new TypeError("getProgramParameter: not a JebGLProgram");
-            try {
-                var result = this.JebApp.glGetProgramiv(program.id, pname);
-            } catch (e) {
-                throw new Error(e);
-            }
-            switch(result) {
-            case this.TRUE:
-                return true;
-                break;
-            case this.FALSE:
-                return false;
-                break;
-            default:
-                return result;
+            if (program instanceof JebGLProgram) {
+                // Before calling gl methods directly we submit the call list
+                this.submit();
+                try {
+                    var result = this.JebApp.glGetProgramiv(program.id, pname);
+                } catch (e) {
+                    throw new Error(e);
+                }
+                switch(result) {
+                case this.TRUE:
+                    return true;
+                    break;
+                case this.FALSE:
+                    return false;
+                    break;
+                default:
+                    return result;
+                }
+            } else if (typeof(program) == "undefined" || program == null) {
+                // Don't throw, cf. WebGL conformance test
+                return null;
+            } else {
+                throw new TypeError("getProgramParameter: invalid argument");
             }
         },
 
         getProgramInfoLog: function(program) {
-            // Before calling gl methods directly we submit the call list
-            this.submit();
-            if (!(program instanceof JebGLProgram)) 
-                throw new TypeError("getProgramInfoLog: not a JebGLProgram");
-            try {
-                var info = this.JebApp.glGetProgramInfoLog(program.id);
-            } catch (e) {
-                throw new Error(e);
+            if (program instanceof JebGLProgram) {
+                // Before calling gl methods directly we submit the call list
+                this.submit();
+                try {
+                    var info = this.JebApp.glGetProgramInfoLog(program.id);
+                } catch (e) {
+                    throw new Error(e);
+                }
+                var out = "";
+                for (var i = 0, l = info.length; i<l; i++) {
+                    out += String.fromCharCode(info[i]);
+                }
+                return out;
+            } else if (typeof(program) == "undefined" || program == null) {
+                // Don't throw, cf. WebGL conformance test
+                return "";
+            } else {
+                throw new TypeError("getProgramInfoLog: invalid argument");
             }
-            var out = "";
-            for (var i = 0, l = info.length; i<l; i++) {
-                out += String.fromCharCode(info[i]);
-            }
-            return out;
         },
 
         getRenderbufferParameter: function(target, pname) {
@@ -1335,57 +1649,73 @@
         },
 
         getShaderParameter: function(shader, pname) {
-            // Before calling gl methods directly we submit the call list
-            this.submit();
-            if (!(shader instanceof JebGLShader)) 
-                throw new TypeError("getShaderParameter: not a JebGLShader");
-            try {
-                var result = this.JebApp.glGetShaderiv(shader.id, pname);
-            } catch (e) {
-                throw new Error(e);
-            }
-            switch(result) {
-            case this.TRUE:
-                return true;
-                break;
-            case this.FALSE:
-                return false;
-                break;
-            default:
-                return result;
+            if (shader instanceof JebGLShader) {
+                // Before calling gl methods directly we submit the call list
+                this.submit();
+                try {
+                    var result = this.JebApp.glGetShaderiv(shader.id, pname);
+                } catch (e) {
+                    throw new Error(e);
+                }
+                switch(result) {
+                case this.TRUE:
+                    return true;
+                    break;
+                case this.FALSE:
+                    return false;
+                    break;
+                default:
+                    return result;
+                }
+            } else if (typeof(shader) == "undefined" || shader == null) {
+                // Don't throw, cf. WebGL conformance test
+                return null;
+            } else {
+                throw new TypeError("getShaderParameter: invalid argument");
             }
         },
 
         getShaderInfoLog: function(shader) {
-            // Before calling gl methods directly we submit the call list
-            this.submit();
-            if (!(shader instanceof JebGLShader)) 
-                throw new TypeError("getShaderInfoLog: not a JebGLShader");
-            try {
-                var info = this.JebApp.glGetShaderInfoLog(shader.id);
-            } catch (e) {
-                throw new Error(e);
+            if (shader instanceof JebGLShader) {
+                // Before calling gl methods directly we submit the call list
+                this.submit();
+                try {
+                    var info = this.JebApp.glGetShaderInfoLog(shader.id);
+                } catch (e) {
+                    throw new Error(e);
+                }
+                var out = "";
+                for (var i = 0, l = info.length; i<l; i++) {
+                    out += String.fromCharCode(info[i]);
+                }
+                return out;
+            } else if (typeof(shader) == "undefined" || shader == null) {
+                // Don't throw, cf. WebGL conformance test
+                return "";
+            } else {
+                throw new TypeError("getShaderInfoLog: invalid argument");
             }
-            var out = "";
-            for (var i = 0, l = info.length; i<l; i++) {
-                out += String.fromCharCode(info[i]);
-            }
-            return out;
         },
 
         getShaderSource: function(shader) {
-            // Before calling gl methods directly we submit the call list
-            this.submit();
-            if (!(shader instanceof JebGLShader)) 
-                throw new TypeError("getShaderSource: not a JebGLShader");
-            try {
-                var source = this.JebApp.glGetShaderSource(shader.id);
-            } catch (e) {
-                throw new Error(e);
-            }
-            var out = "";
-            for (var i = 0, l = source.length; i<l; i++) {
-                out += String.fromCharCode(source[i]);
+            if (shader instanceof JebGLShader) {
+                // Before calling gl methods directly we submit the call list
+                this.submit();
+                try {
+                    var source = this.JebApp.glGetShaderSource(shader.id);
+                } catch (e) {
+                    throw new Error(e);
+                }
+                var out = "";
+                for (var i = 0, l = source.length; i<l; i++) {
+                    out += String.fromCharCode(source[i]);
+                }
+                return out;
+            } else if (typeof(shader) == "undefined" || shader == null) {
+                // Don't throw, cf. WebGL conformance test
+                return "";
+            } else {
+                throw new TypeError("getShaderSource: invalid argument");
             }
         },
 
@@ -1411,26 +1741,36 @@
         },
 
         getUniform: function(program, location) {
-            // Before calling gl methods directly we submit the call list
-            this.submit();
-            if (!(program instanceof JebGLProgram)) 
-                throw new TypeError("getUniform: not a JebGLProgram");
-            try {
-                return this.JebApp.glGetUniform(program.id, location);
-            } catch (e) {
-                throw new Error(e);
+            if (program instanceof JebGLProgram && location instanceof JebGLUniformLocation) {
+                // Before calling gl methods directly we submit the call list
+                this.submit();
+                try {
+                    return this.JebApp.glGetUniform(program.id, location.id);
+                } catch (e) {
+                    throw new Error(e);
+                }
+            } else if (typeof(program) == "undefined" || typeof(location) == "undefined" || program == null || location == null) {
+                // Don't throw, cf. WebGL conformance test
+                return null;
+            } else {
+                throw new TypeError("getUniform: invalid argument");
             }
         },
 
         getUniformLocation: function(program, name) {
-            // Before calling gl methods directly we submit the call list
-            this.submit();
-            if (!(program instanceof JebGLProgram)) 
-                throw new TypeError("getUniformLocation: not a JebGLProgram");
-            try {
-                return this.JebApp.glGetUniformLocation(program.id, name);
-            } catch (e) {
-                throw new Error(e);
+            if (program instanceof JebGLProgram) {
+                // Before calling gl methods directly we submit the call list
+                this.submit();
+                try {
+                    return new JebGLUniformLocation(this.JebApp.glGetUniformLocation(program.id, name));
+                } catch (e) {
+                    throw new Error(e);
+                }
+            } else if (typeof(program) == "undefined" || program == null) {
+                // Don't throw, cf. WebGL conformance test
+                return null;
+            } else {
+                throw new TypeError("getUniformLocation: invalid argument");
             }
         },
 
@@ -1575,9 +1915,14 @@
         },
 
         linkProgram: function(program) {
-            if (!(program instanceof JebGLProgram)) 
-                throw new TypeError("linkProgram: not a JebGLProgram");
-            this.addCall(this.CALL_LINK_PROGRAM, [program.id], []);
+            if (program instanceof JebGLProgram) {
+                this.addCall(this.CALL_LINK_PROGRAM, [program.id], []);
+            } else if (typeof(program) == "undefined" || program == null) {
+                // Don't throw, cf. WebGL conformance test
+                return;
+            } else {
+                throw new TypeError("linkProgram: invalid argument");
+            }
         },
 
         pixelStorei: function(pname, param) {
@@ -1618,14 +1963,19 @@
         },
 
         shaderSource: function(shader, source) {
-            // Before calling gl methods directly we submit the call list
-            this.submit();
-            if (!(shader instanceof JebGLShader)) 
-                throw new TypeError("shaderSource: not a JebGLShader");
-            try {
-                this.JebApp.glShaderSource(shader.id, source);
-            } catch (e) {
-                throw new Error(e);
+            if (shader instanceof JebGLShader) {
+                // Before calling gl methods directly we submit the call list
+                this.submit();
+                try {
+                    this.JebApp.glShaderSource(shader.id, source);
+                } catch (e) {
+                    throw new Error(e);
+                }
+            } else if (typeof(shader) == "undefined" || shader == null) {
+                // Don't throw, cf. WebGL conformance test
+                return;
+            } else {
+                throw new TypeError("shaderSource: invalid argument");
             }
         },
         
@@ -1687,110 +2037,244 @@
         },
 
         uniform1f: function(location, x) {
-            this.addCall(this.CALL_UNIFORM1F, [location], [x]);
+            if (location instanceof JebGLUniformLocation) {
+                this.addCall(this.CALL_UNIFORM1F, [location.id], [x]);
+            } else if (typeof(location) == "undefined" || location == null) {
+                // Don't throw, cf. WebGL conformance test
+                return
+            } else {
+                throw new Error("uniform1f: invalid argument");
+            }
         },
 
         uniform1fv: function(location, value) {
-            this.addCall(this.CALL_UNIFORM1F, [location], [value[0]]);
+            if (location instanceof JebGLUniformLocation) {
+                this.addCall(this.CALL_UNIFORM2F, [location.id], [value[0]]);
+            } else if (typeof(location) == "undefined" || location == null) {
+                // Don't throw, cf. WebGL conformance test
+                return
+            } else {
+                throw new Error("uniform1fv: invalid argument");
+            }
         },
 
         uniform1i: function(location, x) {
-            if (x === true) {
-                this.addCall(this.CALL_UNIFORM1I, [location, this.TRUE], []);
-            } else if (x === false) {
-                this.addCall(this.CALL_UNIFORM1I, [location, this.FALSE], []);
+            if (location instanceof JebGLUniformLocation) {
+                if (x === true) {
+                    this.addCall(this.CALL_UNIFORM1I, [location.id, this.TRUE], []);
+                } else if (x === false) {
+                    this.addCall(this.CALL_UNIFORM1I, [location.id, this.FALSE], []);
+                } else {
+                    this.addCall(this.CALL_UNIFORM1I, [location.id, x], []);
+                }
+            } else if (typeof(location) == "undefined" || location == null) {
+                // Don't throw, cf. WebGL conformance test
+                return
             } else {
-                this.addCall(this.CALL_UNIFORM1I, [location, x], []);
+                throw new Error("uniform1i: invalid argument");
             }
         },
 
         uniform1iv: function(location, value) {
-            this.addCall(this.CALL_UNIFORM1I, [location, value[0]], []);
+            if (location instanceof JebGLUniformLocation) {
+                this.addCall(this.CALL_UNIFORM1I, [location.id, value[0]], []);
+            } else if (typeof(location) == "undefined" || location == null) {
+                // Don't throw, cf. WebGL conformance test
+                return
+            } else {
+                throw new Error("uniform1iv: invalid argument");
+            }
         },
 
         uniform2f: function(location, x, y) {
-            this.addCall(this.CALL_UNIFORM2F, [location], [x, y]);
+            if (location instanceof JebGLUniformLocation) {
+                this.addCall(this.CALL_UNIFORM2F, [location.id], [x, y]);
+            } else if (typeof(location) == "undefined" || location == null) {
+                // Don't throw, cf. WebGL conformance test
+                return
+            } else {
+                throw new Error("uniform2f: invalid argument");
+            }
         },
 
         uniform2fv: function(location, value) {
-            this.addCall(this.CALL_UNIFORM2F, [location], [value[0], value[1]]);
+            if (location instanceof JebGLUniformLocation) {
+                this.addCall(this.CALL_UNIFORM2F, [location.id], [value[0], value[1]]);
+            } else if (typeof(location) == "undefined" || location == null) {
+                // Don't throw, cf. WebGL conformance test
+                return
+            } else {
+                throw new Error("uniform2fv: invalid argument");
+            }
         },
 
         uniform2i: function(location, x, y) {
-            this.addCall(this.CALL_UNIFORM2I, [location, x, y], []);
+            if (location instanceof JebGLUniformLocation) {
+                this.addCall(this.CALL_UNIFORM2I, [location.id, x, y], []);
+            } else if (typeof(location) == "undefined" || location == null) {
+                // Don't throw, cf. WebGL conformance test
+                return
+            } else {
+                throw new Error("uniform2i: invalid argument");
+            }
         },
 
         uniform2iv: function(location, value) {
-            this.addCall(this.CALL_UNIFORM2I, [location, value[0], value[1]], []);
+            if (location instanceof JebGLUniformLocation) {
+                this.addCall(this.CALL_UNIFORM2I, [location.id, value[0], value[1]], []);
+            } else if (typeof(location) == "undefined" || location == null) {
+                // Don't throw, cf. WebGL conformance test
+                return
+            } else {
+                throw new Error("uniform2iv: invalid argument");
+            }
         },
 
         uniform3f: function(location, x, y, z) {
-            this.addCall(this.CALL_UNIFORM3F, [location], [x, y, z]);
+            if (location instanceof JebGLUniformLocation) {
+                this.addCall(this.CALL_UNIFORM3F, [location.id], [x, y, z]);
+            } else if (typeof(location) == "undefined" || location == null) {
+                // Don't throw, cf. WebGL conformance test
+                return
+            } else {
+                throw new Error("uniform3f: invalid argument");
+            }
         },
 
         uniform3fv: function(location, value) {
-            this.addCall(this.CALL_UNIFORM3F, [location], 
-                         [value[0], value[1], value[2]]);
+            if (location instanceof JebGLUniformLocation) {
+                this.addCall(this.CALL_UNIFORM3F, [location.id], [value[0], value[1], value[2]]);
+            } else if (typeof(location) == "undefined" || location == null) {
+                // Don't throw, cf. WebGL conformance test
+                return
+            } else {
+                throw new Error("uniform3fv: invalid argument");
+            }
         },
 
         uniform3i: function(location, x, y, z) {
-            this.addCall(this.CALL_UNIFORM3I, [location, x, y, z], []);
+            if (location instanceof JebGLUniformLocation) {
+                this.addCall(this.CALL_UNIFORM3I, [location.id, x, y, z], []);
+            } else if (typeof(location) == "undefined" || location == null) {
+                // Don't throw, cf. WebGL conformance test
+                return
+            } else {
+                throw new Error("uniform3i: invalid argument");
+            }
         },
 
         uniform3iv: function(location, value) {
-            this.addCall(this.CALL_UNIFORM3I, [location, value[0], 
-                                               value[1], value[2]], []);
+            if (location instanceof JebGLUniformLocation) {
+                this.addCall(this.CALL_UNIFORM3I, [location.id, value[0], value[1], value[2]], []);
+            } else if (typeof(location) == "undefined" || location == null) {
+                // Don't throw, cf. WebGL conformance test
+                return
+            } else {
+                throw new Error("uniform3iv: invalid argument");
+            }
         },
 
         uniform4f: function(location, x, y, z, w) {
-            this.addCall(this.CALL_UNIFORM4F, [location], [x, y, z, w]);
+            if (location instanceof JebGLUniformLocation) {
+                this.addCall(this.CALL_UNIFORM4F, [location.id], [x, y, z, w]);
+            } else if (typeof(location) == "undefined" || location == null) {
+                // Don't throw, cf. WebGL conformance test
+                return
+            } else {
+                throw new Error("uniform4f: invalid argument");
+            }
         },
 
         uniform4fv: function(location, value) {
-            this.addCall(this.CALL_UNIFORM4F, [location], 
-                         [value[0], value[1], value[2], value[3]]);
+            if (location instanceof JebGLUniformLocation) {
+                this.addCall(this.CALL_UNIFORM4F, [location.id], [value[0], value[1], value[2], value[3]]);
+            } else if (typeof(location) == "undefined" || location == null) {
+                // Don't throw, cf. WebGL conformance test
+                return
+            } else {
+                throw new Error("uniform4fv: invalid argument");
+            }
         },
 
         uniform4i: function(location, x, y, z, w) {
-            this.addCall(this.CALL_UNIFORM4I, [location, x, y, z, w], []);
+            if (location instanceof JebGLUniformLocation) {
+                this.addCall(this.CALL_UNIFORM4I, [location.id, x, y, z, w], []);
+            } else if (typeof(location) == "undefined" || location == null) {
+                // Don't throw, cf. WebGL conformance test
+                return
+            } else {
+                throw new Error("uniform4i: invalid argument");
+            }
         },
 
         uniform4iv: function(location, value) {
-            this.addCall(this.CALL_UNIFORM4I, [location, value[0], value[1], 
-                                               value[2], value[3]], []);
+            if (location instanceof JebGLUniformLocation) {
+                this.addCall(this.CALL_UNIFORM4I, [location.id, value[0], value[1], value[2], value[3]], []);
+            } else if (typeof(location) == "undefined" || location == null) {
+                // Don't throw, cf. WebGL conformance test
+                return
+            } else {
+                throw new Error("uniform4iv: invalid argument");
+            }
         },
 
         uniformMatrix2fv: function(location, transpose, value) {
-            var count = 1;
-            if (transpose) {
-                this.addCall(this.CALL_UNIFORM_MATRIX2FV, [location, count, 1], [value[0], value[1], value[2], value[3]]);
+            if (location instanceof JebGLUniformLocation) {
+                var count = 1;
+                if (transpose) {
+                    this.addCall(this.CALL_UNIFORM_MATRIX2FV, [location.id, count, 1], [value[0], value[1], value[2], value[3]]);
+                } else {
+                    this.addCall(this.CALL_UNIFORM_MATRIX2FV, [location.id, count, 0], [value[0], value[1], value[2], value[3]]);
+                }
+            } else if (typeof(location) == "undefined" || location == null) {
+                // Don't throw, cf. WebGL conformance test
+                return
             } else {
-                this.addCall(this.CALL_UNIFORM_MATRIX2FV, [location, count, 0], [value[0], value[1], value[2], value[3]]);
+                throw new Error("uniformMatrix2fv: invalid argument");
             }
         },
 
         uniformMatrix3fv: function(location, transpose, value) {
-            var count = 1;
-            if (transpose) {
-                this.addCall(this.CALL_UNIFORM_MATRIX3FV, [location, count, 1], [value[0], value[1], value[2], value[3], value[4], value[5], value[6], value[7], value[8]]);
+            if (location instanceof JebGLUniformLocation) {
+                var count = 1;
+                if (transpose) {
+                    this.addCall(this.CALL_UNIFORM_MATRIX3FV, [location.id, count, 1], [value[0], value[1], value[2], value[3], value[4], value[5], value[6], value[7], value[8]]);
+                } else {
+                    this.addCall(this.CALL_UNIFORM_MATRIX3FV, [location.id, count, 0], [value[0], value[1], value[2], value[3], value[4], value[5], value[6], value[7], value[8]]);
+                }
+            } else if (typeof(location) == "undefined" || location == null) {
+                // Don't throw, cf. WebGL conformance test
+                return
             } else {
-                this.addCall(this.CALL_UNIFORM_MATRIX3FV, [location, count, 0], [value[0], value[1], value[2], value[3], value[4], value[5], value[6], value[7], value[8]]);
+                throw new Error("uniformMatrix3fv: invalid argument");
             }
         },
 
         uniformMatrix4fv: function(location, transpose, value) {
-            var count = 1;
-            if (transpose) {
-                this.addCall(this.CALL_UNIFORM_MATRIX4FV, [location, count, 1], [value[0], value[1], value[2], value[3], value[4], value[5], value[6], value[7], value[8], value[9], value[10], value[11], value[12], value[13], value[14], value[15]]);
+            if (location instanceof JebGLUniformLocation) {
+                var count = 1;
+                if (transpose) {
+                    this.addCall(this.CALL_UNIFORM_MATRIX4FV, [location.id, count, 1], [value[0], value[1], value[2], value[3], value[4], value[5], value[6], value[7], value[8], value[9], value[10], value[11], value[12], value[13], value[14], value[15]]);
+                } else {
+                    this.addCall(this.CALL_UNIFORM_MATRIX4FV, [location.id, count, 0], [value[0], value[1], value[2], value[3], value[4], value[5], value[6], value[7], value[8], value[9], value[10], value[11], value[12], value[13], value[14], value[15]]);
+                }
+            } else if (typeof(location) == "undefined" || location == null) {
+                // Don't throw, cf. WebGL conformance test
+                return
             } else {
-                this.addCall(this.CALL_UNIFORM_MATRIX4FV, [location, count, 0], [value[0], value[1], value[2], value[3], value[4], value[5], value[6], value[7], value[8], value[9], value[10], value[11], value[12], value[13], value[14], value[15]]);
+                throw new Error("uniformMatrix4fv: invalid argument");
             }
         },
 
         useProgram: function(program) {
-            if (!(program instanceof JebGLProgram)) 
-                throw new TypeError("useProgram: not a JebGLProgram");
-            this.addCall(this.CALL_USE_PROGRAM, [program.id], []);
+            if (program instanceof JebGLProgram) {
+                this.addCall(this.CALL_USE_PROGRAM, [program.id], []);
+            } else if (typeof(program) == "undefined" || program == null) {
+                // Don't throw, cf. WebGL conformance test
+                return;
+            } else {
+                throw new TypeError("useProgram: invalid argument");
+            }
         },
 
         validateProgram: function(program) {
@@ -1868,7 +2352,7 @@
         }
 
         // Add getContext function to applet
-        var gl = new JebGLCanvas(applet);
+        var gl = new JebGLRenderingContext(applet);
         gl.clearColor(0,0,0,0); // Clear the canvas for noise
         gl.clear(gl.COLOR_BUFFER_BIT);
         container.getContext = function () { return gl; };
@@ -2094,6 +2578,7 @@
 
     window.jebgl = function(canvas, callback, settings) {
         // Calls callback when applet is fully ready
+        if (typeof(canvas) == "undefined") throw new Error("Canvas unspecified.");
 
         // Default settings
         var jebglJar = "http://jebgl.googlecode.com/files/jebgl-0.1.jar",
@@ -2129,16 +2614,16 @@
         var container = document.createElement("div");
         
         // Emulate width and height attributes
-        container.width = canvas.width;
-        container.height = canvas.height;
+        container.width = canvas.width || 300;
+        container.height = canvas.height || 150;
 
         // Copy inline CSS
         if (canvas.style.cssText)
             container.style.cssText = canvas.style.cssText;
 
         // Make sure size is set correctly
-        container.style.width = canvas.width + 'px';
-        container.style.height = canvas.height + 'px';
+        container.style.width = container.width + 'px';
+        container.style.height = container.height + 'px';
 
         // Copy attributes
         for (i = 0; i < canvas.attributes.length; i++) {

@@ -239,6 +239,7 @@ public class JebGL extends Applet {
     public static final int GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS = GL2.GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS;
     public static final int GL_MAX_TEXTURE_IMAGE_UNITS = GL2.GL_MAX_TEXTURE_IMAGE_UNITS;
     public static final int GL_MAX_FRAGMENT_UNIFORM_VECTORS = GL2.GL_MAX_FRAGMENT_UNIFORM_VECTORS;
+    public static final int GL_SHADER_COMPILER = GL2.GL_SHADER_COMPILER;
     public static final int GL_SHADER_TYPE = GL2.GL_SHADER_TYPE;
     public static final int GL_DELETE_STATUS = GL2.GL_DELETE_STATUS;
     public static final int GL_LINK_STATUS = GL2.GL_LINK_STATUS;
@@ -385,6 +386,10 @@ public class JebGL extends Applet {
     public static final int GL_RENDERBUFFER_DEPTH_SIZE = GL2.GL_RENDERBUFFER_DEPTH_SIZE;
     public static final int GL_RENDERBUFFER_STENCIL_SIZE = GL2.GL_RENDERBUFFER_STENCIL_SIZE;
     public static final int GL_NONE = GL2.GL_NONE;
+    public static final int GL_FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE = GL2.GL_FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE;
+    public static final int GL_FRAMEBUFFER_ATTACHMENT_OBJECT_NAME = GL2.GL_FRAMEBUFFER_ATTACHMENT_OBJECT_NAME;
+    public static final int GL_FRAMEBUFFER_ATTACHMENT_TEXTURE_LEVEL = GL2.GL_FRAMEBUFFER_ATTACHMENT_TEXTURE_LEVEL;
+    public static final int GL_FRAMEBUFFER_ATTACHMENT_TEXTURE_CUBE_MAP_FACE = GL2.GL_FRAMEBUFFER_ATTACHMENT_TEXTURE_CUBE_MAP_FACE;
     public static final int GL_FRAMEBUFFER_COMPLETE = GL2.GL_FRAMEBUFFER_COMPLETE;
     public static final int GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT = GL2.GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT;
     public static final int GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT = GL2.GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT;
@@ -394,6 +399,10 @@ public class JebGL extends Applet {
     public static final int GL_RENDERBUFFER_BINDING = GL2.GL_RENDERBUFFER_BINDING;
     public static final int GL_MAX_RENDERBUFFER_SIZE = GL2.GL_MAX_RENDERBUFFER_SIZE;
     public static final int GL_INVALID_FRAMEBUFFER_OPERATION = GL2.GL_INVALID_FRAMEBUFFER_OPERATION;
+    public static final int GL_COLOR_ATTACHMENT0 = GL2.GL_COLOR_ATTACHMENT0;
+    public static final int GL_DEPTH_ATTACHMENT = GL2.GL_DEPTH_ATTACHMENT;
+    public static final int GL_STENCIL_ATTACHMENT = GL2.GL_STENCIL_ATTACHMENT;
+    public static final int GL_DEPTH_STENCIL_ATTACHMENT = GL2.GL_DEPTH_STENCIL_ATTACHMENT;
     /* WebGL-specific enums */
     public static final int GL_UNPACK_FLIP_Y_WEBGL = 37440;
     public static final int GL_UNPACK_PREMULTIPLY_ALPHA_WEBGL = 37441;
@@ -1242,14 +1251,18 @@ public class JebGL extends Applet {
         
         public void run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
-            ByteBuffer bufdata = ByteBuffer.allocateDirect(4*(int)size);
-            bufdata.order(ByteOrder.nativeOrder());
-            FloatBuffer fdata = bufdata.asFloatBuffer();
-            for (int i = 0; i < size; i++) {
-                fdata.put(data[i]);
+            if (data == null) {
+                gl.glBufferData(target, 4*size, null, usage);
+            } else {
+                ByteBuffer bufdata = ByteBuffer.allocateDirect(4*(int)size);
+                bufdata.order(ByteOrder.nativeOrder());
+                FloatBuffer fdata = bufdata.asFloatBuffer();
+                for (int i = 0; i < size; i++) {
+                    fdata.put(data[i]);
             }
-            fdata.position(0);
-            gl.glBufferData(target, 4*size, fdata, usage);
+                fdata.position(0);
+                gl.glBufferData(target, 4*size, fdata, usage);
+            }
         }
     }
 
@@ -1267,18 +1280,78 @@ public class JebGL extends Applet {
         
         public void run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
-            ByteBuffer bufdata = ByteBuffer.allocateDirect(2*(int)size);
-            bufdata.order(ByteOrder.nativeOrder());
-            ShortBuffer idata = bufdata.asShortBuffer();
-            for (int i = 0; i < size; i++) {
-                idata.put(data[i]);
+            if (data == null) {
+                gl.glBufferData(target, 2*size, null, usage);
+            } else {
+                ByteBuffer bufdata = ByteBuffer.allocateDirect(2*(int)size);
+                bufdata.order(ByteOrder.nativeOrder());
+                ShortBuffer idata = bufdata.asShortBuffer();
+                for (int i = 0; i < size; i++) {
+                    idata.put(data[i]);
+                }
+                idata.position(0);
+                gl.glBufferData(target, 2*size, idata, usage);
             }
-            idata.position(0);
-            gl.glBufferData(target, 2*size, idata, usage);
         }
     }
 
-    // FIXME: BufferSubData
+    public class BufferSubDataf implements GLRunnable {
+        private int target;
+        private long offset;
+        private long size;
+        private float[] data;
+        public BufferSubDataf(int target, long offset, long size, float[] data) {
+            this.target = target;
+            this.offset = offset;
+            this.size = size;
+            this.data = data;
+        }
+        
+        public void run(GLAutoDrawable drawable) {
+            GL2 gl = drawable.getGL().getGL2();
+            if (data == null) {
+                gl.glBufferSubData(target, offset, 4*size, null);
+            } else {
+                ByteBuffer bufdata = ByteBuffer.allocateDirect(4*(int)size);
+                bufdata.order(ByteOrder.nativeOrder());
+                FloatBuffer fdata = bufdata.asFloatBuffer();
+                for (int i = 0; i < size; i++) {
+                    fdata.put(data[i]);
+            }
+                fdata.position(0);
+                gl.glBufferSubData(target, offset, 4*size, fdata);
+            }
+        }
+    }
+
+    public class BufferSubDatai implements GLRunnable {
+        private int target;
+        private long offset;
+        private long size;
+        private short[] data;
+        public BufferSubDatai(int target, long offset, long size, short[] data) {
+            this.target = target;
+            this.offset = offset;
+            this.size = size;
+            this.data = data;
+        }
+        
+        public void run(GLAutoDrawable drawable) {
+            GL2 gl = drawable.getGL().getGL2();
+            if (data == null) {
+                gl.glBufferSubData(target, offset, 2*size, null);
+            } else {
+                ByteBuffer bufdata = ByteBuffer.allocateDirect(2*(int)size);
+                bufdata.order(ByteOrder.nativeOrder());
+                ShortBuffer idata = bufdata.asShortBuffer();
+                for (int i = 0; i < size; i++) {
+                    idata.put(data[i]);
+                }
+                idata.position(0);
+                gl.glBufferSubData(target, offset, 2*size, idata);
+            }
+        }
+    }
 
     public class CheckFramebufferStatus implements GLRunnable {
         private int target;
@@ -3031,9 +3104,36 @@ public class JebGL extends Applet {
     public void glBufferData(int target, long size, int usage) {
         // Requires upload first
         if (target == this.GL_ARRAY_BUFFER) {
-            canvas.invoke(false, new BufferDataf(target, size, uploadf, usage));
+            if (uploadf == null) {
+                canvas.invoke(false, new BufferDataf(target, size, null, usage));
+            } else {
+                canvas.invoke(false, new BufferDataf(target, size, uploadf, usage));
+            }
         } else if (target == this.GL_ELEMENT_ARRAY_BUFFER) {
-            canvas.invoke(false, new BufferDatai(target, size, uploadi, usage));
+            if (uploadi == null) {
+                canvas.invoke(false, new BufferDatai(target, size, null, usage));
+            } else {
+                canvas.invoke(false, new BufferDatai(target, size, uploadi, usage));
+            }
+        } else {
+            System.err.println("Error in target");
+        }
+    }
+
+    public void glBufferSubData(int target, long offset, long size) {
+        // Requires upload first
+        if (target == this.GL_ARRAY_BUFFER) {
+            if (uploadf == null) {
+                canvas.invoke(false, new BufferSubDataf(target, offset, size, null));
+            } else {
+                canvas.invoke(false, new BufferSubDataf(target, offset, size, uploadf));
+            }
+        } else if (target == this.GL_ELEMENT_ARRAY_BUFFER) {
+            if (uploadi == null) {
+                canvas.invoke(false, new BufferSubDatai(target, offset, size, null));
+            } else {
+                canvas.invoke(false, new BufferSubDatai(target, offset, size, uploadi));
+            }
         } else {
             System.err.println("Error in target");
         }

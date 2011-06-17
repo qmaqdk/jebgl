@@ -1052,12 +1052,19 @@
         bufferData: function(target, data, usage) {
             // Make sure we've submitted eventual bindBuffer commands
             this.submit();
-            if (typeof(data) != "undefined" && data != null && typeof(data.length) != "undefined") {
+            if (typeof(data) == "undefined" || data == null) {
+                // Send it through.
+                try {
+                    this.JebApp.glBufferData(target, data, usage, 1, true);
+                } catch(e) {
+                    throw new Error(e);
+                }
+            } else if (data instanceof TypedArray) {
                 var size = data.length,
                     it = 0;
                 // IE6 fix - it counts one too many
                 if (isNaN(data[size-1])) size--;
-                if (target == this.ARRAY_BUFFER) {
+                if (data instanceof Float32Array || data instanceof Float64Array) {
                     try {
                         // Calling Java methods with arrays is sloooow, so we do this
                         this.JebApp.createUploadf(size);
@@ -1072,13 +1079,14 @@
                             this.JebApp.uploadSinglef(it, data[it]);
                             it++;
                         }
-                        this.JebApp.glBufferData(target, size, usage);
+                        this.JebApp.glBufferData(target, size, usage, data.BYTES_PER_ELEMENT, true);
                         this.JebApp.deleteUploadf();
                     } catch (e) {
-                        alert(e.message);
                         throw new Error(e);
                     }
-                } else if (target == this.ELEMENT_ARRAY_BUFFER) {
+                } else if (data instanceof Int8Array || data instanceof Uint8Array ||
+                          data instanceof Int16Array || data instanceof Uint16Array ||
+                          data instanceof Int32Array || data instanceof Uint32Array) {
                     try {
                         // Calling Java methods with arrays is sloooow, so we do this
                         this.JebApp.createUploadi(size);
@@ -1093,32 +1101,37 @@
                             this.JebApp.uploadSinglei(it, data[it]);
                             it++;
                         }
-                        this.JebApp.glBufferData(target, size, usage);
+                        this.JebApp.glBufferData(target, size, usage, data.BYTES_PER_ELEMENT, false);
                         this.JebApp.deleteUploadi();
                     } catch (e) {
                         throw new Error(e);
                     }
-                } else {
-                    throw new Error("Unknown target for bufferData");
                 }
+            } else if (data instanceof ArrayBuffer) {
+                //throw new Error("emulated ArrayBuffer has not content");
             } else {
-                try {
-                    this.JebApp.glBufferData(target, data, usage);
-                } catch(e) {
-                    throw new Error(e);
-                }
+                // data assumed to be a number. Buffer is initalized to zeros.
+                var zeros = new Int8Array(data);
+                this.bufferData(target, zeros, usage);
             }
         },
 
         bufferSubData: function(target, offset, data) {
             // Make sure we've submitted eventual bindBuffer commands
             this.submit();
-            if (typeof(data) != "undefined" && data != null && typeof(data.length) != "undefined") {
+            if (typeof(data) == "undefined" || data == null) {
+                // Send it through.
+                try {
+                    this.JebApp.glBufferSubData(target, offset, size, 1, true);
+                } catch(e) {
+                    throw new Error(e);
+                }
+            } else if (data instanceof TypedArray) {
                 var size = data.length,
                     it = 0;
                 // IE6 fix - it counts one too many
                 if (isNaN(data[size-1])) size--;
-                if (target == this.ARRAY_BUFFER) {
+                if (data instanceof Float32Array || data instanceof Float64Array) {
                     try {
                         // Calling Java methods with arrays is sloooow, so we do this
                         this.JebApp.createUploadf(size);
@@ -1133,13 +1146,14 @@
                             this.JebApp.uploadSinglef(it, data[it]);
                             it++;
                         }
-                        this.JebApp.glBufferSubData(target, offset, size);
+                        this.JebApp.glBufferSubData(target, offset, size, data.BYTES_PER_ELEMENT, true);
                         this.JebApp.deleteUploadf();
                     } catch (e) {
-                        alert(e.message);
                         throw new Error(e);
                     }
-                } else if (target == this.ELEMENT_ARRAY_BUFFER) {
+                } else if (data instanceof Int8Array || data instanceof Uint8Array ||
+                          data instanceof Int16Array || data instanceof Uint16Array ||
+                          data instanceof Int32Array || data instanceof Uint32Array) {
                     try {
                         // Calling Java methods with arrays is sloooow, so we do this
                         this.JebApp.createUploadi(size);
@@ -1154,7 +1168,7 @@
                             this.JebApp.uploadSinglei(it, data[it]);
                             it++;
                         }
-                        this.JebApp.glBufferSubData(target, offset, size);
+                        this.JebApp.glBufferSubData(target, offset, size, data.BYTES_PER_ELEMENT, false);
                         this.JebApp.deleteUploadi();
                     } catch (e) {
                         throw new Error(e);
@@ -1162,12 +1176,10 @@
                 } else {
                     throw new Error("Unknown target for bufferSubData");
                 }
+            } else if (data instanceof ArrayBuffer) {
+                //throw new Error("emulated ArrayBuffer has not content");
             } else {
-                try {
-                    this.JebApp.glBufferSubData(target, offset, data);
-                } catch(e) {
-                    throw new Error(e);
-                }
+                throw new Error("invalid arguments");
             }
         },
 

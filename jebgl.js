@@ -1113,7 +1113,7 @@
                 //throw new Error("emulated ArrayBuffer has not content");
             } else {
                 // data assumed to be a number. Buffer is initalized to zeros.
-                var zeros = new Int8Array(data);
+                var zeros = new Uint8Array(data);
                 this.bufferData(target, zeros, usage);
             }
         },
@@ -2530,8 +2530,7 @@
                         }
                         // Mouse events are triggered on the DOM element
                         if (typeof(navigator.userAgent) != "undefined" && webkitCheck.test(navigator.userAgent) && !chromeCheck.test(navigator.userAgent)) {
-                            // Safari fires most event already, so only fire move 
-                            if (evt.type == "mousemove") element.dispatchEvent(evt);
+                            // Safari fires events correctly so do nothing 
                         } else {
                             element.dispatchEvent(evt);
                         }

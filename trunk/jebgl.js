@@ -1199,7 +1199,9 @@
         },
         
         clear: function(mask) {
+            // FIXME: temporary sync point
             this.addCall(this.CALL_CLEAR, [mask], []);
+            this.submit();
         },
         
         clearColor: function(red, green, blue, alpha) {

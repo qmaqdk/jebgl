@@ -1059,7 +1059,9 @@
                 } catch(e) {
                     throw new Error(e);
                 }
-            } else if (data instanceof TypedArray) {
+            } else if (data instanceof Float32Array || data instanceof Float64Array || data instanceof Int8Array || data instanceof Uint8Array ||
+                          data instanceof Int16Array || data instanceof Uint16Array ||
+                          data instanceof Int32Array || data instanceof Uint32Array) {
                 var size = data.length,
                     it = 0;
                 // IE6 fix - it counts one too many
@@ -1126,7 +1128,9 @@
                 } catch(e) {
                     throw new Error(e);
                 }
-            } else if (data instanceof TypedArray) {
+            } else if (data instanceof Float32Array || data instanceof Float64Array || data instanceof Int8Array || data instanceof Uint8Array ||
+                          data instanceof Int16Array || data instanceof Uint16Array ||
+                          data instanceof Int32Array || data instanceof Uint32Array) {
                 var size = data.length,
                     it = 0;
                 // IE6 fix - it counts one too many

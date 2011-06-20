@@ -550,7 +550,7 @@
             window.msRequestAnimationFrame ||
             function(callback, element) {
                 // Set new timeout only if we've finished the previous one
-                if(typeof(window.reqAnimFrameTimeout) == "undefined") window.reqAnimFrameTimeout = window.setTimeout(function() { window.reqAnimFrameTimeout = undefined; callback(); }, 1000/70);
+                if(typeof(window.reqAnimFrameTimeout) == "undefined") window.reqAnimFrameTimeout = window.setTimeout(function() { window.reqAnimFrameTimeout = undefined; callback(); }, 1000/100);
             };
     })();
   </script>

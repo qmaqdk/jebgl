@@ -1297,14 +1297,13 @@ public class JebGL extends Applet {
             if (data == null) {
                 gl.glBufferData(target, bytesPerElement*size, null, usage);
             } else {
-                ByteBuffer bufdata = ByteBuffer.allocateDirect(bytesPerElement*(int)size);
-                bufdata.order(ByteOrder.nativeOrder());
-                CharBuffer i8data = bufdata.asCharBuffer();
-                ShortBuffer i16data = bufdata.asShortBuffer();
-                IntBuffer i32data = bufdata.asIntBuffer();
+                ByteBuffer i8data = ByteBuffer.allocateDirect(bytesPerElement*(int)size);
+                i8data.order(ByteOrder.nativeOrder());
+                ShortBuffer i16data = i8data.asShortBuffer();
+                IntBuffer i32data = i8data.asIntBuffer();
                 for (int i = 0; i < size; i++) {
                     if (bytesPerElement == 1) {
-                        i8data.put((char) data[i]);
+                        i8data.put((byte) data[i]);
                     } else if (bytesPerElement == 2) {
                         i16data.put((short) data[i]);
                     } else if (bytesPerElement == 4) {
@@ -1385,14 +1384,13 @@ public class JebGL extends Applet {
             if (data == null) {
                 gl.glBufferSubData(target, offset, bytesPerElement*size, null);
             } else {
-                ByteBuffer bufdata = ByteBuffer.allocateDirect(bytesPerElement*(int)size);
-                bufdata.order(ByteOrder.nativeOrder());
-                CharBuffer i8data = bufdata.asCharBuffer();
-                ShortBuffer i16data = bufdata.asShortBuffer();
-                IntBuffer i32data = bufdata.asIntBuffer();
+                ByteBuffer i8data = ByteBuffer.allocateDirect(bytesPerElement*(int)size);
+                i8data.order(ByteOrder.nativeOrder());
+                ShortBuffer i16data = i8data.asShortBuffer();
+                IntBuffer i32data = i8data.asIntBuffer();
                 for (int i = 0; i < size; i++) {
                     if (bytesPerElement == 1) {
-                        i8data.put((char) data[i]);
+                        i8data.put((byte) data[i]);
                     } else if (bytesPerElement == 2) {
                         i16data.put((short) data[i]);
                     } else if (bytesPerElement == 4) {

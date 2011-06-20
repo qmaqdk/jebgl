@@ -4,17 +4,12 @@
     <meta charset="utf-8" />
     <title>JebGL test</title>
   <script type="text/javascript" src="../jebgl.js"></script>
-  <script id="shader-vs" type="x-shader/x-vertex">
-    attribute vec2 pos;
-
-    void main(void) {
-        gl_Position = vec4(pos.x, pos.y, 0.0, 1.0);
-    }
-  </script>
   <script>
     var vSource = [
-      "attribute vec2 pos;",
+      "attribute vec3 pos;",
+      "varying float time;",
       "void main(void) {",
+      "time = pos.z;",
       "gl_Position = vec4(pos.x, pos.y, 0.0, 1.0);",
       "}"
       ].join("\n");
@@ -23,12 +18,10 @@
       "#ifdef GL_ES",
       "precision highp float;",
       "#endif",
-      "uniform float time;",
+      "varying float time;",
       "void main(void)",
       "{",
-      "float cox = sin(cos(0.1*time) + 0.1*gl_FragCoord.x);",
-      "float coy = sin(sin(0.1*time) + 0.1*gl_FragCoord.y);",
-      "float co = cox*coy;",
+      "float co = cos(0.02*dot(gl_FragCoord,gl_FragCoord) + 2.0*3.14159265*time);",
       "if (co >= 0.0) {",
       "gl_FragColor = vec4(co, 0.0, 0.0, 1.0 );",
       "} else {",
@@ -42,7 +35,8 @@
         buf,
         pa, 
         tu,
-        time = 0;
+        time = 0,
+        iter = 100;
 
     function initShaders() {
        prog = gl.createProgram();
@@ -78,31 +72,40 @@
     }
 
     function initBuffer() {
-       var vertices = new Float32Array([ -1., -1.,   
-                                          1., -1.,    
-                                          -1.,  1.,     
-                                          1., -1.,    
-                                          1.,  1.,    
-                                          -1.,  1.]);
+       var vertices = [];
+       for (var i=0; i<iter; i++) {
+           vertices = vertices.concat([-1, -1, i/iter,
+                                        1, -1, i/iter,
+                                       -1,  1, i/iter,
+                                        1, -1, i/iter,
+                                        1,  1, i/iter,
+                                       -1,  1, i/iter]);
+       }
+
        buf = gl.createBuffer();
        gl.bindBuffer(gl.ARRAY_BUFFER, buf);
-       gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
+       gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+
+       var indices = [];
+       for (var i=0; i<iter; i++) {
+           indices = indices.concat([ 0 + 6*i, 1 + 6*i, 2 + 6*i,
+                                      3 + 6*i, 4 + 6*i, 5 + 6*i]);
+       }
+
+       ibuf = gl.createBuffer();
+       gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ibuf);
+       gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
     }
 
     function draw() {
         gl.clear(gl.COLOR_BUFFER_BIT);
-        gl.bindBuffer(gl.ARRAY_BUFFER, buf);
-        gl.uniform1f(tu, time);
-        gl.vertexAttribPointer(pa, 2, gl.FLOAT, false, 0, 0);
-        gl.enableVertexAttribArray(pa);
-        gl.drawArrays(gl.TRIANGLES, 0, 6);
-        gl.disableVertexAttribArray(pa);
+        gl.drawElements(gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, Uint16Array.BYTES_PER_ELEMENT*6*(time % iter));
     }
 
     function tick() {
         draw()
-        time++;
-        setTimeout(tick, 10);
+        time+=1;
+        setTimeout(tick, 1000/60);
     }
 
     function run() {
@@ -114,8 +117,11 @@
         
         gl.viewport(0, 0, canvas.width, canvas.height);
         gl.clearColor(0.0, 0.0, 0.0, 0.0);
-        pl = gl.getAttribLocation(prog, "pos");
-        tu = gl.getUniformLocation(prog, "time");
+        pa = gl.getAttribLocation(prog, "pos");
+        gl.enableVertexAttribArray(pa);
+        gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+        gl.vertexAttribPointer(pa, 3, gl.FLOAT, false, 0, 0);
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ibuf);
 
         tick();
     }
@@ -130,6 +136,6 @@
   </script>
   </head>
   <body>
-  <canvas id="canvas" width=300 height=300></canvas>
+  <canvas id="canvas" width=512 height=512></canvas>
   </body>
 </html>

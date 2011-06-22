@@ -57,17 +57,14 @@ public class JebGL extends Applet {
     private GLAnimatorControl animator;
     private float[] uploadf;
     private int[] uploadi;
-    private int unpack_flip_y_webgl;
+
+    // WebGL specific settings
+    private int unpack_flip_y_webgl = this.GL_FALSE;
+    private int unpack_premultiply_alpha_webgl = this.GL_FALSE;
+    private int unpack_colorspace_conversion_webgl = this.GL_BROWSER_DEFAULT_WEBGL;
 
     public GLCanvas canvas;
     public boolean ready = false;
-
-    public static final int maxCalls = 50;
-    public static final int maxInts = 100;
-    public static final int maxFloats = 100;
-    private int[] calls;
-    private int[] ints;
-    private float[] floats;
 
     private MediaTracker mt; // MediaTracker
 
@@ -648,11 +645,6 @@ public class JebGL extends Applet {
         canvas.setSize(getSize());
         canvas.setAutoSwapBufferMode(true);
 
-        // Allocate arrays for call method
-        calls = new int[this.maxCalls];
-        ints = new int[this.maxInts];
-        floats = new float[this.maxFloats];
-
         // Create a media tracker
         mt = new MediaTracker(this);
         
@@ -686,117 +678,49 @@ public class JebGL extends Applet {
     }
 
     // Method used in JavaScript to call a number of gl commands simultaneously
-    public void call(int c0, int c1, int c2, int c3, int c4,
-                     int c5, int c6, int c7, int c8, int c9,
-                     int c10, int c11, int c12, int c13, int c14,
-                     int c15, int c16, int c17, int c18, int c19,
-                     int c20, int c21, int c22, int c23, int c24,
-                     int c25, int c26, int c27, int c28, int c29,
-                     int c30, int c31, int c32, int c33, int c34,
-                     int c35, int c36, int c37, int c38, int c39,
-                     int c40, int c41, int c42, int c43, int c44,
-                     int c45, int c46, int c47, int c48, int c49,
-                     int i0, int i1, int i2, int i3, int i4,
-                     int i5, int i6, int i7, int i8, int i9,
-                     int i10, int i11, int i12, int i13, int i14,
-                     int i15, int i16, int i17, int i18, int i19,
-                     int i20, int i21, int i22, int i23, int i24,
-                     int i25, int i26, int i27, int i28, int i29,
-                     int i30, int i31, int i32, int i33, int i34,
-                     int i35, int i36, int i37, int i38, int i39,
-                     int i40, int i41, int i42, int i43, int i44,
-                     int i45, int i46, int i47, int i48, int i49,
-                     int i50, int i51, int i52, int i53, int i54,
-                     int i55, int i56, int i57, int i58, int i59,
-                     int i60, int i61, int i62, int i63, int i64,
-                     int i65, int i66, int i67, int i68, int i69,
-                     int i70, int i71, int i72, int i73, int i74,
-                     int i75, int i76, int i77, int i78, int i79,
-                     int i80, int i81, int i82, int i83, int i84,
-                     int i85, int i86, int i87, int i88, int i89,
-                     int i90, int i91, int i92, int i93, int i94,
-                     int i95, int i96, int i97, int i98, int i99,
-                     float f0, float f1, float f2, float f3, float f4,
-                     float f5, float f6, float f7, float f8, float f9,
-                     float f10, float f11, float f12, float f13, float f14,
-                     float f15, float f16, float f17, float f18, float f19,
-                     float f20, float f21, float f22, float f23, float f24,
-                     float f25, float f26, float f27, float f28, float f29,
-                     float f30, float f31, float f32, float f33, float f34,
-                     float f35, float f36, float f37, float f38, float f39,
-                     float f40, float f41, float f42, float f43, float f44,
-                     float f45, float f46, float f47, float f48, float f49,
-                     float f50, float f51, float f52, float f53, float f54,
-                     float f55, float f56, float f57, float f58, float f59,
-                     float f60, float f61, float f62, float f63, float f64,
-                     float f65, float f66, float f67, float f68, float f69,
-                     float f70, float f71, float f72, float f73, float f74,
-                     float f75, float f76, float f77, float f78, float f79,
-                     float f80, float f81, float f82, float f83, float f84,
-                     float f85, float f86, float f87, float f88, float f89,
-                     float f90, float f91, float f92, float f93, float f94,
-                     float f95, float f96, float f97, float f98, float f99) {
-        // Collect all the data in arrays
-        calls[0] = c0; calls[1] = c1; calls[2] = c2; calls[3] = c3; calls[4] = c4; 
-        calls[5] = c5; calls[6] = c6; calls[7] = c7; calls[8] = c8; calls[9] = c9; 
-        calls[10] = c10; calls[11] = c11; calls[12] = c12; calls[13] = c13; calls[14] = c14; 
-        calls[15] = c15; calls[16] = c16; calls[17] = c17; calls[18] = c18; calls[19] = c19; 
-        calls[20] = c20; calls[21] = c21; calls[22] = c22; calls[23] = c23; calls[24] = c24; 
-        calls[25] = c25; calls[26] = c26; calls[27] = c27; calls[28] = c28; calls[29] = c29; 
-        calls[30] = c30; calls[31] = c31; calls[32] = c32; calls[33] = c33; calls[34] = c34; 
-        calls[35] = c35; calls[36] = c36; calls[37] = c37; calls[38] = c38; calls[39] = c39; 
-        calls[40] = c40; calls[41] = c41; calls[42] = c42; calls[43] = c43; calls[44] = c44; 
-        calls[45] = c45; calls[46] = c46; calls[47] = c47; calls[48] = c48; calls[49] = c49; 
+    public byte[] call(String c, String i, String f) {
+        if (c.length() > 0) {
+            // Collect all the data in arrays
+            String[] cs = c.split(",");
+            int[] calls = new int[cs.length];
+            for (int j=0; j<cs.length; j++) {
+                calls[j] = (new Integer(cs[j])).intValue();
+            }
+            
+            int[] ints;
+            if (i.length() > 0) {
+                String[] is = i.split(",");
+                ints = new int[is.length];
+                for (int j=0; j<is.length; j++) {
+                    ints[j] = (new Integer(is[j])).intValue();
+                }
+            } else {
+                ints = new int[0];
+            }
 
-        ints[0] = i0; ints[1] = i1; ints[2] = i2; ints[3] = i3; ints[4] = i4; 
-        ints[5] = i5; ints[6] = i6; ints[7] = i7; ints[8] = i8; ints[9] = i9; 
-        ints[10] = i10; ints[11] = i11; ints[12] = i12; ints[13] = i13; ints[14] = i14; 
-        ints[15] = i15; ints[16] = i16; ints[17] = i17; ints[18] = i18; ints[19] = i19; 
-        ints[20] = i20; ints[21] = i21; ints[22] = i22; ints[23] = i23; ints[24] = i24; 
-        ints[25] = i25; ints[26] = i26; ints[27] = i27; ints[28] = i28; ints[29] = i29; 
-        ints[30] = i30; ints[31] = i31; ints[32] = i32; ints[33] = i33; ints[34] = i34; 
-        ints[35] = i35; ints[36] = i36; ints[37] = i37; ints[38] = i38; ints[39] = i39; 
-        ints[40] = i40; ints[41] = i41; ints[42] = i42; ints[43] = i43; ints[44] = i44; 
-        ints[45] = i45; ints[46] = i46; ints[47] = i47; ints[48] = i48; ints[49] = i49; 
-        ints[50] = i50; ints[51] = i51; ints[52] = i52; ints[53] = i53; ints[54] = i54; 
-        ints[55] = i55; ints[56] = i56; ints[57] = i57; ints[58] = i58; ints[59] = i59; 
-        ints[60] = i60; ints[61] = i61; ints[62] = i62; ints[63] = i63; ints[64] = i64; 
-        ints[65] = i65; ints[66] = i66; ints[67] = i67; ints[68] = i68; ints[69] = i69; 
-        ints[70] = i70; ints[71] = i71; ints[72] = i72; ints[73] = i73; ints[74] = i74; 
-        ints[75] = i75; ints[76] = i76; ints[77] = i77; ints[78] = i78; ints[79] = i79; 
-        ints[80] = i80; ints[81] = i81; ints[82] = i82; ints[83] = i83; ints[84] = i84; 
-        ints[85] = i85; ints[86] = i86; ints[87] = i87; ints[88] = i88; ints[89] = i89; 
-        ints[90] = i90; ints[91] = i91; ints[92] = i92; ints[93] = i93; ints[94] = i94; 
-        ints[95] = i95; ints[96] = i96; ints[97] = i97; ints[98] = i98; ints[99] = i99; 
+            float[] floats;
+            if (f.length() > 0) {
+                String[] fs = f.split(",");
+                floats = new float[fs.length];
+                for (int j=0; j<fs.length; j++) {
+                    floats[j] = (new Float(fs[j])).floatValue();
+                }
+            } else {
+                floats = new float[0];
+            }
+            
+            // And run the calls
+            runCalls(calls, ints, floats);
+        }        
 
-        floats[0] = f0; floats[1] = f1; floats[2] = f2; floats[3] = f3; floats[4] = f4; 
-        floats[5] = f5; floats[6] = f6; floats[7] = f7; floats[8] = f8; floats[9] = f9; 
-        floats[10] = f10; floats[11] = f11; floats[12] = f12; floats[13] = f13; floats[14] = f14; 
-        floats[15] = f15; floats[16] = f16; floats[17] = f17; floats[18] = f18; floats[19] = f19; 
-        floats[20] = f20; floats[21] = f21; floats[22] = f22; floats[23] = f23; floats[24] = f24; 
-        floats[25] = f25; floats[26] = f26; floats[27] = f27; floats[28] = f28; floats[29] = f29; 
-        floats[30] = f30; floats[31] = f31; floats[32] = f32; floats[33] = f33; floats[34] = f34; 
-        floats[35] = f35; floats[36] = f36; floats[37] = f37; floats[38] = f38; floats[39] = f39; 
-        floats[40] = f40; floats[41] = f41; floats[42] = f42; floats[43] = f43; floats[44] = f44; 
-        floats[45] = f45; floats[46] = f46; floats[47] = f47; floats[48] = f48; floats[49] = f49; 
-        floats[50] = f50; floats[51] = f51; floats[52] = f52; floats[53] = f53; floats[54] = f54; 
-        floats[55] = f55; floats[56] = f56; floats[57] = f57; floats[58] = f58; floats[59] = f59; 
-        floats[60] = f60; floats[61] = f61; floats[62] = f62; floats[63] = f63; floats[64] = f64; 
-        floats[65] = f65; floats[66] = f66; floats[67] = f67; floats[68] = f68; floats[69] = f69; 
-        floats[70] = f70; floats[71] = f71; floats[72] = f72; floats[73] = f73; floats[74] = f74; 
-        floats[75] = f75; floats[76] = f76; floats[77] = f77; floats[78] = f78; floats[79] = f79; 
-        floats[80] = f80; floats[81] = f81; floats[82] = f82; floats[83] = f83; floats[84] = f84; 
-        floats[85] = f85; floats[86] = f86; floats[87] = f87; floats[88] = f88; floats[89] = f89; 
-        floats[90] = f90; floats[91] = f91; floats[92] = f92; floats[93] = f93; floats[94] = f94; 
-        floats[95] = f95; floats[96] = f96; floats[97] = f97; floats[98] = f98; floats[99] = f99; 
-        // And run the calls
-        runCalls();
+        // Return anything relevant
+        return new byte[0];
     }
 
-    public void runCalls() {
+    public void runCalls(int[] calls, int[] ints, float[] floats) {
         int i=0;
         int f=0;
-        for (int c=0; c<maxCalls; c++) {
+        for (int c=0; c<calls.length; c++) {
             // call the relevant method and increase i and f
             // relative to how many parameters were used
             switch (calls[c]) {
@@ -2651,6 +2575,7 @@ public class JebGL extends Applet {
         private int border;
         private int format;
         private int type;
+        private String url;
         private ByteBuffer pixels;
         public TexImage2D(int target, int level, int internalformat,
                           int width, int height, int border,
@@ -2663,29 +2588,31 @@ public class JebGL extends Applet {
             this.border = border;
             this.format = format;
             this.type = type;
+            this.url = url;
             // FIXME: this should be internalformat_size*width*height
             pixels = ByteBuffer.allocateDirect(4*width*height);
             pixels.order(ByteOrder.nativeOrder());
             
-            try {
-                Image img = getImage(new URL(url));
-
-                mt.addImage(img, 1);
+            if (url != "") {
                 try {
-                    mt.waitForAll();
-                } catch (InterruptedException e) {
-                    System.err.println("getImage interrupted for " + url);
-                    return;
-                }
+                    Image img = getImage(new URL(url));
                     
-                int[] data = new int[width*height];
+                    mt.addImage(img, 1);
+                    try {
+                        mt.waitForAll();
+                    } catch (InterruptedException e) {
+                        System.err.println("getImage interrupted for " + url);
+                        return;
+                    }
+                    
+                    int[] data = new int[width*height];
                 try {
                     (new PixelGrabber(img, 0, 0, width, height, data, 0, width)).grabPixels();
                 } catch (InterruptedException e) {
                     System.err.println("grabPixels interrupted for " + url);
                     return;
                 }
-
+                
                 // FIXME: This needs to check the color model, etc.
                 if (unpack_flip_y_webgl == GL_TRUE) {
                     for (int j=height-1; j>=0; j--) {
@@ -2709,21 +2636,27 @@ public class JebGL extends Applet {
                     }
                 }
                 pixels.position(0);
-
+                
                 if ((mt.statusAll(false) & MediaTracker.ERRORED) != 0) {
                     System.err.println("MediaTracker error on " + url);
                 }
-
-            } catch (MalformedURLException e) {
-                System.err.println("Malformed URL: " + url);
-                return;
+                
+                } catch (MalformedURLException e) {
+                    System.err.println("Malformed URL: " + url);
+                    return;
+                }
             }
         }
         
         public void run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
-            gl.glTexImage2D(target, level, internalformat, width, height,
-                            border, format, type, pixels);
+            if (url == "") {
+                gl.glTexImage2D(target, level, internalformat, width, height,
+                                border, format, type, 0);
+            } else {
+                gl.glTexImage2D(target, level, internalformat, width, height,
+                                border, format, type, pixels);
+            }
         }
     }
 
@@ -3472,10 +3405,18 @@ public class JebGL extends Applet {
     }
 
     public int glGetIntegerv(int pname) {
-        GetIntegerv iv = new GetIntegerv(pname);
-        canvas.invoke(false, iv);
-        canvas.display(); // Flushes the invoke list
-        return iv.params[0];
+        if (pname == this.GL_UNPACK_FLIP_Y_WEBGL) {
+            return this.unpack_flip_y_webgl;
+        } else if (pname == this.GL_UNPACK_PREMULTIPLY_ALPHA_WEBGL) {
+            return this.unpack_premultiply_alpha_webgl;
+        } else if (pname == this.GL_UNPACK_COLORSPACE_CONVERSION_WEBGL) {
+            return this.unpack_colorspace_conversion_webgl;
+        } else {
+            GetIntegerv iv = new GetIntegerv(pname);
+            canvas.invoke(false, iv);
+            canvas.display(); // Flushes the invoke list
+            return iv.params[0];
+        }
     }
 
     public int glGetProgramiv(int program, int pname) {
@@ -3533,11 +3474,12 @@ public class JebGL extends Applet {
         return out;
     }
 
-    public String glGetString(int name) {
+    public byte[] glGetString(int name) {
         GetString s = new GetString(name);
         canvas.invoke(false, s);
         canvas.display(); // Flushes the invoke list
-        return s.result;
+        byte[] out = s.result.getBytes();
+        return out;
     }
 
     public float glGetTexParameterfv(int target, int pname) {

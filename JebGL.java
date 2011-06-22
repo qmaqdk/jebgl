@@ -3338,8 +3338,8 @@ public class JebGL extends Applet {
         GetActiveAttrib aa = new GetActiveAttrib(program, index);
         canvas.invoke(false, aa);
         canvas.display(); // Flushes the invoke list
-        byte[] out = new byte[aa.size[0]];
-        for (int i = 0; i < aa.size[0]; i++) {
+        byte[] out = new byte[aa.length[0]];
+        for (int i = 0; i < aa.length[0]; i++) {
             out[i] = aa.name[i];
         }
         return out;
@@ -3349,8 +3349,8 @@ public class JebGL extends Applet {
         GetActiveUniform au = new GetActiveUniform(program, index);
         canvas.invoke(false, au);
         canvas.display(); // Flushes the invoke list
-        byte[] out = new byte[au.size[0]];
-        for (int i = 0; i < au.size[0]; i++) {
+        byte[] out = new byte[au.length[0]];
+        for (int i = 0; i < au.length[0]; i++) {
             out[i] = au.name[i];
         }
         return out;

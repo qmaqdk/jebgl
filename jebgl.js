@@ -305,6 +305,7 @@
 
     function JebGLRenderingContext(applet) {
         // Store applet as canvas and get the actual JebGL applet
+        this.applet = applet;
         this.JebApp = applet.getSubApplet();
         
         /* Get all WebGL enums from applet, cf
@@ -783,14 +784,10 @@
             return null;
         }
 
-        // Get call list parameters
-        this.maxCalls = this.JebApp.maxCalls;
-        this.maxInts = this.JebApp.maxInts;
-        this.maxFloats = this.JebApp.maxFloats;
-
-        this.intList = [];
-        this.floatList = [];
-        this.callList = [];
+        // Call lists
+        this.intStr = [];
+        this.floatStr = [];
+        this.callStr = [];
 
         // Call timer
         this.callTimer = null;
@@ -805,115 +802,27 @@
         },
 
         submit: function() {
-            // Zero pad all lists
-            for (var i=0; i<this.maxCalls; i++) {
-                if (typeof(this.callList[i]) == "undefined") this.callList[i] = 0;
-            }
-            for (var i=0; i<this.maxInts; i++) {
-                if (typeof(this.intList[i]) == "undefined") this.intList[i] = 0;
-            }
-            for (var i=0; i<this.maxFloats; i++) {
-                if (typeof(this.floatList[i]) == "undefined") this.floatList[i] = 0.0;
-            }
+            var returnStr = "";
             try {
-                this.JebApp.call(this.callList[0], this.callList[1], this.callList[2],
-                                 this.callList[3], this.callList[4], this.callList[5],
-                                 this.callList[6], this.callList[7], this.callList[8],
-                                 this.callList[9], this.callList[10], this.callList[11],
-                                 this.callList[12], this.callList[13], this.callList[14],
-                                 this.callList[15], this.callList[16], this.callList[17],
-                                 this.callList[18], this.callList[19], this.callList[20],
-                                 this.callList[21], this.callList[22], this.callList[23],
-                                 this.callList[24], this.callList[25], this.callList[26],
-                                 this.callList[27], this.callList[28], this.callList[29],
-                                 this.callList[30], this.callList[31], this.callList[32],
-                                 this.callList[33], this.callList[34], this.callList[35],
-                                 this.callList[36], this.callList[37], this.callList[38],
-                                 this.callList[39], this.callList[40], this.callList[41],
-                                 this.callList[42], this.callList[43], this.callList[44],
-                                 this.callList[45], this.callList[46], this.callList[47],
-                                 this.callList[48], this.callList[49], 
-                                 this.intList[0], this.intList[1], this.intList[2],
-                                 this.intList[3], this.intList[4], this.intList[5],
-                                 this.intList[6], this.intList[7], this.intList[8],
-                                 this.intList[9], this.intList[10], this.intList[11],
-                                 this.intList[12], this.intList[13], this.intList[14],
-                                 this.intList[15], this.intList[16], this.intList[17],
-                                 this.intList[18], this.intList[19], this.intList[20],
-                                 this.intList[21], this.intList[22], this.intList[23],
-                                 this.intList[24], this.intList[25], this.intList[26],
-                                 this.intList[27], this.intList[28], this.intList[29],
-                                 this.intList[30], this.intList[31], this.intList[32],
-                                 this.intList[33], this.intList[34], this.intList[35],
-                                 this.intList[36], this.intList[37], this.intList[38],
-                                 this.intList[39], this.intList[40], this.intList[41],
-                                 this.intList[42], this.intList[43], this.intList[44],
-                                 this.intList[45], this.intList[46], this.intList[47],
-                                 this.intList[48], this.intList[49], 
-                                 this.intList[50], this.intList[51], this.intList[52],
-                                 this.intList[53], this.intList[54], this.intList[55],
-                                 this.intList[56], this.intList[57], this.intList[58],
-                                 this.intList[59], this.intList[60], this.intList[61],
-                                 this.intList[62], this.intList[63], this.intList[64],
-                                 this.intList[65], this.intList[66], this.intList[67],
-                                 this.intList[68], this.intList[69], this.intList[70],
-                                 this.intList[71], this.intList[72], this.intList[73],
-                                 this.intList[74], this.intList[75], this.intList[76],
-                                 this.intList[77], this.intList[78], this.intList[79],
-                                 this.intList[80], this.intList[81], this.intList[82],
-                                 this.intList[83], this.intList[84], this.intList[85],
-                                 this.intList[86], this.intList[87], this.intList[88],
-                                 this.intList[89], this.intList[90], this.intList[91],
-                                 this.intList[92], this.intList[93], this.intList[94],
-                                 this.intList[95], this.intList[96], this.intList[97],
-                                 this.intList[98], this.intList[99], 
-                                 this.floatList[0], this.floatList[1], this.floatList[2],
-                                 this.floatList[3], this.floatList[4], this.floatList[5],
-                                 this.floatList[6], this.floatList[7], this.floatList[8],
-                                 this.floatList[9], this.floatList[10], this.floatList[11],
-                                 this.floatList[12], this.floatList[13], this.floatList[14],
-                                 this.floatList[15], this.floatList[16], this.floatList[17],
-                                 this.floatList[18], this.floatList[19], this.floatList[20],
-                                 this.floatList[21], this.floatList[22], this.floatList[23],
-                                 this.floatList[24], this.floatList[25], this.floatList[26],
-                                 this.floatList[27], this.floatList[28], this.floatList[29],
-                                 this.floatList[30], this.floatList[31], this.floatList[32],
-                                 this.floatList[33], this.floatList[34], this.floatList[35],
-                                 this.floatList[36], this.floatList[37], this.floatList[38],
-                                 this.floatList[39], this.floatList[40], this.floatList[41],
-                                 this.floatList[42], this.floatList[43], this.floatList[44],
-                                 this.floatList[45], this.floatList[46], this.floatList[47],
-                                 this.floatList[48], this.floatList[49], 
-                                 this.floatList[50], this.floatList[51], this.floatList[52],
-                                 this.floatList[53], this.floatList[54], this.floatList[55],
-                                 this.floatList[56], this.floatList[57], this.floatList[58],
-                                 this.floatList[59], this.floatList[60], this.floatList[61],
-                                 this.floatList[62], this.floatList[63], this.floatList[64],
-                                 this.floatList[65], this.floatList[66], this.floatList[67],
-                                 this.floatList[68], this.floatList[69], this.floatList[70],
-                                 this.floatList[71], this.floatList[72], this.floatList[73],
-                                 this.floatList[74], this.floatList[75], this.floatList[76],
-                                 this.floatList[77], this.floatList[78], this.floatList[79],
-                                 this.floatList[80], this.floatList[81], this.floatList[82],
-                                 this.floatList[83], this.floatList[84], this.floatList[85],
-                                 this.floatList[86], this.floatList[87], this.floatList[88],
-                                 this.floatList[89], this.floatList[90], this.floatList[91],
-                                 this.floatList[92], this.floatList[93], this.floatList[94],
-                                 this.floatList[95], this.floatList[96], this.floatList[97],
-                                 this.floatList[98], this.floatList[99]);
+                returnStr = this.JebApp.call(this.callStr.toString(), this.intStr.toString(), this.floatStr.toString());
             } catch (e) {
                 if (typeof(applet) != "undefined" && typeof(applet.getSubApplet().ready) == "boolean" && applet.getSubApplet().ready) {
                     throw new Error(e);
                 } // Else the applet is closing and this error may occur in some browsers
             }
 
-            this.intList = [];
-            this.floatList = [];
-            this.callList = [];
+            this.intStr = [];
+            this.floatStr = [];
+            this.callStr = [];
 
             // Clear the callTimer
-            clearTimeout(this.callTimer);
-            this.callTimer = null;
+            this.clearTimer();
+
+            // FIXME: temporary check for canvas size change
+            if (this.applet.parentNode.width != this.applet.width) 
+                this.applet.width = this.applet.parentNode.width;
+            if (this.applet.parentNode.height != this.applet.height) 
+                this.applet.height = this.applet.parentNode.height;
         },
 
         setTimer: function() {
@@ -927,31 +836,21 @@
         },
 
         addCall: function(f, intParams, floatParams) {
-            if (this.callList.length + 1 >= this.maxCalls ||
-                this.intList.length + intParams.length >= this.maxInts ||
-                this.floatList.length + floatParams.length >= this.maxFloats) {
-                // Submit first
-                if (this.callTimer) {
-                    this.clearTimer();
-                }
-                this.submit();
-            }
-            this.callList[this.callList.length] = f;
-	    for (var i=0, l=intParams.length; i<l; i++) {
-	        this.intList[this.intList.length] = intParams[i];
-            }
-	    for (var i=0, l=floatParams.length; i<l; i++) {
-	        this.floatList[this.floatList.length] = floatParams[i];
-	    }
+            this.callStr.push(f);
+            for (var i=0, l=intParams.length; i<l; i++)
+	        this.intStr.push(intParams[i]);
+            for (var i=0, l=floatParams.length; i<l; i++)
+	        this.floatStr.push(floatParams[i]);
+
             if (!this.callTimer) {
                 this.setTimer();
             }
         },
 
         /* 
-     * WebGL specification methods
-     * http://www.khronos.org/registry/webgl/specs/latest
-     */
+         * WebGL specification methods
+         * http://www.khronos.org/registry/webgl/specs/latest
+         */
 
         activeTexture: function(textureEnum) {
             this.addCall(this.CALL_ACTIVE_TEXTURE, [textureEnum], []);
@@ -1055,7 +954,7 @@
             if (typeof(data) == "undefined" || data == null) {
                 // Send it through.
                 try {
-                    this.JebApp.glBufferData(target, data, usage, 1, true);
+                    //this.JebApp.glBufferData(target, data, usage, 1, true);
                 } catch(e) {
                     throw new Error(e);
                 }
@@ -1065,7 +964,7 @@
                 var size = data.length,
                     it = 0;
                 // IE6 fix - it counts one too many
-                if (isNaN(data[size-1])) size--;
+                if (isNaN(data[size-1]) && size != 0) size--;
                 if (data instanceof Float32Array || data instanceof Float64Array) {
                     try {
                         // Calling Java methods with arrays is sloooow, so we do this
@@ -1544,7 +1443,121 @@
         },
 
         getParameter: function(pname) {
-            //throw new Error("FIXME: not implemented");
+            // Before calling gl methods directly we submit the call list
+            this.submit();
+            if (pname == this.VENDOR || pname == this.RENDERER || 
+                pname == this.VERSION || pname == this.SHADING_LANGUAGE_VERSION) {
+                // Corresponds to glGetString
+                try {
+                    var string = this.JebApp.glGetString(pname);
+                } catch (e) {
+                    throw new Error(e);
+                }
+                var out = "";
+                for (var i = 0, l = string.length; i<l; i++) {
+                    out += String.fromCharCode(string[i]);
+                }
+                return out;
+            } else if (pname == this.ACTIVE_TEXTURE || pname == this.ALPHA_BITS ||
+                       pname == this.BLEND_DST_ALPHA || pname == this.BLEND_DST_RGB ||
+                       pname == this.BLEND_EQUATION_ALPHA || pname == this.BLEND_EQUATION_RGB ||
+                       pname == this.BLEND_SRC_ALPHA || pname == this.BLEND_SRC_RGB ||
+                       pname == this.BLUE_BITS || pname == this.CULL_FACE_MODE ||
+                       pname == this.DEPTH_BITS || pname == this.DEPTH_FUNC ||
+                       pname == this.FRONT_FACE || pname == this.GENERATE_MIPMAP_HINT ||
+                       pname == this.GREEN_BITS || pname == this.MAX_COMBINED_TEXTURE_IMAGE_UNITS ||
+                       pname == this.MAX_CUBE_MAP_TEXTURE_SIZE || pname == this.MAX_FRAGMENT_UNIFORM_VECTORS ||
+                       pname == this.MAX_RENDERBUFFER_SIZE || pname == this.MAX_TEXTURE_IMAGE_UNITS ||
+                       pname == this.MAX_TEXTURE_SIZE || pname == this.MAX_VARYING_VECTORS ||
+                       pname == this.MAX_VERTEX_ATTRIBS || pname == this.MAX_VERTEX_TEXTURE_IMAGE_UNITS ||
+                       pname == this.MAX_VERTEX_UNIFORM_VECTORS || pname == this.NUM_COMPRESSED_TEXTURE_FORMATS ||
+                       pname == this.PACK_ALIGNMENT || pname == this.RED_BITS ||
+                       pname == this.SAMPLE_BUFFERS || pname == this.SAMPLES ||
+                       pname == this.STENCIL_BACK_FAIL || pname == this.STENCIL_BACK_FUNC ||
+                       pname == this.STENCIL_BACK_PASS_DEPTH_FAIL || pname == this.STENCIL_BACK_PASS_DEPTH_PASS ||
+                       pname == this.STENCIL_BACK_REF || pname == this.STENCIL_BACK_VALUE_MASK ||
+                       pname == this.STENCIL_BACK_WRITEMASK || pname == this.STENCIL_BITS ||
+                       pname == this.STENCIL_CLEAR_VALUE || pname == this.STENCIL_FAIL ||
+                       pname == this.STENCIL_FUNC || pname == this.STENCIL_PASS_DEPTH_FAIL ||
+                       pname == this.STENCIL_PASS_DEPTH_PASS || pname == this.STENCIL_REF ||
+                       pname == this.STENCIL_VALUE_MASK || pname == this.STENCIL_WRITEMASK ||
+                       pname == this.SUBPIXEL_BITS || pname == this.UNPACK_ALIGNMENT ||
+                       pname == this.UNPACK_COLORSPACE_CONVERSION_WEBGL) {
+                // Corresponds to getInteger with a single return value
+                try {
+                    return this.JebApp.glGetIntegerv(pname);
+                } catch (e) {
+                    throw new Error(e);
+                }
+            } else if (pname == this.BLEND || pname == this.CULL_FACE ||
+                       pname == this.DEPTH_TEST || pname == this.DEPTH_WRITEMASK ||
+                       pname == this.DITHER || pname == this.POLYGON_OFFSET_FILL ||
+                       pname == this.SAMPLE_COVERAGE_INVERT || pname == this.SCISSOR_TEST ||
+                       pname == this.STENCIL_TEST || pname == this.UNPACK_FLIP_Y_WEBGL || pname == this.UNPACK_PREMULTIPLY_ALPHA_WEBGL) {
+                // Corresponds to getInteger with a single boolean return value
+                try {
+                    var result = this.JebApp.glGetIntegerv(pname);
+                } catch (e) {
+                    throw new Error(e);
+                }
+                switch(result) {
+                case this.TRUE:
+                    return true;
+                    break;
+                case this.FALSE:
+                    return false;
+                    break;
+                }
+            } else if (pname == this.ALIASED_LINE_WIDTH_RANGE || pname == this.ALIASED_POINT_SIZE_RANGE ||
+                       pname == this.BLEND_COLOR || pname == this.COLOR_CLEAR_VALUE ||
+                       pname == this.DEPTH_RANGE) {
+                // Corresponds to getFloat with array return value
+                throw new Error("not implemented");
+            } else if (pname == this.MAX_VIEWPORT_DIMS || pname == this.SCISSOR_BOX ||
+                       pname == this.VIEWPORT) {
+                // Corresponds to getInteger with array return value
+                throw new Error("not implemented");
+            } else if (pname == this.COLOR_WRITEMASK) {
+                // Corresponds to getInteger with boolean array return value
+                throw new Error("not implemented");
+            } else if (pname == this.ARRAY_BUFFER_BINDING || 
+                       pname == this.ELEMENT_ARRAY_BUFFER_BINDING) {
+                // Corresponds to getInteger with WebGLBuffer return value
+                try {
+                    return new JebGLBuffer(this.JebApp.glGetIntegerv(pname));
+                } catch (e) {
+                    throw new Error(e);
+                }
+            } else if (pname == this.CURRENT_PROGRAM) {
+                // Corresponds to getInteger with WebGLProgram return value
+                try {
+                    return new JebGLProgram(this.JebApp.glGetIntegerv(pname));
+                } catch (e) {
+                    throw new Error(e);
+                }
+            } else if (pname == this.FRAMEBUFFER_BINDING) {
+                // Corresponds to getInteger with WebGLFramebuffer return value
+                try {
+                    return new JebGLFramebuffer(this.JebApp.glGetIntegerv(pname));
+                } catch (e) {
+                    throw new Error(e);
+                }
+            } else if (pname == this.RENDERBUFFER_BINDING) {
+                // Corresponds to getInteger with WebGLRenderbuffer return value
+                try {
+                    return new JebGLRenderbuffer(this.JebApp.glGetIntegerv(pname));
+                } catch (e) {
+                    throw new Error(e);
+                }
+            } else if (pname == this.TEXTURE_BINDING_2D ||
+                       pname == this.TEXTURE_BINDING_CUBE_MAP) {
+                // Corresponds to getInteger with WebGLTexture return value
+                try {
+                    return new JebGLTexture(this.JebApp.glGetIntegerv(pname));
+                } catch (e) {
+                    throw new Error(e);
+                }
+            }
         },
 
         getBufferParameter: function(target, pname) {
@@ -2021,16 +2034,30 @@
             this.addCall(this.CALL_STENCIL_OP_SEPARATE, [face, fail, zfail, zpass], []);
         },
 
-        texImage2D: function(target, level, internalformat, format, type, image) {
+        texImage2D: function(target, level, internalformat, formatWidth, typeHeight, imageBorder, format, type, pixels) {
             // Make sure we've submitted eventual bindTexture commands
             this.submit();
-            var width = image.width,
-                height = image.height;
-            if (target == this.TEXTURE_2D) {
-                try {
-                    this.JebApp.glTexImage2D(target, level, internalformat, width, height, 0, format, type, image.src);
-                } catch (e) {
-                    throw new Error(e);
+            if (typeof(format) != "undefined" && typeof(type) != "undefined") {
+                if (pixels == null) {
+                    try {
+                        this.JebApp.glTexImage2D(target, level, internalformat, formatWidth, typeHeight, imageBorder, format, type, "");
+                    } catch (e) {
+                        throw new Error(e);
+                    }
+                } else {
+                    throw new Error("not implemented");
+                }
+            } else {
+                var width = imageBorder.width,
+                    height = imageBorder.height;
+                if (target == this.TEXTURE_2D) {
+                    try {
+                        this.JebApp.glTexImage2D(target, level, internalformat, width, height, 0, formatWidth, typeHeight, imageBorder.src);
+                    } catch (e) {
+                        throw new Error(e);
+                    }
+                } else {
+                    throw new Error("not implemented");
                 }
             }
         },

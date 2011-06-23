@@ -2575,7 +2575,7 @@ public class JebGL extends Applet {
             pixels = ByteBuffer.allocateDirect(4*width*height);
             pixels.order(ByteOrder.nativeOrder());
             
-            if (url != "") {
+            if (url.length() > 0) {
                 try {
                     Image img = getImage(new URL(url));
                     
@@ -2627,18 +2627,24 @@ public class JebGL extends Applet {
                     System.err.println("Malformed URL: " + url);
                     return;
                 }
+            } else {
+                // Initialize to zero
+                for (int j=0; j<height; j++) {
+                    for (int i=0; i<width; i++) {
+                        pixels.put((byte) 0);
+                        pixels.put((byte) 0);
+                        pixels.put((byte) 0);
+                        pixels.put((byte) 0);
+                    }
+                }
+                pixels.position(0);
             }
         }
         
         public void run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
-            if (url == "") {
-                gl.glTexImage2D(target, level, internalformat, width, height,
-                                border, format, type, 0);
-            } else {
-                gl.glTexImage2D(target, level, internalformat, width, height,
-                                border, format, type, pixels);
-            }
+            gl.glTexImage2D(target, level, internalformat, width, height,
+                            border, format, type, pixels);
         }
     }
 

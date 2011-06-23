@@ -952,36 +952,18 @@
             // Make sure we've submitted eventual bindBuffer commands
             this.submit();
             if (typeof(data) == "undefined" || data == null) {
-                // Send it through.
-                try {
-                    //this.JebApp.glBufferData(target, data, usage, 1, true);
-                } catch(e) {
-                    throw new Error(e);
-                }
-            } else if (data instanceof Float32Array || data instanceof Float64Array || data instanceof Int8Array || data instanceof Uint8Array ||
-                          data instanceof Int16Array || data instanceof Uint16Array ||
-                          data instanceof Int32Array || data instanceof Uint32Array) {
-                var size = data.length,
-                    it = 0;
-                // IE6 fix - it counts one too many
-                if (isNaN(data[size-1]) && size != 0) size--;
+                // Do nothing, but don't throw, according to spec.
+            } else if (data instanceof Float32Array || data instanceof Float64Array || 
+                       data instanceof Int8Array || data instanceof Uint8Array ||
+                       data instanceof Int16Array || data instanceof Uint16Array ||
+                       data instanceof Int32Array || data instanceof Uint32Array) {
                 if (data instanceof Float32Array || data instanceof Float64Array) {
                     try {
-                        // Calling Java methods with arrays is sloooow, so we do this
-                        this.JebApp.createUploadf(size);
-                        while(it+10 < size) {
-                            this.JebApp.uploadDataf(it, data[it], data[it+1], data[it+2],
-                                                    data[it+3], data[it+4], data[it+5],
-                                                    data[it+6], data[it+7], data[it+8],
-                                                    data[it+9]);
-                            it+=10;
-                        }
-                        while(it < size) {
-                            this.JebApp.uploadSinglef(it, data[it]);
-                            it++;
-                        }
-                        this.JebApp.glBufferData(target, size, usage, data.BYTES_PER_ELEMENT, true);
-                        this.JebApp.deleteUploadf();
+                        // Calling methods with arrays is very slow, so we use strings
+                        var dataStr = [];
+                        for (var i=0; i<data.length; i++) 
+                            dataStr.push(data[i]);
+                        this.JebApp.glBufferData(target, dataStr.toString(), usage, data.BYTES_PER_ELEMENT, true);
                     } catch (e) {
                         throw new Error(e);
                     }
@@ -989,27 +971,17 @@
                           data instanceof Int16Array || data instanceof Uint16Array ||
                           data instanceof Int32Array || data instanceof Uint32Array) {
                     try {
-                        // Calling Java methods with arrays is sloooow, so we do this
-                        this.JebApp.createUploadi(size);
-                        while(it+10 < size) {
-                            this.JebApp.uploadDatai(it, data[it], data[it+1], data[it+2],
-                                                    data[it+3], data[it+4], data[it+5],
-                                                    data[it+6], data[it+7], data[it+8],
-                                                    data[it+9]);
-                            it+=10;
-                        }
-                        while(it < size) {
-                            this.JebApp.uploadSinglei(it, data[it]);
-                            it++;
-                        }
-                        this.JebApp.glBufferData(target, size, usage, data.BYTES_PER_ELEMENT, false);
-                        this.JebApp.deleteUploadi();
+                        // Calling methods with arrays is very slow, so we use strings
+                        var dataStr = [];
+                        for (var i=0; i<data.length; i++) 
+                            dataStr.push(data[i]);
+                        this.JebApp.glBufferData(target, dataStr.toString(), usage, data.BYTES_PER_ELEMENT, false);
                     } catch (e) {
                         throw new Error(e);
                     }
                 }
             } else if (data instanceof ArrayBuffer) {
-                //throw new Error("emulated ArrayBuffer has not content");
+                throw new Error("emulated ArrayBuffer has no content");
             } else {
                 // data assumed to be a number. Buffer is initalized to zeros.
                 var zeros = new Uint8Array(data);
@@ -1021,36 +993,19 @@
             // Make sure we've submitted eventual bindBuffer commands
             this.submit();
             if (typeof(data) == "undefined" || data == null) {
-                // Send it through.
-                try {
-                    this.JebApp.glBufferSubData(target, offset, size, 1, true);
-                } catch(e) {
-                    throw new Error(e);
-                }
-            } else if (data instanceof Float32Array || data instanceof Float64Array || data instanceof Int8Array || data instanceof Uint8Array ||
-                          data instanceof Int16Array || data instanceof Uint16Array ||
-                          data instanceof Int32Array || data instanceof Uint32Array) {
-                var size = data.length,
-                    it = 0;
-                // IE6 fix - it counts one too many
-                if (isNaN(data[size-1])) size--;
+                // Do nothing, but don't throw, according to spec.
+            } else if (data instanceof Float32Array || data instanceof Float64Array || 
+                       data instanceof Int8Array || data instanceof Uint8Array ||
+                       data instanceof Int16Array || data instanceof Uint16Array ||
+                       data instanceof Int32Array || data instanceof Uint32Array) {
                 if (data instanceof Float32Array || data instanceof Float64Array) {
                     try {
-                        // Calling Java methods with arrays is sloooow, so we do this
-                        this.JebApp.createUploadf(size);
-                        while(it+10 < size) {
-                            this.JebApp.uploadDataf(it, data[it], data[it+1], data[it+2],
-                                                    data[it+3], data[it+4], data[it+5],
-                                                    data[it+6], data[it+7], data[it+8],
-                                                    data[it+9]);
-                            it+=10;
-                        }
-                        while(it < size) {
-                            this.JebApp.uploadSinglef(it, data[it]);
-                            it++;
-                        }
-                        this.JebApp.glBufferSubData(target, offset, size, data.BYTES_PER_ELEMENT, true);
-                        this.JebApp.deleteUploadf();
+                        // Calling methods with arrays is very slow, so we use strings
+                        var dataStr = [];
+                        for (var i=0; i<data.length; i++) 
+                            dataStr.push(data[i]);
+
+                        this.JebApp.glBufferSubData(target, offset, dataStr.toString(), data.BYTES_PER_ELEMENT, true);
                     } catch (e) {
                         throw new Error(e);
                     }
@@ -1058,29 +1013,18 @@
                           data instanceof Int16Array || data instanceof Uint16Array ||
                           data instanceof Int32Array || data instanceof Uint32Array) {
                     try {
-                        // Calling Java methods with arrays is sloooow, so we do this
-                        this.JebApp.createUploadi(size);
-                        while(it+10 < size) {
-                            this.JebApp.uploadDatai(it, data[it], data[it+1], data[it+2],
-                                                    data[it+3], data[it+4], data[it+5],
-                                                    data[it+6], data[it+7], data[it+8],
-                                                    data[it+9]);
-                            it+=10;
-                        }
-                        while(it < size) {
-                            this.JebApp.uploadSinglei(it, data[it]);
-                            it++;
-                        }
-                        this.JebApp.glBufferSubData(target, offset, size, data.BYTES_PER_ELEMENT, false);
-                        this.JebApp.deleteUploadi();
+                        // Calling methods with arrays is very slow, so we use strings
+                        var dataStr = [];
+                        for (var i=0; i<data.length; i++) 
+                            dataStr.push(data[i]);
+
+                        this.JebApp.glBufferSubData(target, offset, dataStr.toString(), data.BYTES_PER_ELEMENT, false);
                     } catch (e) {
                         throw new Error(e);
                     }
-                } else {
-                    throw new Error("Unknown target for bufferSubData");
                 }
             } else if (data instanceof ArrayBuffer) {
-                //throw new Error("emulated ArrayBuffer has not content");
+                throw new Error("emulated ArrayBuffer has not content");
             } else {
                 throw new Error("invalid arguments");
             }

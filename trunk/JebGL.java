@@ -55,8 +55,6 @@ import javax.media.opengl.GLAnimatorControl;
 
 public class JebGL extends Applet {
     private GLAnimatorControl animator;
-    private float[] uploadf;
-    private int[] uploadi;
 
     // WebGL specific settings
     private int unpack_flip_y_webgl = this.GL_FALSE;
@@ -1177,27 +1175,23 @@ public class JebGL extends Applet {
         
         public void run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
-            if (data == null) {
-                gl.glBufferData(target, bytesPerElement*size, null, usage);
-            } else {
-                ByteBuffer bufdata = ByteBuffer.allocateDirect(bytesPerElement*(int)size);
-                bufdata.order(ByteOrder.nativeOrder());
-                FloatBuffer fdata = bufdata.asFloatBuffer();
-                DoubleBuffer ddata = bufdata.asDoubleBuffer();
-                for (int i = 0; i < size; i++) {
-                    if (bytesPerElement == 4) {
-                        fdata.put(data[i]);
-                    } else if (bytesPerElement == 8) {
-                        ddata.put((double) data[i]);
-                    }
-                }
-                fdata.position(0);
-                ddata.position(0);
+            ByteBuffer bufdata = ByteBuffer.allocateDirect(bytesPerElement*(int)size);
+            bufdata.order(ByteOrder.nativeOrder());
+            FloatBuffer fdata = bufdata.asFloatBuffer();
+            DoubleBuffer ddata = bufdata.asDoubleBuffer();
+            for (int i = 0; i < size; i++) {
                 if (bytesPerElement == 4) {
-                    gl.glBufferData(target, bytesPerElement*size, fdata, usage);
+                    fdata.put(data[i]);
                 } else if (bytesPerElement == 8) {
-                    gl.glBufferData(target, bytesPerElement*size, ddata, usage);
+                    ddata.put((double) data[i]);
                 }
+            }
+            fdata.position(0);
+            ddata.position(0);
+            if (bytesPerElement == 4) {
+                    gl.glBufferData(target, bytesPerElement*size, fdata, usage);
+            } else if (bytesPerElement == 8) {
+                gl.glBufferData(target, bytesPerElement*size, ddata, usage);
             }
         }
     }
@@ -1218,32 +1212,28 @@ public class JebGL extends Applet {
         
         public void run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
-            if (data == null) {
-                gl.glBufferData(target, bytesPerElement*size, null, usage);
-            } else {
-                ByteBuffer i8data = ByteBuffer.allocateDirect(bytesPerElement*(int)size);
-                i8data.order(ByteOrder.nativeOrder());
-                ShortBuffer i16data = i8data.asShortBuffer();
-                IntBuffer i32data = i8data.asIntBuffer();
-                for (int i = 0; i < size; i++) {
-                    if (bytesPerElement == 1) {
-                        i8data.put((byte) data[i]);
-                    } else if (bytesPerElement == 2) {
-                        i16data.put((short) data[i]);
-                    } else if (bytesPerElement == 4) {
-                        i32data.put(data[i]);
-                    }
-                }
-                i8data.position(0);
-                i16data.position(0);
-                i32data.position(0);
+            ByteBuffer i8data = ByteBuffer.allocateDirect(bytesPerElement*(int)size);
+            i8data.order(ByteOrder.nativeOrder());
+            ShortBuffer i16data = i8data.asShortBuffer();
+            IntBuffer i32data = i8data.asIntBuffer();
+            for (int i = 0; i < size; i++) {
                 if (bytesPerElement == 1) {
-                    gl.glBufferData(target, bytesPerElement*size, i8data, usage);
+                    i8data.put((byte) data[i]);
                 } else if (bytesPerElement == 2) {
-                    gl.glBufferData(target, bytesPerElement*size, i16data, usage);
+                    i16data.put((short) data[i]);
                 } else if (bytesPerElement == 4) {
-                    gl.glBufferData(target, bytesPerElement*size, i32data, usage);
+                    i32data.put(data[i]);
                 }
+            }
+            i8data.position(0);
+            i16data.position(0);
+            i32data.position(0);
+            if (bytesPerElement == 1) {
+                gl.glBufferData(target, bytesPerElement*size, i8data, usage);
+            } else if (bytesPerElement == 2) {
+                gl.glBufferData(target, bytesPerElement*size, i16data, usage);
+            } else if (bytesPerElement == 4) {
+                gl.glBufferData(target, bytesPerElement*size, i32data, usage);
             }
         }
     }
@@ -1264,27 +1254,23 @@ public class JebGL extends Applet {
         
         public void run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
-            if (data == null) {
-                gl.glBufferSubData(target, offset, bytesPerElement*size, null);
-            } else {
-                ByteBuffer bufdata = ByteBuffer.allocateDirect(bytesPerElement*(int)size);
-                bufdata.order(ByteOrder.nativeOrder());
-                FloatBuffer fdata = bufdata.asFloatBuffer();
-                DoubleBuffer ddata = bufdata.asDoubleBuffer();
-                for (int i = 0; i < size; i++) {
-                    if (bytesPerElement == 4) {
-                        fdata.put(data[i]);
-                    } else if (bytesPerElement == 8) {
-                        ddata.put((double) data[i]);
-                    }
-                }
-                fdata.position(0);
-                ddata.position(0);
+            ByteBuffer bufdata = ByteBuffer.allocateDirect(bytesPerElement*(int)size);
+            bufdata.order(ByteOrder.nativeOrder());
+            FloatBuffer fdata = bufdata.asFloatBuffer();
+            DoubleBuffer ddata = bufdata.asDoubleBuffer();
+            for (int i = 0; i < size; i++) {
                 if (bytesPerElement == 4) {
-                    gl.glBufferSubData(target, offset, bytesPerElement*size, fdata);
+                    fdata.put(data[i]);
                 } else if (bytesPerElement == 8) {
-                    gl.glBufferSubData(target, offset, bytesPerElement*size, ddata);
+                    ddata.put((double) data[i]);
                 }
+            }
+            fdata.position(0);
+            ddata.position(0);
+            if (bytesPerElement == 4) {
+                gl.glBufferSubData(target, offset, bytesPerElement*size, fdata);
+            } else if (bytesPerElement == 8) {
+                gl.glBufferSubData(target, offset, bytesPerElement*size, ddata);
             }
         }
     }
@@ -1305,32 +1291,28 @@ public class JebGL extends Applet {
         
         public void run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
-            if (data == null) {
-                gl.glBufferSubData(target, offset, bytesPerElement*size, null);
-            } else {
-                ByteBuffer i8data = ByteBuffer.allocateDirect(bytesPerElement*(int)size);
-                i8data.order(ByteOrder.nativeOrder());
-                ShortBuffer i16data = i8data.asShortBuffer();
-                IntBuffer i32data = i8data.asIntBuffer();
-                for (int i = 0; i < size; i++) {
-                    if (bytesPerElement == 1) {
-                        i8data.put((byte) data[i]);
-                    } else if (bytesPerElement == 2) {
-                        i16data.put((short) data[i]);
-                    } else if (bytesPerElement == 4) {
-                        i32data.put(data[i]);
-                    }
-                }
-                i8data.position(0);
-                i16data.position(0);
-                i32data.position(0);
+            ByteBuffer i8data = ByteBuffer.allocateDirect(bytesPerElement*(int)size);
+            i8data.order(ByteOrder.nativeOrder());
+            ShortBuffer i16data = i8data.asShortBuffer();
+            IntBuffer i32data = i8data.asIntBuffer();
+            for (int i = 0; i < size; i++) {
                 if (bytesPerElement == 1) {
-                    gl.glBufferSubData(target, offset, bytesPerElement*size, i8data);
+                    i8data.put((byte) data[i]);
                 } else if (bytesPerElement == 2) {
-                    gl.glBufferSubData(target, offset, bytesPerElement*size, i16data);
+                    i16data.put((short) data[i]);
                 } else if (bytesPerElement == 4) {
-                    gl.glBufferSubData(target, offset, bytesPerElement*size, i32data);
+                    i32data.put(data[i]);
                 }
+            }
+            i8data.position(0);
+            i16data.position(0);
+            i32data.position(0);
+            if (bytesPerElement == 1) {
+                gl.glBufferSubData(target, offset, bytesPerElement*size, i8data);
+            } else if (bytesPerElement == 2) {
+                gl.glBufferSubData(target, offset, bytesPerElement*size, i16data);
+            } else if (bytesPerElement == 4) {
+                gl.glBufferSubData(target, offset, bytesPerElement*size, i32data);
             }
         }
     }
@@ -3092,37 +3074,59 @@ public class JebGL extends Applet {
         canvas.invoke(false, new BlendFuncSeparate(srcRGB, dstRGB, srcAlpha, dstAlpha));
     }
 
-    public void glBufferData(int target, long size, int usage, int bytesPerElement, boolean floating) {
-        // Requires upload first
-        if (floating) {
-            if (uploadf == null) {
-                canvas.invoke(false, new BufferDataf(target, size, null, usage, bytesPerElement));
+    public void glBufferData(int target, String data, int usage, int bytesPerElement, boolean fp) {
+        if (fp) {
+            float[] floats;
+            if (data.length() > 0) {
+                String[] fs = data.split(",");
+                floats = new float[fs.length];
+                for (int j=0; j<fs.length; j++) {
+                    floats[j] = (new Float(fs[j])).floatValue();
+                }
             } else {
-                canvas.invoke(false, new BufferDataf(target, size, uploadf, usage, bytesPerElement));
+                floats = new float[0];
             }
+            canvas.invoke(false, new BufferDataf(target, floats.length, floats, usage, bytesPerElement));
         } else {
-            if (uploadi == null) {
-                canvas.invoke(false, new BufferDatai(target, size, null, usage, bytesPerElement));
+            int[] ints;
+            if (data.length() > 0) {
+                String[] is = data.split(",");
+                ints = new int[is.length];
+                for (int j=0; j<is.length; j++) {
+                    ints[j] = (new Integer(is[j])).intValue();
+                }
             } else {
-                canvas.invoke(false, new BufferDatai(target, size, uploadi, usage, bytesPerElement));
+                ints = new int[0];
             }
+            canvas.invoke(false, new BufferDatai(target, ints.length, ints, usage, bytesPerElement));
         }
     }
 
-    public void glBufferSubData(int target, long offset, long size, int bytesPerElement, boolean floating) {
-        // Requires upload first
-        if (floating) {
-            if (uploadf == null) {
-                canvas.invoke(false, new BufferSubDataf(target, offset, size, null, bytesPerElement));
+    public void glBufferSubData(int target, long offset, String data, int bytesPerElement, boolean fp) {
+        if (fp) {
+            float[] floats;
+            if (data.length() > 0) {
+                String[] fs = data.split(",");
+                floats = new float[fs.length];
+                for (int j=0; j<fs.length; j++) {
+                    floats[j] = (new Float(fs[j])).floatValue();
+                }
             } else {
-                canvas.invoke(false, new BufferSubDataf(target, offset, size, uploadf, bytesPerElement));
+                floats = new float[0];
             }
+            canvas.invoke(false, new BufferSubDataf(target, offset, floats.length, floats, bytesPerElement));
         } else {
-            if (uploadi == null) {
-                canvas.invoke(false, new BufferSubDatai(target, offset, size, null, bytesPerElement));
+            int[] ints;
+            if (data.length() > 0) {
+                String[] is = data.split(",");
+                ints = new int[is.length];
+                for (int j=0; j<is.length; j++) {
+                    ints[j] = (new Integer(is[j])).intValue();
+                }
             } else {
-                canvas.invoke(false, new BufferSubDatai(target, offset, size, uploadi, bytesPerElement));
+                ints = new int[0];
             }
+            canvas.invoke(false, new BufferSubDatai(target, offset, ints.length, ints, bytesPerElement));
         }
     }
 
@@ -3808,66 +3812,6 @@ public class JebGL extends Applet {
 
     public void glViewport(int x, int y, int width, int height) {
         canvas.invoke(false, new Viewport(x, y, width, height));
-    }
-
-    /*
-     *  JebGL utility functions
-     */ 
-
-    public void createUploadf(int size) {
-        uploadf = new float[size];
-    }
-
-    public void createUploadi(int size) {
-        uploadi = new int[size];
-    }
-
-    public void deleteUploadf() {
-        uploadf = null;
-    }
-
-    public void deleteUploadi() {
-        uploadi = null;
-    }
-
-    public void uploadDataf(int pos, float data0, float data1,
-                           float data2, float data3, float data4,
-                           float data5, float data6, float data7,
-                           float data8, float data9) {
-        uploadf[pos]   = data0;
-        uploadf[pos+1] = data1;
-        uploadf[pos+2] = data2;
-        uploadf[pos+3] = data3;
-        uploadf[pos+4] = data4;
-        uploadf[pos+5] = data5;
-        uploadf[pos+6] = data6;
-        uploadf[pos+7] = data7;
-        uploadf[pos+8] = data8;
-        uploadf[pos+9] = data9;
-    }
-
-    public void uploadDatai(int pos, int data0, int data1,
-                           int data2, int data3, int data4,
-                           int data5, int data6, int data7,
-                           int data8, int data9) {
-        uploadi[pos]   = data0;
-        uploadi[pos+1] = data1;
-        uploadi[pos+2] = data2;
-        uploadi[pos+3] = data3;
-        uploadi[pos+4] = data4;
-        uploadi[pos+5] = data5;
-        uploadi[pos+6] = data6;
-        uploadi[pos+7] = data7;
-        uploadi[pos+8] = data8;
-        uploadi[pos+9] = data9;
-    }
-
-    public void uploadSinglef(int pos, float data) {
-        uploadf[pos] = data;
-    }
-
-    public void uploadSinglei(int pos, int data) {
-        uploadi[pos] = data;
     }
 
 }

@@ -306,6 +306,7 @@
     function JebGLRenderingContext(applet) {
         // Store applet as canvas and get the actual JebGL applet
         this.applet = applet;
+        this.element = applet.parentNode;
         this.JebApp = applet.getSubApplet();
         
         /* Get all WebGL enums from applet, cf
@@ -656,12 +657,12 @@
         }
 
         /* Get all call enums from applet. These are all GL functions
-     * which are safe to put in a call list, e.g. with return type void, cf. 
-     * http://www.khronos.org/registry/webgl/specs/latest/#5.13, except
-     * functions that have variable sized arrays as parameters, e.g. 
-     * bufferData and texImage2D, and a few other exceptions 
-     * (e.g. delete*, finish, flush).
-     */
+         * which are safe to put in a call list, e.g. with return type void,
+         * cf. http://www.khronos.org/registry/webgl/specs/latest/#5.13, except
+         * functions that have variable sized arrays as parameters, e.g. 
+         * bufferData and texImage2D, and a few other exceptions 
+         * (e.g. delete*, finish, flush).
+         */
         var callEnums = [
             "ACTIVE_TEXTURE",
             "ATTACH_SHADER",
@@ -760,6 +761,28 @@
             this["CALL_" + callEnums[i]] = this.JebApp["CALL_" + callEnums[i]];
         }
 
+        /* Get all event enums from applet. They are used for passing events
+         * from the Java applet to the browser.
+         */
+        var eventEnums = [
+            "MOUSE",
+            "KEY",
+            "MOVE",
+            "DOWN",
+            "UP",
+            "PRESS",
+            "CLICK",
+            "OVER",
+            "OUT",
+            "WHEEL"
+        ];
+
+        for (var i=0, l=eventEnums.length; i<l; i++) {
+            if (typeof(this.JebApp["EVT_" + eventEnums[i]]) === "undefined")
+                throw new Error("EVT_" + eventEnums[i] + " undefined in applet");
+            this["EVT_" + eventEnums[i]] = this.JebApp["EVT_" + eventEnums[i]];
+        }
+
         this.getContextAttributes = function() {
             // FIXME: return dummy attribute for now
             return { alpha: true,
@@ -794,6 +817,7 @@
     }
 
     JebGLRenderingContext.prototype = {
+        // Some utility functions
         bind: function(method) {
             var _this = this;
             return function() {
@@ -801,10 +825,215 @@
             };
         },
 
+        bytesToString: function(bytes) {
+            return String.fromCharCode.apply(String, bytes);
+        },
+
+        fire: function(event) {
+            var webkitCheck = /Safari/i,
+                chromeCheck = /Chrome/i,
+                evt;
+            // Create DOM event
+            if (document.createEventObject) {
+                // IE
+                evt = document.createEventObject();
+                switch (event.type) {
+                case "mouse":
+                    // Mouse events are triggered on the DOM element
+                    var element = this.element,
+                        par = element,
+                        top = 0,
+                        left = 0;
+                    // IE offset calculation
+                    do { 
+                        top += par.offsetTop,
+                        left += par.offsetLeft;
+                    } while (par = par.offsetParent);
+                    evt.clientX = event.x + left;
+                    evt.clientY = event.y + top; 
+                    evt.screenX = evt.clientX + window.screenLeft;
+                    evt.screenY = evt.clientY + window.screenTop;
+                    evt.button = event.button;
+                    switch (event.action) {
+                    case "move":
+                        evt.setAttribute("type","mousemove");
+                        element.fireEvent('onmousemove', evt);
+                        break;
+                    case "down":
+                        evt.setAttribute("type","mousedown");
+                        element.fireEvent('onmousedown', evt);
+                        break;
+                    case "up":
+                        evt.setAttribute("type","mouseup");
+                        element.fireEvent('onmouseup', evt);
+                        break;
+                    case "click":
+                        evt.setAttribute("type","click");
+                        element.fireEvent('onclick', evt);
+                        break;
+                    case "over":
+                        evt.setAttribute("type","mouseover");
+                        element.fireEvent('onmouseover', evt);
+                        break;
+                    case "out":
+                        evt.setAttribute("type","mouseout");
+                        element.fireEvent('onmouseout', evt);
+                        break;
+                    case "wheel":
+                        throw new Error("not implemented");
+                        break;
+                    }
+                    break;
+                case "key":
+                    // Keyboard events are triggered on document
+                    evt.keyCode = event.keyCode || event.keyChar.charCodeAt(0);
+                    switch (event.action) {
+                    case "down":
+                        evt.setAttribute("type","keydown");
+                        document.fireEvent('onkeydown', evt);
+                        break;
+                    case "up":
+                        evt.setAttribute("type","keyup");
+                        document.fireEvent('onkeyup', evt);
+                        break;
+                    case "press":
+                        evt.setAttribute("type","keypress");
+                        document.fireEvent('onkeypress', evt);
+                        break;
+                    }
+                    break;
+                }
+            } else {
+                // FF, Chrome, etc.
+                switch (event.type) {
+                case "mouse":
+                    evt = document.createEvent("MouseEvents");
+                    var element = this.element,
+                        top = element.offsetTop,
+                        left = element.offsetLeft,
+                        clientX = event.x + left,
+                        clientY = event.y + top,
+                        screenX,
+                        screenY;
+                    if (typeof(window.mozInnerScreenX) != "undefined") {
+                        // Firefox has a way to get this
+                        screenX = clientX + window.mozInnerScreenX;
+                        screenY = clientY + window.mozInnerScreenY;
+                    } else {
+                        // This does not account for toolbars etc.
+                        // Alternatively we could steal the offset from a
+                        // regular dom click. We only need one per resize
+                        screenX = clientX + window.screenX;
+                        screenY = clientY + window.screenY;
+                    }
+                    switch (event.action) {
+                    case "move":
+                        evt.initMouseEvent('mousemove', true, true, window, 
+                                           0, screenX, screenY, clientX, 
+                                           clientY, false, false, 
+                                           false, false, event.button, null);
+                        break;
+                    case "down":
+                        evt.initMouseEvent('mousedown', true, true, window, 
+                                           0, screenX, screenY, clientX, 
+                                           clientY, false, false, 
+                                           false, false, event.button, null);
+                        break;
+                    case "up":
+                        evt.initMouseEvent('mouseup', true, true, window, 
+                                           0, screenX, screenY, clientX, 
+                                           clientY, false, false, 
+                                           false, false, event.button, null);
+                        break;
+                    case "click":
+                        evt.initMouseEvent('click', true, true, window, 
+                                           0, screenX, screenY, clientX, 
+                                           clientY, false, false, 
+                                           false, false, event.button, null);
+                        break;
+                    case "over":
+                        evt.initMouseEvent('mouseover', true, true, window, 
+                                           0, screenX, screenY, clientX, 
+                                           clientY, false, false, 
+                                           false, false, event.button, null);
+                        break;
+                    case "out":
+                        evt.initMouseEvent('mouseout', true, true, window, 
+                                           0, screenX, screenY, clientX, 
+                                           clientY, false, false, 
+                                           false, false, event.button, null);
+                        break;
+                    case "wheel":
+                        throw new Error("not implemented");
+                        break;
+                    }
+                    // Mouse events are triggered on the DOM element
+                    if (typeof(navigator.userAgent) != "undefined" && webkitCheck.test(navigator.userAgent) && !chromeCheck.test(navigator.userAgent)) {
+                        // Safari fires events correctly so do nothing 
+                        if (event.action == "move")
+                            element.dispatchEvent(evt);
+                    } else {
+                        element.dispatchEvent(evt);
+                    }
+                    break;
+                case "key":
+                    if (!window.opera) {
+                        evt = document.createEvent("KeyboardEvent");
+                        if (evt.initKeyEvent) {
+                            evt.initKeyEvent('key' + event.action, true, true, null, 
+                                             false, false, false, false, 
+                                             event.keyCode, 
+                                             event.keyChar.charCodeAt(0));
+                            // Keyboard events are triggered on document
+                            document.dispatchEvent(evt);
+                        } else {
+                            // FIXME: this doesn't work because of a webkit bug:
+                            // https://bugs.webkit.org/show%5Fbug.cgi?id=16735
+                            // evt.initKeyboardEvent('key' + event.action, true, true, null,
+                            //                      event.keyChar, 0);
+                            
+                            // Webkit - try and run with a fake event
+                            var fevt = { keyCode: event.keyCode || event.keyChar.charCodeAt(0),
+                                charCode: event.keyChar.charCodeAt(0) };
+                            if (event.action == "down" && typeof(document.onkeydown) != "undefined" && document.onkeydown != null) {
+                                fevt.type = "keydown";
+                                document.onkeydown(fevt);
+                            }
+                            if (event.action == "press" && typeof(document.onkeypress) != "undefined" && document.onkeypress != null) {
+                                fevt.type = "keypress";
+                                document.onkeypress(fevt);
+                            }
+                            if (event.action == "up" && typeof(document.onkeyup) != "undefined" && document.onkeyup != null) {
+                                fevt.type = "keyup";
+                                document.onkeyup(fevt);
+                            }
+                        }
+                        break;
+                    } else {
+                        // Opera - try and run with a fake event
+                        var fevt = { keyCode: event.keyCode || event.keyChar.charCodeAt(0),
+                            charCode: event.keyChar.charCodeAt(0) };
+                        if (event.action == "down" && typeof(document.onkeydown) != "undefined" && document.onkeydown != null) {
+                            fevt.type = "keydown";
+                            document.onkeydown(fevt);
+                        }
+                        if (event.action == "press" && typeof(document.onkeypress) != "undefined" && document.onkeypress != null) {
+                            fevt.type = "keypress";
+                            document.onkeypress(fevt);
+                        }
+                        if (event.action == "up" && typeof(document.onkeyup) != "undefined" && document.onkeyup != null) {
+                            fevt.type = "keyup";
+                            document.onkeyup(fevt);
+                        }
+                    }
+                }
+            }
+        },
+        
         submit: function() {
-            var returnStr = "";
+            var returnList = [];
             try {
-                returnStr = this.JebApp.call(this.callStr.toString(), this.intStr.toString(), this.floatStr.toString());
+                returnList = this.JebApp.call(this.callStr.toString(), this.intStr.toString(), this.floatStr.toString());
             } catch (e) {
                 if (typeof(applet) != "undefined" && typeof(applet.getSubApplet().ready) == "boolean" && applet.getSubApplet().ready) {
                     throw new Error(e);
@@ -818,11 +1047,61 @@
             // Clear the callTimer
             this.clearTimer();
 
-            // FIXME: temporary check for canvas size change
-            if (this.applet.parentNode.width != this.applet.width) 
-                this.applet.width = this.applet.parentNode.width;
-            if (this.applet.parentNode.height != this.applet.height) 
-                this.applet.height = this.applet.parentNode.height;
+            // Handle any returned messages
+            if (returnList.length > 0) {
+                // Create events from returnList
+                var event = {},
+                    i=0;
+                while (i<returnList.length) {
+                    if (returnList[i] == this.EVT_MOUSE) {
+                        event.type = "mouse";
+                        switch (returnList[i+1]) {
+                        case this.EVT_MOVE:
+                            event.action = "move";
+                            break;
+                        case this.EVT_CLICK:
+                            event.action = "click";
+                            break;
+                        case this.EVT_OVER:
+                            event.action = "over";
+                            break;
+                        case this.EVT_OUT:
+                            event.action = "out";
+                            break;
+                        case this.EVT_DOWN:
+                            event.action = "down";
+                            break;
+                        case this.EVT_UP:
+                            event.action = "up";
+                            break;
+                        case this.EVT_WHEEL:
+                            event.action = "wheel";
+                            break;
+                        }
+                        event.button = returnList[i+2];
+                        event.x = returnList[i+3];
+                        event.y = returnList[i+4];
+                        i += 5;
+                    } else if (returnList[i] == this.EVT_KEY) {
+                        event.type = "key";
+                        switch (returnList[i+1]) {
+                        case this.EVT_DOWN:
+                            event.action = "down";
+                            break;
+                        case this.EVT_PRESS:
+                            event.action = "press";
+                            break;
+                        case this.EVT_UP:
+                            event.action = "up";
+                            break;
+                        }
+                        event.keyChar = String.fromCharCode(returnList[i+2]);
+                        event.keyCode = returnList[i+3];
+                        i += 4;
+                    }
+                    this.fire(event);
+                }
+            }
         },
 
         setTimer: function() {
@@ -2350,220 +2629,6 @@
         f();
     }
 
-    // JebGL event handler - called from the applet and delegates the event
-    window.jebglEvent = {
-        list: [],
-        register: function(element) {
-            var list = window.jebglEvent.list;
-
-            // Add element to listener list
-            list.push(element);
-        },
-        fire: function(event) {
-            var list = window.jebglEvent.list,
-                webkitCheck = /Safari/i,
-                chromeCheck = /Chrome/i,
-                evt;
-            // Create DOM event
-            if (document.createEventObject) {
-                // IE
-                evt = document.createEventObject();
-                switch (event.type) {
-                case "mouse":
-                    for (var i=0, l=list.length; i<l; i++) {
-                        // Mouse events are triggered on the DOM element
-                        var element = list[i],
-                            par = element,
-                            top = 0,
-                            left = 0;
-                        // IE offset calculation
-                        do { 
-                            top += par.offsetTop,
-                            left += par.offsetLeft;
-                        } while (par = par.offsetParent);
-                        evt.clientX = event.x + left;
-                        evt.clientY = event.y + top; 
-                        evt.screenX = evt.clientX + window.screenLeft;
-                        evt.screenY = evt.clientY + window.screenTop;
-                        evt.button = event.button;
-                        switch (event.action) {
-                        case "move":
-                            evt.setAttribute("type","mousemove");
-                            element.fireEvent('onmousemove', evt);
-                            break;
-                        case "down":
-                            evt.setAttribute("type","mousedown");
-                            element.fireEvent('onmousedown', evt);
-                            break;
-                        case "up":
-                            evt.setAttribute("type","mouseup");
-                            element.fireEvent('onmouseup', evt);
-                            break;
-                        case "click":
-                            evt.setAttribute("type","click");
-                            element.fireEvent('onclick', evt);
-                            break;
-                        case "over":
-                            evt.setAttribute("type","mouseover");
-                            element.fireEvent('onmouseover', evt);
-                            break;
-                        case "out":
-                            evt.setAttribute("type","mouseout");
-                            element.fireEvent('onmouseout', evt);
-                            break;
-                        case "wheel":
-                            throw new Error("not implemented");
-                            break;
-                        }
-                    }
-                    break;
-                case "key":
-                    // Keyboard events are triggered on document
-                    evt.keyCode = event.keyCode || event.keyChar.charCodeAt(0);
-                    switch (event.action) {
-                    case "down":
-                        evt.setAttribute("type","keydown");
-                        document.fireEvent('onkeydown', evt);
-                        break;
-                    case "up":
-                        evt.setAttribute("type","keyup");
-                        document.fireEvent('onkeyup', evt);
-                        break;
-                    case "press":
-                        evt.setAttribute("type","keypress");
-                        document.fireEvent('onkeypress', evt);
-                        break;
-                    }
-                    break;
-                }
-            } else {
-                // FF, Chrome, etc.
-                switch (event.type) {
-                case "mouse":
-                    evt = document.createEvent("MouseEvents");
-                    for (var i=0, l=list.length; i<l; i++) {
-                        var element = list[i],
-                            top = element.offsetTop,
-                            left = element.offsetLeft,
-                            clientX = event.x + left,
-                            clientY = event.y + top,
-                            screenX,
-                            screenY;
-                        if (typeof(window.mozInnerScreenX) != "undefined") {
-                            // Firefox has a way to get this
-                            screenX = clientX + window.mozInnerScreenX;
-                            screenY = clientY + window.mozInnerScreenY;
-                        } else {
-                            // This does not account for toolbars etc.
-                            // Alternatively we could steal the offset from a
-                            // regular dom click. We only need one per resize
-                            screenX = clientX + window.screenX;
-                            screenY = clientY + window.screenY;
-                        }
-                        switch (event.action) {
-                        case "move":
-                            evt.initMouseEvent('mousemove', true, true, window, 
-                                               0, screenX, screenY, clientX, 
-                                               clientY, false, false, 
-                                               false, false, event.button, null);
-                            break;
-                        case "down":
-                            evt.initMouseEvent('mousedown', true, true, window, 
-                                               0, screenX, screenY, clientX, 
-                                               clientY, false, false, 
-                                               false, false, event.button, null);
-                            break;
-                        case "up":
-                            evt.initMouseEvent('mouseup', true, true, window, 
-                                               0, screenX, screenY, clientX, 
-                                               clientY, false, false, 
-                                               false, false, event.button, null);
-                            break;
-                        case "click":
-                            evt.initMouseEvent('click', true, true, window, 
-                                               0, screenX, screenY, clientX, 
-                                               clientY, false, false, 
-                                               false, false, event.button, null);
-                            break;
-                        case "over":
-                            evt.initMouseEvent('mouseover', true, true, window, 
-                                               0, screenX, screenY, clientX, 
-                                               clientY, false, false, 
-                                               false, false, event.button, null);
-                            break;
-                        case "out":
-                            evt.initMouseEvent('mouseout', true, true, window, 
-                                               0, screenX, screenY, clientX, 
-                                               clientY, false, false, 
-                                               false, false, event.button, null);
-                            break;
-                        case "wheel":
-                            throw new Error("not implemented");
-                            break;
-                        }
-                        // Mouse events are triggered on the DOM element
-                        if (typeof(navigator.userAgent) != "undefined" && webkitCheck.test(navigator.userAgent) && !chromeCheck.test(navigator.userAgent)) {
-                            // Safari fires events correctly so do nothing 
-                        } else {
-                            element.dispatchEvent(evt);
-                        }
-                    }
-                    break;
-                case "key":
-                    if (!window.opera) {
-                        evt = document.createEvent("KeyboardEvent");
-                        if (evt.initKeyEvent) {
-                            evt.initKeyEvent('key' + event.action, true, true, null, 
-                                             false, false, false, false, 
-                                             event.keyCode, 
-                                             event.keyChar.charCodeAt(0));
-                        } else {
-                            // FIXME: this doesn't work because of a webkit bug:
-                            // https://bugs.webkit.org/show%5Fbug.cgi?id=16735
-                            // evt.initKeyboardEvent('key' + event.action, true, true, null,
-                            //                      event.keyChar, 0);
-                            
-                            // Webkit - try and run with a fake event
-                            var fevt = { keyCode: event.keyCode || event.keyChar.charCodeAt(0),
-                                charCode: event.keyChar.charCodeAt(0) };
-                            if (event.action == "down" && typeof(document.onkeydown) != "undefined" && document.onkeydown != null) {
-                                fevt.type = "keydown";
-                                document.onkeydown(fevt);
-                            }
-                            if (event.action == "press" && typeof(document.onkeypress) != "undefined" && document.onkeypress != null) {
-                                fevt.type = "keypress";
-                                document.onkeypress(fevt);
-                            }
-                            if (event.action == "up" && typeof(document.onkeyup) != "undefined" && document.onkeyup != null) {
-                                fevt.type = "keyup";
-                                document.onkeyup(fevt);
-                            }
-                        }
-                        // Keyboard events are triggered on document
-                        document.dispatchEvent(evt);
-                        break;
-                    } else {
-                        // Opera - try and run with a fake event
-                        var fevt = { keyCode: event.keyCode || event.keyChar.charCodeAt(0),
-                            charCode: event.keyChar.charCodeAt(0) };
-                        if (event.action == "down" && typeof(document.onkeydown) != "undefined" && document.onkeydown != null) {
-                            fevt.type = "keydown";
-                            document.onkeydown(fevt);
-                        }
-                        if (event.action == "press" && typeof(document.onkeypress) != "undefined" && document.onkeypress != null) {
-                            fevt.type = "keypress";
-                            document.onkeypress(fevt);
-                        }
-                        if (event.action == "up" && typeof(document.onkeyup) != "undefined" && document.onkeyup != null) {
-                            fevt.type = "keyup";
-                            document.onkeyup(fevt);
-                        }
-                    }
-                }
-            }
-        }
-    }
-
     window.jebgl = function(canvas, callback, settings) {
         // Calls callback when applet is fully ready
         if (typeof(canvas) == "undefined") throw new Error("Canvas unspecified.");
@@ -2648,9 +2713,6 @@
 
         // Add applet to container
         container.appendChild(applet);
-
-        // Register container with event handler
-        window.jebglEvent.register(container);
 
         // replace the canvas with the container
         canvas.parentNode.replaceChild(container, canvas);

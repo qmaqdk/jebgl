@@ -28,7 +28,6 @@ package com.iola;
 
 import java.applet.*;
 import java.awt.*;
-import netscape.javascript.*;
 import com.jogamp.newt.event.KeyAdapter;
 import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.newt.event.KeyListener;
@@ -66,7 +65,7 @@ public class JebGL extends Applet {
 
     private MediaTracker mt; // MediaTracker
 
-    private JSObject window; // JSObjects
+    private int[] message = new int[0]; // Messages returned to browser
 
     /* Ready all WebGL enums, cf
      * http://www.khronos.org/registry/webgl/specs/latest/#5.13
@@ -503,6 +502,20 @@ public class JebGL extends Applet {
     public static final int CALL_VIEWPORT = 10089;
 
     /* 
+     * Ready all event enums 
+     */
+    public static final int EVT_MOUSE = 20000;
+    public static final int EVT_KEY = 20001;
+    public static final int EVT_MOVE = 20002;
+    public static final int EVT_DOWN = 20003;
+    public static final int EVT_UP = 20004;
+    public static final int EVT_PRESS = 20005;
+    public static final int EVT_CLICK = 20006;
+    public static final int EVT_OVER = 20007;
+    public static final int EVT_OUT = 20008;
+    public static final int EVT_WHEEL = 20009;
+
+    /* 
      * NullAnimator which catches repaint calls from 
      * the os (does nothing while running)
      */
@@ -551,43 +564,55 @@ public class JebGL extends Applet {
         }
     }
 
+    // Helper function 
+    private int[] concat(int[] a, int[] b) {
+        int[] out = new int[a.length + b.length];
+        for (int i = 0; i<a.length; i++) {
+            out[i] = a[i];
+        }
+        for (int i = 0; i<b.length; i++) {
+            out[i+a.length] = b[i];
+        }
+        return out;
+    }
+
     /*
      * MouseAdapter for mouse events
      */
     class JebGLMouseAdapter extends MouseAdapter {
-      private void handle(MouseEvent e, String action) {
-          window.eval("jebglEvent.fire({type: 'mouse', " + 
-                      "action: '" + action + "', " + 
-                      "button: " + e.getButton() + ", " + 
-                      "delta: " + e.getWheelRotation() + ", " + 
-                      "x: " + e.getX() + ", " + 
-                      "y: " + e.getY() + 
-                      "});");
+      private void handle(MouseEvent e, int action) {
+          int[] evt = new int[5];
+          evt[0] = EVT_MOUSE;
+          evt[1] = action;
+          evt[2] = e.getButton();
+          evt[3] = e.getX();
+          evt[4] = e.getY();
+          message = concat(message, evt);
       }   
         
       public void mouseClicked(MouseEvent e) {
-          this.handle(e, "click");
+          this.handle(e, EVT_CLICK);
       }
       public void mouseDragged(MouseEvent e) {
-          this.handle(e, "move");
+          this.handle(e, EVT_MOVE);
       }
       public void mouseEntered(MouseEvent e) {
-          this.handle(e, "over");
+          this.handle(e, EVT_OVER);
       }
       public void mouseExited(MouseEvent e) {
-          this.handle(e, "out");
+          this.handle(e, EVT_OUT);
       }
       public void mouseMoved(MouseEvent e) {
-          this.handle(e, "move");
+          this.handle(e, EVT_MOVE);
       }
       public void mousePressed(MouseEvent e) {
-          this.handle(e, "down");
+          this.handle(e, EVT_DOWN);
       }
       public void mouseReleased(MouseEvent e) {
-          this.handle(e, "up");
+          this.handle(e, EVT_UP);
       }
       public void mouseWheelMoved(MouseEvent e) {
-          this.handle(e, "wheel");
+          this.handle(e, EVT_WHEEL);
       }
     }
 
@@ -595,22 +620,22 @@ public class JebGL extends Applet {
      * KeyAdapter for keyboard events
      */
     class JebGLKeyAdapter extends KeyAdapter {
-        private void handle(KeyEvent e, String action) {
-          window.eval("jebglEvent.fire({type: 'key', " + 
-                      "action: '" + action + "', " + 
-                      "keyChar: '" + e.getKeyChar() + "', " + 
-                      "keyCode: " + e.getKeyCode() + 
-                      "});");
+        private void handle(KeyEvent e, int action) {
+          int[] evt = new int[4];
+          evt[0] = EVT_KEY;
+          evt[1] = action;
+          evt[2] = e.getKeyChar();
+          evt[3] = e.getKeyCode();
+          message = concat(message, evt);
         }
-
         public void keyPressed(KeyEvent e) {
-            this.handle(e, "down");
+            this.handle(e, EVT_DOWN);
         }
         public void keyReleased(KeyEvent e) {
-            this.handle(e, "up");
+            this.handle(e, EVT_UP);
         }
         public void keyTyped(KeyEvent e) {
-            this.handle(e, "press");
+            this.handle(e, EVT_PRESS);
         }
     }
 
@@ -646,9 +671,6 @@ public class JebGL extends Applet {
         // Create a media tracker
         mt = new MediaTracker(this);
         
-        // Get window JSObject
-        window = JSObject.getWindow(this);
-
         // Enable event listeners
         MouseListener jebglMouse = new JebGLMouseAdapter();
         KeyListener jebglKey = new JebGLKeyAdapter();
@@ -676,7 +698,7 @@ public class JebGL extends Applet {
     }
 
     // Method used in JavaScript to call a number of gl commands simultaneously
-    public byte[] call(String c, String i, String f) {
+    public int[] call(String c, String i, String f) {
         if (c.length() > 0) {
             // Collect all the data in arrays
             String[] cs = c.split(",");
@@ -712,7 +734,9 @@ public class JebGL extends Applet {
         }        
 
         // Return anything relevant
-        return new byte[0];
+        int[] msg = message;
+        message = new int[0];
+        return msg;
     }
 
     public void runCalls(int[] calls, int[] ints, float[] floats) {

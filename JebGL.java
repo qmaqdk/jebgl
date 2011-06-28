@@ -3372,9 +3372,20 @@ public class JebGL extends Applet {
         GetActiveAttrib aa = new GetActiveAttrib(program, index);
         canvas.invoke(false, aa);
         canvas.display(); // Flushes the invoke list
-        byte[] out = new byte[aa.length[0]];
+        byte[] size = Integer.toString(aa.size[0]).getBytes();
+        byte[] type = Integer.toString(aa.type[0]).getBytes();
+        byte[] comma = (new String(",")).getBytes();
+        byte[] out = new byte[aa.length[0] + size.length + type.length + 2];
+        for (int i = 0; i < size.length; i++) {
+            out[i] = size[i];
+        }
+        out[size.length] = comma[0];
+        for (int i = 0; i < type.length; i++) {
+            out[size.length + 1 + i] = type[i];
+        }
+        out[size.length + 1 + type.length] = comma[0];
         for (int i = 0; i < aa.length[0]; i++) {
-            out[i] = aa.name[i];
+            out[size.length + 1 + type.length + 1 + i] = aa.name[i];
         }
         return out;
     }
@@ -3383,9 +3394,20 @@ public class JebGL extends Applet {
         GetActiveUniform au = new GetActiveUniform(program, index);
         canvas.invoke(false, au);
         canvas.display(); // Flushes the invoke list
-        byte[] out = new byte[au.length[0]];
+        byte[] size = Integer.toString(au.size[0]).getBytes();
+        byte[] type = Integer.toString(au.type[0]).getBytes();
+        byte[] comma = (new String(",")).getBytes();
+        byte[] out = new byte[au.length[0] + size.length + type.length + 2];
+        for (int i = 0; i < size.length; i++) {
+            out[i] = size[i];
+        }
+        out[size.length] = comma[0];
+        for (int i = 0; i < type.length; i++) {
+            out[size.length + 1 + i] = type[i];
+        }
+        out[size.length + 1 + type.length] = comma[0];
         for (int i = 0; i < au.length[0]; i++) {
-            out[i] = au.name[i];
+            out[size.length + 1 + type.length + 1 + i] = au.name[i];
         }
         return out;
     }

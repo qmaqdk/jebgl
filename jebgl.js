@@ -1620,7 +1620,12 @@
             for (var i = 0, l = activeinfo.length; i<l; i++) {
                 out += String.fromCharCode(activeinfo[i]);
             }
-            return out;
+            var arr = out.split(",");
+            if (arr[2] != "") {
+                return new JebGLActiveInfo(parseInt(arr[0]), parseInt(arr[1]), arr[2]);
+            } else {
+                return null;
+            }
         },
 
         getActiveUniform: function(program, index) {
@@ -1637,7 +1642,12 @@
             for (var i = 0, l = activeinfo.length; i<l; i++) {
                 out += String.fromCharCode(activeinfo[i]);
             }
-            return out;
+            var arr = out.split(",");
+            if (arr[2] != "") {
+                return new JebGLActiveInfo(parseInt(arr[0]), parseInt(arr[1]), arr[2]);
+            } else {
+                return null;
+            }
         },
 
         getAttachedShaders: function(program) {

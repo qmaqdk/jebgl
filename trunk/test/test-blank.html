@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>JebGL test</title>
+  <script type="text/javascript" src="../jebgl.js"></script>
+  <script type="text/javascript">
+     window.onload = function() {
+      jebgl(document.getElementById('canvas'), function() { console.log("ready"); }, {
+         jebglJar: "../jebgl.jar",
+         jarLocation: "../webstart/",
+         development: true});
+    };
+  </script>
+  </head>
+  <body>
+  <canvas id="canvas"></canvas>
+  </body>
+</html>

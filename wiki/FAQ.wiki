@@ -19,7 +19,7 @@ JebGL doesn't work well when sharing a JVM with a previous instance. This is the
 
 = Windows =
 === Performance is sometimes bad in IE9 ===
-This is a known issue. We're working on it.
+Connect your charger...
 
 = Linux =
 === class not found com.iola.JebGL ===

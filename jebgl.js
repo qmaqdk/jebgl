@@ -2659,7 +2659,7 @@
         }
 
         // Add timestamp to jebgl.jar in development mode (cache busting)
-        if (development) jebglJar += "?" + new Date().getTime();
+        if (development && location.href.indexOf("http") == 0) jebglJar += "?" + new Date().getTime();
 
         if (typeof(canvas.getContext) != "undefined") {
             try {

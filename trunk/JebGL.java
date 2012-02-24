@@ -1018,9 +1018,10 @@ public class JebGL extends Applet {
             this.texture = texture;
         }
         
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             gl.glActiveTexture(texture);
+            return true;
         }
     }
 
@@ -1032,9 +1033,10 @@ public class JebGL extends Applet {
             this.shader = shader;
         }
         
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             gl.glAttachShader(program, shader);
+            return true;
         }
     }
 
@@ -1048,9 +1050,10 @@ public class JebGL extends Applet {
             this.name = name;
         }
         
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             gl.glBindAttribLocation(program, index, name);
+            return true;
         }
     }
 
@@ -1062,9 +1065,10 @@ public class JebGL extends Applet {
             this.buffer = buffer;
         }
         
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             gl.glBindBuffer(target, buffer);
+            return true;
         }
     }
 
@@ -1076,9 +1080,10 @@ public class JebGL extends Applet {
             this.framebuffer = framebuffer;
         }
         
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             gl.glBindFramebuffer(target, framebuffer);
+            return true;
         }
     }
 
@@ -1090,9 +1095,10 @@ public class JebGL extends Applet {
             this.renderbuffer = renderbuffer;
         }
         
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             gl.glBindRenderbuffer(target, renderbuffer);
+            return true;
         }
     }
 
@@ -1104,9 +1110,10 @@ public class JebGL extends Applet {
             this.texture = texture;
         }
         
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             gl.glBindTexture(target, texture);
+            return true;
         }
     }
 
@@ -1119,9 +1126,10 @@ public class JebGL extends Applet {
             this.a = a;
         }
         
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             gl.glBlendColor(r, g, b, a);
+            return true;
         }
     }
 
@@ -1131,9 +1139,10 @@ public class JebGL extends Applet {
             this.mode = mode;
         }
         
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             gl.glBlendEquation(mode);
+            return true;
         }
     }
 
@@ -1145,9 +1154,10 @@ public class JebGL extends Applet {
             this.modeAlpha = modeAlpha;
         }
         
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             gl.glBlendEquationSeparate(modeRGB, modeAlpha);
+            return true;
         }
     }
 
@@ -1159,9 +1169,10 @@ public class JebGL extends Applet {
             this.dfactor = dfactor;
         }
         
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             gl.glBlendFunc(sfactor, dfactor);
+            return true;
         }
     }
 
@@ -1177,9 +1188,10 @@ public class JebGL extends Applet {
             this.dstAlpha = dstAlpha;
         }
         
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             gl.glBlendFuncSeparate(srcRGB, dstRGB, srcAlpha, dstAlpha);
+            return true;
         }
     }
 
@@ -1197,7 +1209,7 @@ public class JebGL extends Applet {
             this.bytesPerElement = bytesPerElement;
         }
         
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             ByteBuffer bufdata = ByteBuffer.allocateDirect(bytesPerElement*(int)size);
             bufdata.order(ByteOrder.nativeOrder());
@@ -1217,6 +1229,7 @@ public class JebGL extends Applet {
             } else if (bytesPerElement == 8) {
                 gl.glBufferData(target, bytesPerElement*size, ddata, usage);
             }
+            return true;
         }
     }
 
@@ -1234,7 +1247,7 @@ public class JebGL extends Applet {
             this.bytesPerElement = bytesPerElement;
         }
         
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             ByteBuffer i8data = ByteBuffer.allocateDirect(bytesPerElement*(int)size);
             i8data.order(ByteOrder.nativeOrder());
@@ -1259,6 +1272,7 @@ public class JebGL extends Applet {
             } else if (bytesPerElement == 4) {
                 gl.glBufferData(target, bytesPerElement*size, i32data, usage);
             }
+            return true;
         }
     }
 
@@ -1276,7 +1290,7 @@ public class JebGL extends Applet {
             this.bytesPerElement = bytesPerElement;
         }
         
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             ByteBuffer bufdata = ByteBuffer.allocateDirect(bytesPerElement*(int)size);
             bufdata.order(ByteOrder.nativeOrder());
@@ -1296,6 +1310,7 @@ public class JebGL extends Applet {
             } else if (bytesPerElement == 8) {
                 gl.glBufferSubData(target, offset, bytesPerElement*size, ddata);
             }
+            return true;
         }
     }
 
@@ -1313,7 +1328,7 @@ public class JebGL extends Applet {
             this.bytesPerElement = bytesPerElement;
         }
         
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             ByteBuffer i8data = ByteBuffer.allocateDirect(bytesPerElement*(int)size);
             i8data.order(ByteOrder.nativeOrder());
@@ -1338,6 +1353,7 @@ public class JebGL extends Applet {
             } else if (bytesPerElement == 4) {
                 gl.glBufferSubData(target, offset, bytesPerElement*size, i32data);
             }
+            return true;
         }
     }
 
@@ -1348,9 +1364,10 @@ public class JebGL extends Applet {
             this.target = target;
         }
         
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             this.status = gl.glCheckFramebufferStatus(target);
+            return true;
         }
     }
 
@@ -1360,9 +1377,10 @@ public class JebGL extends Applet {
             this.bit = bit;
         }
         
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             gl.glClear(bit);
+            return true;
         }
     }
 
@@ -1375,9 +1393,10 @@ public class JebGL extends Applet {
             this.a = a;
         }
         
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             gl.glClearColor(r, g, b, a);
+            return true;
         }
     }
 
@@ -1387,9 +1406,10 @@ public class JebGL extends Applet {
             this.depth = depth;
         }
         
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             gl.glClearDepthf(depth);
+            return true;
         }
     }
 
@@ -1399,9 +1419,10 @@ public class JebGL extends Applet {
             this.s = s;
         }
         
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             gl.glClearStencil(s);
+            return true;
         }
     }
 
@@ -1414,9 +1435,10 @@ public class JebGL extends Applet {
             this.a = a;
         }
         
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             gl.glColorMask(r, g, b, a);
+            return true;
         }
     }
 
@@ -1426,9 +1448,10 @@ public class JebGL extends Applet {
             this.shader = shader;
         }
         
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             gl.glCompileShader(shader);
+            return true;
         }
     }
 
@@ -1454,10 +1477,11 @@ public class JebGL extends Applet {
             this.border = border;
         }
         
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             gl.glCopyTexImage2D(target, level, internalformat, x, y, width, 
                                 height, border);
+            return true;
         }
     }
 
@@ -1483,10 +1507,11 @@ public class JebGL extends Applet {
             this.height = height;
         }
         
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             gl.glCopyTexSubImage2D(target, level, xoffset, yoffset, x, y,
                                    width, height);
+            return true;
         }
     }
 
@@ -1496,9 +1521,10 @@ public class JebGL extends Applet {
             this.buffers = new int[1];
         }
         
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             gl.glGenBuffers(1, buffers, 0);
+            return true;
         }
     }
 
@@ -1508,9 +1534,10 @@ public class JebGL extends Applet {
             this.buffers = new int[1];
         }
         
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             gl.glGenFramebuffers(1, buffers, 0);
+            return true;
         }
     }
 
@@ -1519,9 +1546,10 @@ public class JebGL extends Applet {
         public CreateProgram() {
         }
         
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             this.id = gl.glCreateProgram();
+            return true;
         }
     }
 
@@ -1531,9 +1559,10 @@ public class JebGL extends Applet {
             this.buffers = new int[1];
         }
         
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             gl.glGenRenderbuffers(1, buffers, 0);
+            return true;
         }
     }
 
@@ -1544,7 +1573,7 @@ public class JebGL extends Applet {
             this.type = type;
         }
         
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
 
             //System.err.println("Chosen GLCapabilities: " + drawable.getChosenGLCapabilities());
@@ -1556,6 +1585,7 @@ public class JebGL extends Applet {
             //System.err.println(gl.isFunctionAvailable("glCreateShader"));
 
             this.id = gl.glCreateShader(type);
+            return true;
         }
     }
     
@@ -1565,9 +1595,10 @@ public class JebGL extends Applet {
             this.textures = new int[1];
         }
         
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             gl.glGenTextures(1, textures, 0);
+            return true;
         }
     }
 
@@ -1577,9 +1608,10 @@ public class JebGL extends Applet {
             this.mode = mode;
         }
         
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             gl.glCullFace(mode);
+            return true;
         }
     }
 
@@ -1590,9 +1622,10 @@ public class JebGL extends Applet {
             this.buffers[0] = b;
         }
         
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             gl.glDeleteBuffers(1, buffers, 0);
+            return true;
         }
     }
 
@@ -1603,9 +1636,10 @@ public class JebGL extends Applet {
             this.buffers[0] = b;
         }
         
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             gl.glDeleteFramebuffers(1, buffers, 0);
+            return true;
         }
     }
 
@@ -1615,9 +1649,10 @@ public class JebGL extends Applet {
             this.program = program;
         }
         
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             gl.glDeleteProgram(program);
+            return true;
         }
     }
 
@@ -1628,9 +1663,10 @@ public class JebGL extends Applet {
             this.buffers[0] = b;
         }
         
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             gl.glDeleteRenderbuffers(1, buffers, 0);
+            return true;
         }
     }
     
@@ -1640,9 +1676,10 @@ public class JebGL extends Applet {
             this.shader = shader;
         }
         
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             gl.glDeleteShader(shader);
+            return true;
         }
     }
 
@@ -1653,9 +1690,10 @@ public class JebGL extends Applet {
             this.textures[0] = t;
         }
         
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             gl.glDeleteTextures(1, textures, 0);
+            return true;
         }
     }
 
@@ -1665,9 +1703,10 @@ public class JebGL extends Applet {
             this.func = func;
         }
         
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             gl.glDepthFunc(func);
+            return true;
         }
     }
 
@@ -1677,9 +1716,10 @@ public class JebGL extends Applet {
             this.flag = flag;
         }
         
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             gl.glDepthMask(flag);
+            return true;
         }
     }
 
@@ -1691,9 +1731,10 @@ public class JebGL extends Applet {
             this.zFar = zFar;
         }
         
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             gl.glDepthRangef(zNear, zFar);
+            return true;
         }
     }
 
@@ -1705,9 +1746,10 @@ public class JebGL extends Applet {
             this.shader = shader;
         }
         
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             gl.glDetachShader(program, shader);
+            return true;
         }
     }
 
@@ -1717,9 +1759,10 @@ public class JebGL extends Applet {
             this.cap = cap;
         }
         
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             gl.glDisable(cap);
+            return true;
         }
     }
 
@@ -1729,9 +1772,10 @@ public class JebGL extends Applet {
             this.index = index;
         }
         
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             gl.glDisableVertexAttribArray(index);
+            return true;
         }
     }
 
@@ -1745,9 +1789,10 @@ public class JebGL extends Applet {
             this.count = count;
         }
         
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             gl.glDrawArrays(mode, first, count);
+            return true;
         }
     }
 
@@ -1763,9 +1808,10 @@ public class JebGL extends Applet {
             this.offset = (long)offset;
         }
         
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             gl.glDrawElements(mode, count, type, offset);
+            return true;
         }
     }
 
@@ -1775,9 +1821,10 @@ public class JebGL extends Applet {
             this.cap = cap;
         }
         
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             gl.glEnable(cap);
+            return true;
         }
     }
 
@@ -1787,9 +1834,10 @@ public class JebGL extends Applet {
             this.index = index;
         }
         
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             gl.glEnableVertexAttribArray(index);
+            return true;
         }
     }
 
@@ -1797,9 +1845,10 @@ public class JebGL extends Applet {
         public Finish() {
         }
         
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             gl.glFinish();
+            return true;
         }
     }
 
@@ -1807,9 +1856,10 @@ public class JebGL extends Applet {
         public Flush() {
         }
         
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             gl.glFlush();
+            return true;
         }
     }
 
@@ -1826,10 +1876,11 @@ public class JebGL extends Applet {
             this.renderbuffer = renderbuffer;
         }
         
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             gl.glFramebufferRenderbuffer(target, attachment, renderbuffertarget,
                                          renderbuffer);
+            return true;
         }
     }
 
@@ -1848,10 +1899,11 @@ public class JebGL extends Applet {
             this.level = level;
         }
         
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             gl.glFramebufferTexture2D(target, attachment, textarget,
                                       texture, level);
+            return true;
         }
     }
 
@@ -1861,9 +1913,10 @@ public class JebGL extends Applet {
             this.mode = mode;
         }
         
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             gl.glFrontFace(mode);
+            return true;
         }
     }
 
@@ -1873,9 +1926,10 @@ public class JebGL extends Applet {
             this.target = target;
         }
         
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             gl.glGenerateMipmap(target);
+            return true;
         }
     }
 
@@ -1896,10 +1950,11 @@ public class JebGL extends Applet {
             this.name = new byte[bufsize];
         }
 
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             gl.glGetActiveAttrib(program, index, bufsize, length,
                                  0, size, 0, type, 0, name, 0);
+            return true;
         }
     }
 
@@ -1920,10 +1975,11 @@ public class JebGL extends Applet {
             this.name = new byte[bufsize];
         }
 
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             gl.glGetActiveUniform(program, index, bufsize, length,
                                  0, size, 0, type, 0, name, 0);
+            return true;
         }
     }
 
@@ -1938,10 +1994,11 @@ public class JebGL extends Applet {
             this.shaders = new int[maxcount];
         }
 
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             gl.glGetAttachedShaders(program, maxcount, count, 0,
                                     shaders, 0);
+            return true;
         }
     }
 
@@ -1954,9 +2011,10 @@ public class JebGL extends Applet {
             this.name = name;
         }
 
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             this.location = gl.glGetAttribLocation(program, name);
+            return true;
         }
     }
 
@@ -1970,9 +2028,10 @@ public class JebGL extends Applet {
             this.params = new int[1];
         }
 
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             gl.glGetBufferParameteriv(target, pname, params, 0);
+            return true;
         }
     }
 
@@ -1981,9 +2040,10 @@ public class JebGL extends Applet {
         public GetError() {
         }
         
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             this.id = gl.glGetError();
+            return true;
         }
     }
 
@@ -1995,9 +2055,10 @@ public class JebGL extends Applet {
             this.params = new float[1];
         }
 
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             gl.glGetFloatv(pname, params, 0);
+            return true;
         }
     }
 
@@ -2013,9 +2074,10 @@ public class JebGL extends Applet {
             this.params = new int[1];
         }
 
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             gl.glGetFramebufferAttachmentParameteriv(target, attachment, pname, params, 0);
+            return true;
         }
     }
 
@@ -2027,9 +2089,10 @@ public class JebGL extends Applet {
             this.params = new int[1];
         }
 
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             gl.glGetIntegerv(pname, params, 0);
+            return true;
         }
     }
 
@@ -2043,9 +2106,10 @@ public class JebGL extends Applet {
             this.params = new int[1];
         }
 
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             gl.glGetProgramiv(program, pname, params, 0);
+            return true;
         }
     }
 
@@ -2060,10 +2124,11 @@ public class JebGL extends Applet {
             this.infolog = new byte[bufsize];
         }
 
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             gl.glGetProgramiv(program, gl.GL_INFO_LOG_LENGTH, length, 0);
             gl.glGetProgramInfoLog(program, bufsize, length, 0, infolog, 0);
+            return true;
         }
     }
 
@@ -2077,9 +2142,10 @@ public class JebGL extends Applet {
             this.params = new int[1];
         }
 
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             gl.glGetRenderbufferParameteriv(target, pname, params, 0);
+            return true;
         }
     }
 
@@ -2095,10 +2161,11 @@ public class JebGL extends Applet {
             this.bufsize = 1024;
         }
 
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             gl.glGetShaderiv(shader, gl.GL_INFO_LOG_LENGTH, length, 0);
             gl.glGetShaderInfoLog(shader, bufsize, length, 0, infolog, 0);
+            return true;
         }
     }
 
@@ -2112,9 +2179,10 @@ public class JebGL extends Applet {
             this.params = new int[1];
         }
 
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             gl.glGetShaderiv(shader, pname, params, 0);
+            return true;
         }
     }
 
@@ -2129,9 +2197,10 @@ public class JebGL extends Applet {
             this.source = new byte[bufsize];
         }
 
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             gl.glGetShaderSource(shader, bufsize, length, 0, source, 0);
+            return true;
         }
     }
 
@@ -2143,9 +2212,10 @@ public class JebGL extends Applet {
             this.result = new String();
         }
 
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             result = gl.glGetString(name);
+            return true;
         }
     }
 
@@ -2159,9 +2229,10 @@ public class JebGL extends Applet {
             this.params = new float[1];
         }
 
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             gl.glGetTexParameterfv(target, pname, params, 0);
+            return true;
         }
     }
 
@@ -2175,9 +2246,10 @@ public class JebGL extends Applet {
             this.params = new int[1];
         }
 
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             gl.glGetTexParameteriv(target, pname, params, 0);
+            return true;
         }
     }
 
@@ -2191,9 +2263,10 @@ public class JebGL extends Applet {
             result = new float[16]; // Just set 16 for now
         }
 
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             gl.glGetUniformfv(program, location, result, 0);
+            return true;
         }
     }
 
@@ -2206,9 +2279,10 @@ public class JebGL extends Applet {
             this.name = name;
         }
 
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             this.location = gl.glGetUniformLocation(program, name);
+            return true;
         }
     }
 
@@ -2222,9 +2296,10 @@ public class JebGL extends Applet {
             this.params = new float[1];
         }
 
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             gl.glGetVertexAttribfv(index, pname, params, 0);
+            return true;
         }
     }
 
@@ -2238,9 +2313,10 @@ public class JebGL extends Applet {
             this.params = new int[1];
         }
 
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             gl.glGetVertexAttribiv(index, pname, params, 0);
+            return true;
         }
     }
 
@@ -2254,9 +2330,10 @@ public class JebGL extends Applet {
             this.mode = mode;
         }
         
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             gl.glHint(target, mode);
+            return true;
         }
     }
 
@@ -2267,9 +2344,10 @@ public class JebGL extends Applet {
             this.buffer = buffer;
         }
         
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             result = gl.glIsBuffer(buffer);
+            return true;
         }
     }
 
@@ -2280,9 +2358,10 @@ public class JebGL extends Applet {
             this.cap = cap;
         }
         
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             result = gl.glIsEnabled(cap);
+            return true;
         }
     }
 
@@ -2293,9 +2372,10 @@ public class JebGL extends Applet {
             this.framebuffer = framebuffer;
         }
         
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             result = gl.glIsFramebuffer(framebuffer);
+            return true;
         }
     }
 
@@ -2306,9 +2386,10 @@ public class JebGL extends Applet {
             this.program = program;
         }
         
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             result = gl.glIsProgram(program);
+            return true;
         }
     }
 
@@ -2319,9 +2400,10 @@ public class JebGL extends Applet {
             this.renderbuffer = renderbuffer;
         }
         
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             result = gl.glIsRenderbuffer(renderbuffer);
+            return true;
         }
     }
 
@@ -2332,9 +2414,10 @@ public class JebGL extends Applet {
             this.shader = shader;
         }
         
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             result = gl.glIsShader(shader);
+            return true;
         }
     }
 
@@ -2345,9 +2428,10 @@ public class JebGL extends Applet {
             this.texture = texture;
         }
         
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             result = gl.glIsTexture(texture);
+            return true;
         }
     }
 
@@ -2357,9 +2441,10 @@ public class JebGL extends Applet {
             this.width = width;
         }
         
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             gl.glLineWidth(width);
+            return true;
         }
     }
 
@@ -2369,9 +2454,10 @@ public class JebGL extends Applet {
             this.program = program;
         }
         
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             gl.glLinkProgram(program);
+            return true;
         }
     }
 
@@ -2385,9 +2471,10 @@ public class JebGL extends Applet {
             this.param = param;
         }
         
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             gl.glPixelStorei(pname, param);
+            return true;
         }
     }
 
@@ -2399,9 +2486,10 @@ public class JebGL extends Applet {
             this.units = units;
         }
         
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             gl.glPolygonOffset(factor, units);
+            return true;
         }
     }
 
@@ -2418,9 +2506,10 @@ public class JebGL extends Applet {
             this.height = height;
         }
         
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             gl.glRenderbufferStorage(target, internalformat, width, height);
+            return true;
         }
     }
 
@@ -2432,9 +2521,10 @@ public class JebGL extends Applet {
             this.invert = invert;
         }
         
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             gl.glSampleCoverage(value, invert);
+            return true;
         }
     }
 
@@ -2450,9 +2540,10 @@ public class JebGL extends Applet {
             this.height = height;
         }
         
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             gl.glScissor(x, y, width, height);
+            return true;
         }
     }
 
@@ -2472,9 +2563,10 @@ public class JebGL extends Applet {
             }
         }
 
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             gl.glShaderSource(shader, count, string, length, 0);
+            return true;
         }
     }
 
@@ -2488,9 +2580,10 @@ public class JebGL extends Applet {
             this.mask = mask;
         }
         
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             gl.glStencilFunc(func, ref, mask);
+            return true;
         }
     }
 
@@ -2506,9 +2599,10 @@ public class JebGL extends Applet {
             this.mask = mask;
         }
         
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             gl.glStencilFuncSeparate(face, func, ref, mask);
+            return true;
         }
     }
 
@@ -2518,9 +2612,10 @@ public class JebGL extends Applet {
             this.mask = mask;
         }
         
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             gl.glStencilMask(mask);
+            return true;
         }
     }
 
@@ -2532,9 +2627,10 @@ public class JebGL extends Applet {
             this.mask = mask;
         }
         
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             gl.glStencilMaskSeparate(face, mask);
+            return true;
         }
     }
 
@@ -2548,9 +2644,10 @@ public class JebGL extends Applet {
             this.zpass = zpass;
         }
         
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             gl.glStencilOp(fail, zfail, zpass);
+            return true;
         }
     }
     
@@ -2566,9 +2663,10 @@ public class JebGL extends Applet {
             this.zpass = zpass;
         }
         
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             gl.glStencilOpSeparate(face, fail, zfail, zpass);
+            return true;
         }
     }
 
@@ -2665,10 +2763,11 @@ public class JebGL extends Applet {
             }
         }
         
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             gl.glTexImage2D(target, level, internalformat, width, height,
                             border, format, type, pixels);
+            return true;
         }
     }
 
@@ -2682,9 +2781,10 @@ public class JebGL extends Applet {
             this.param = param;
         }
         
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             gl.glTexParameterf(target, pname, param);
+            return true;
         }
     }
 
@@ -2698,9 +2798,10 @@ public class JebGL extends Applet {
             this.param = param;
         }
         
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             gl.glTexParameteri(target, pname, param);
+            return true;
         }
     }
 
@@ -2714,9 +2815,10 @@ public class JebGL extends Applet {
             this.value = value;
         }
         
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             gl.glUniform1f(location, value);
+            return true;
         }
     }
 
@@ -2728,9 +2830,10 @@ public class JebGL extends Applet {
             this.value = value;
         }
         
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             gl.glUniform1i(location, value);
+            return true;
         }
     }
 
@@ -2744,9 +2847,10 @@ public class JebGL extends Applet {
             this.y = y;
         }
         
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             gl.glUniform2f(location, x, y);
+            return true;
         }
     }
 
@@ -2760,9 +2864,10 @@ public class JebGL extends Applet {
             this.y = y;
         }
         
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             gl.glUniform2i(location, x, y);
+            return true;
         }
     }
 
@@ -2778,9 +2883,10 @@ public class JebGL extends Applet {
             this.z = z;
         }
         
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             gl.glUniform3f(location, x, y, z);
+            return true;
         }
     }
 
@@ -2796,9 +2902,10 @@ public class JebGL extends Applet {
             this.z = z;
         }
         
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             gl.glUniform3i(location, x, y, z);
+            return true;
         }
     }
 
@@ -2816,9 +2923,10 @@ public class JebGL extends Applet {
             this.w = w;
         }
         
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             gl.glUniform4f(location, x, y, z, w);
+            return true;
         }
     }
 
@@ -2836,9 +2944,10 @@ public class JebGL extends Applet {
             this.w = w;
         }
         
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             gl.glUniform4i(location, x, y, z, w);
+            return true;
         }
     }
 
@@ -2858,9 +2967,10 @@ public class JebGL extends Applet {
             this.value = value;
         }
         
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             gl.glUniformMatrix2fv(location, count, transpose, value, 0);
+            return true;
         }
     }
 
@@ -2880,9 +2990,10 @@ public class JebGL extends Applet {
             this.value = value;
         }
         
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             gl.glUniformMatrix3fv(location, count, transpose, value, 0);
+            return true;
         }
     }
 
@@ -2902,9 +3013,10 @@ public class JebGL extends Applet {
             this.value = value;
         }
         
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             gl.glUniformMatrix4fv(location, count, transpose, value, 0);
+            return true;
         }
     }
 
@@ -2914,9 +3026,10 @@ public class JebGL extends Applet {
             this.program = program;
         }
         
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             gl.glUseProgram(program);
+            return true;
         }
     }
 
@@ -2926,9 +3039,10 @@ public class JebGL extends Applet {
             this.program = program;
         }
         
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             gl.glValidateProgram(program);
+            return true;
         }
     }
 
@@ -2940,9 +3054,10 @@ public class JebGL extends Applet {
             this.x = x;
         }
         
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             gl.glVertexAttrib1f(index, x);
+            return true;
         }
     }
 
@@ -2956,9 +3071,10 @@ public class JebGL extends Applet {
             this.y = y;
         }
         
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             gl.glVertexAttrib2f(index, x, y);
+            return true;
         }
     }
 
@@ -2974,9 +3090,10 @@ public class JebGL extends Applet {
             this.z = z;
         }
         
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             gl.glVertexAttrib3f(index, x, y, z);
+            return true;
         }
     }
 
@@ -2994,9 +3111,10 @@ public class JebGL extends Applet {
             this.w = w;
         }
         
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             gl.glVertexAttrib4f(index, x, y, z, w);
+            return true;
         }
     }
 
@@ -3020,9 +3138,10 @@ public class JebGL extends Applet {
             this.offset = (long)offset;
         }
         
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             gl.glVertexAttribPointer(indx, size, type, normalized, stride, offset);
+            return true;
         }
     }
 
@@ -3038,9 +3157,10 @@ public class JebGL extends Applet {
             this.height = height;
         }
         
-        public void run(GLAutoDrawable drawable) {
+        public boolean run(GLAutoDrawable drawable) {
             GL2 gl = drawable.getGL().getGL2();
             gl.glViewport(x, y, width, height);
+            return true;
         }
     }
 

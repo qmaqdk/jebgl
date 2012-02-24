@@ -1620,12 +1620,7 @@
             for (var i = 0, l = activeinfo.length; i<l; i++) {
                 out += String.fromCharCode(activeinfo[i]);
             }
-            var arr = out.split(",");
-            if (arr[2] != "") {
-                return new JebGLActiveInfo(parseInt(arr[0]), parseInt(arr[1]), arr[2]);
-            } else {
-                return null;
-            }
+            return out;
         },
 
         getActiveUniform: function(program, index) {
@@ -1642,12 +1637,7 @@
             for (var i = 0, l = activeinfo.length; i<l; i++) {
                 out += String.fromCharCode(activeinfo[i]);
             }
-            var arr = out.split(",");
-            if (arr[2] != "") {
-                return new JebGLActiveInfo(parseInt(arr[0]), parseInt(arr[1]), arr[2]);
-            } else {
-                return null;
-            }
+            return out;
         },
 
         getAttachedShaders: function(program) {
@@ -2644,9 +2634,12 @@
         if (typeof(canvas) == "undefined") throw new Error("Canvas unspecified.");
 
         // Default settings
-        var jebglJar = "http://jebgl.googlecode.com/files/jebgl-0.1.jar",
-            jarLocation = "http://jebgl.googlecode.com/svn/webstart/",
-            jnlpLocation = "http://jebgl.googlecode.com/svn/webstart/",
+        //var jebglJar = "http://jebgl.googlecode.com/files/jebgl-0.1.jar",
+        var jebglJar = "http://jebgl.com/media/jar/jebgl.jar",
+           // jarLocation = "http://jebgl.googlecode.com/svn/webstart/",
+            jarLocation = "http://jebgl.com/media/jar/",
+           // jnlpLocation = "http://jebgl.googlecode.com/svn/webstart/",
+            jnlpLocation = "http://jebgl.com/media/jar/",
             alwaysApplet = false,
             development = false;
 
@@ -2659,7 +2652,7 @@
         }
 
         // Add timestamp to jebgl.jar in development mode (cache busting)
-        if (development && location.href.indexOf("http") == 0) jebglJar += "?" + new Date().getTime();
+        if (development) jebglJar += "?" + new Date().getTime();
 
         if (typeof(canvas.getContext) != "undefined") {
             try {
@@ -2700,10 +2693,10 @@
         applet.setAttribute("height", canvas.height);
 
         // Set applet css
-        applet.style.cssText = "position: absolute;";
+        applet.style.cssText = "position: relative; top: 0px; left: 0px;";
 
         var appletParameters = [
-            ['archive', jarLocation + 'applet-launcher.jar,' + jarLocation + 'jogl.all.jar,' + jarLocation + 'nativewindow.all.jar,' + jarLocation + 'gluegen-rt.jar,' + jarLocation + 'newt.all.jar,' + jebglJar],
+            ['archive', jarLocation + 'applet-launcher.jar,' + jarLocation + 'jogl.all.jar,' + jarLocation + 'gluegen-rt.jar,' + jarLocation + 'atomic/nativewindow.all.jar,' + jarLocation + 'atomic/newt.all.jar,' + jebglJar],
             ['codebase_lookup', 'false'],
             ['subapplet.classname', 'com.iola.JebGL'],
             ['subapplet.displayname', 'JebGL Applet'],
@@ -2712,7 +2705,8 @@
             ['progressbar', 'true'],
             ['mayscript', 'true'],
             ['jnlpNumExtensions', '1'],
-            ['jnlpExtension1', jnlpLocation + 'jogl-core.jnlp']];
+            //['jnlpExtension1', jnlpLocation + 'jogl-core.jnlp']];
+            ['jnlpExtension1', jnlpLocation + 'jogl-all-awt.jnlp']];
         
         for (var i=0, l=appletParameters.length; i<l; i++) {
             var p = document.createElement("param");
